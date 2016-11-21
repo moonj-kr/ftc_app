@@ -105,7 +105,7 @@ public class SensorMRColor extends LinearOpMode {
         colorSensor.enableLed(bLedOn);
       }
 
-      // update previous state variable.
+      // update previous state var0iable.
       bPrevState = bCurrState;
 
       // convert the RGB values to HSV values.
