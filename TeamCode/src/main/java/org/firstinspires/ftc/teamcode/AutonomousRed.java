@@ -11,6 +11,8 @@ Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,25 +22,35 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "EncoderDriveRed", group = "Linear Opmode")
-@Disabled
-public class EncoderDriveRed extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+@Autonomous(name = "Autonomous_Red", group = "Linear Opmode")
+
+public class AutonomousRed extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-    DcMotor M_drive_BL = null;
-    DcMotor M_drive_BR = null;
+    DcMotor M_drive_BL,
+            M_drive_BR,
+            M_lift_FL,
+            M_lift_FR;
 
-    Servo S_button_FL = null;
-    Servo S_button_FR = null;
+    Servo S_button_FL,
+          S_button_FR = null;
 
     final double OPEN = 1.0;
 
+    //ColorSensor colorSensorLeft;
+    //ColorSensor colorSensorRight; //different address
     ColorSensor colorSensorLeft;
-    ColorSensor colorSensorRight;
+    ColorSensor colorSensorRight; //different address
 
+    OpticalDistanceSensor opticalDistanceSensor1;
+    OpticalDistanceSensor opticalDistanceSensor2;
 
-    OpticalDistanceSensor opticalDistanceSensor;
+    ModernRoboticsI2cRangeSensor rangeSensorLeft;
+
+    //adafruit range sensor right
 
     boolean LEDState = false;
 
@@ -56,9 +68,13 @@ public class EncoderDriveRed extends LinearOpMode {
         S_button_FR = hardwareMap.servo.get("S_button_FR");
 
         colorSensorLeft = hardwareMap.colorSensor.get("color_FL");
-        //colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
 
-        opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get("ODS");
+        opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
+        opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
+
+        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
+        //adafruit range sensor right
 
         //ColorSensor Values
         int redValue = colorSensorLeft.red();
@@ -76,26 +92,64 @@ public class EncoderDriveRed extends LinearOpMode {
         //ColorSensor state passive mode for beacons
         colorSensorLeft.enableLed(LEDState);
 
-        //Drive
-        DriveFowardDistance(.5, 2484); //end time:
-        // original 3604
 
-        TurnRight(.5,2000);            //end time:
+        ///////////////Drive//////////////////
+//Test:
 
-        DriveFowardDistance(.5,-2086); //end time:
+        S_button_FL.setPosition(0.0);
+        S_button_FR.setPosition(0.0);
+        S_button_FL.setPosition(1.0);
+        sleep(1500);
+
+
+        /*
+        TurnRight(.5,937);                        //end time:
+        //turn 45 degrees
+        //1875/2 = 937
+
+        DriveFowardDistance(.5, 3604);           //end time:
+        //drive forwards
+
+        TurnRight(.5,2811);                      //end time:
+        //turn 90+45 = 135
+        //distance ~ 937*3 = 2811
+
+        //check range (from wall parallel)
+        while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0){
+            TurnLeft(.3,10);
+        }
+
+        while(rangeSensorLeft.getDistance(DistanceUnit.CM) < 5.0){
+            TurnRight(.3,10);
+        }
+
+        while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+
+            DriveBackwardsDistance(.2,60);       //end time:
+        }
+
+
+
+        DriveBackwardsDistance(.5,2086);         //end time:
+        //drive backwards
         //original -4170
 
-        TurnRight(.5,-2000);
+        TurnLeft(.5,-2000);
+        //turn 90 degrees
+        //check gyro
 
         DriveFowardDistance(.5,1120);
 
         TurnRight(.5, 1875);
+        //225 degrees
+        //check gyro
 
         DriveFowardDistance(.5,-2086);
 
         TurnLeft(.5,2480);             //end time:
+        //c
 
-        while(opticalDistanceSensor.getLightDetected() < .40){
+        while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40){
 
             DriveFowardDistance(.2,-60);
         }
@@ -118,7 +172,7 @@ public class EncoderDriveRed extends LinearOpMode {
 
         DriveFowardDistance(.5,-8666);
 
-        while(opticalDistanceSensor.getLightDetected() < .40){
+        while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected()< .40){
 
             DriveFowardDistance(.2,-60);
         }
@@ -140,11 +194,12 @@ public class EncoderDriveRed extends LinearOpMode {
 
         //HITS CAPBALL
         DriveFowardDistance (.7, 8610);
+        //*/
 
     }
 
 
-    public void DriveFowardDistance(double power, int distance) {
+    public void DriveFowardDistance(double power, int distance) throws InterruptedException{
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -173,6 +228,35 @@ public class EncoderDriveRed extends LinearOpMode {
         idle();
     }
 
+    public void DriveBackwardsDistance(double power, int distance) throws InterruptedException{
+        //reset encoders
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //set target position
+        M_drive_BL.setTargetPosition(-distance);
+        M_drive_BR.setTargetPosition(-distance);
+
+        M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
+
+        //set to RUN_TO_POSITION mode
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
+            //wait until target position is reached
+        }
+
+        //stop and change modes back to normal
+        //StopDriving(power, distance);
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        idle();
+    }
+
     public void StopDriving(double power, int distance) {
         M_drive_BL.setPower(0);
         M_drive_BR.setPower(0);
@@ -180,7 +264,7 @@ public class EncoderDriveRed extends LinearOpMode {
         idle();
     }
 
-    public void TurnRight(double power, int distance) {
+    public void TurnLeft(double power, int distance) throws InterruptedException{
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -199,7 +283,7 @@ public class EncoderDriveRed extends LinearOpMode {
         idle();
     }
 
-    public void TurnLeft(double power, int distance) throws InterruptedException {
+    public void TurnRight(double power, int distance)throws InterruptedException{
         telemetry.addData("Encoder",M_drive_BR.getCurrentPosition());
         telemetry.addData("Encoder",M_drive_BL.getCurrentPosition());
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

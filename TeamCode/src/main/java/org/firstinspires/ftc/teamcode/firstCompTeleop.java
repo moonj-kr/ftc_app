@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by Harry and Steven on 11/14/2016.
  */
 @TeleOp(name = "firstCompTeleop", group = "Test")
+
 public class firstCompTeleop extends OpMode {
 
 
@@ -38,8 +40,8 @@ public class firstCompTeleop extends OpMode {
 
     @Override
     public void loop() {
-        right.setPower(-gamepad1.left_stick_y);
-        left.setPower(gamepad1.right_stick_y);
+        right.setPower(gamepad1.left_stick_y);
+        left.setPower(- gamepad1.right_stick_y);
         if(gamepad1.x && !gamepad2.y && lefty.getPosition() + 0.01 < 1.0){
             lefty.setPosition(lefty.getPosition()+0.01);
         }
