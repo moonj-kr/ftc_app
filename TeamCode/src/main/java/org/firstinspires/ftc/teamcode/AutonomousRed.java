@@ -23,6 +23,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+/*
+    Updated: 11.29.16
+ */
 
 @Autonomous(name = "Autonomous_Red", group = "Linear Opmode")
 
@@ -101,8 +104,6 @@ public class AutonomousRed extends LinearOpMode {
         S_button_FL.setPosition(1.0);
         sleep(1500);
 
-
-        /*
         TurnRight(.5,937);                        //end time:
         //turn 45 degrees
         //1875/2 = 937

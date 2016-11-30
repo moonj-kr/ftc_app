@@ -19,8 +19,11 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/*
+    Updated: 11.29.16
+ */
+
 @Autonomous(name = "DriveForwardAuton", group = "Linear Opmode")
-@Disabled
 
 public class DriveForwardAuton extends LinearOpMode {
 

@@ -19,8 +19,12 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/*
+    Updated: 11.29.16
+ */
+
 @Autonomous(name = "EncoderDriveBlue", group = "Linear Opmode")
-@Disabled
+
 public class EncoderDriveBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -93,7 +97,6 @@ public class EncoderDriveBlue extends LinearOpMode {
             sleep(1500);
         }
 
-        //UNTESTED CODE
 
         while (blueValue > redValue){
             DriveFowardDistance(.2,-1120); //to other beacon backwards

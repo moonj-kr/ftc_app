@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
-/**
- * Created by Harry and Steven on 11/14/2016.
+/*
+    Updated 11.29.16
  */
+
 @TeleOp(name = "scissorLiftTest", group = "Test")
 public class scissorLiftTest extends OpMode {
 
@@ -29,28 +29,27 @@ public class scissorLiftTest extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.a) {
+        if (gamepad1.right_bumper) {
             right.setPower(1.0);
 
         }
-        else if (gamepad1.b){
+        else if (gamepad1.left_bumper){
             left.setPower(1.0);
         }
-        else if (gamepad1.x){
-            right.setDirection(DcMotor.Direction.REVERSE);
-            right.setPower(1.0);
+        else if (gamepad1.right_trigger > 0.0){
+            right.setPower(-1.0);
         }
-        else if (gamepad1.y){
+        else if (gamepad1.left_trigger > 0.0){
             left.setDirection(DcMotor.Direction.REVERSE);
             left.setPower(1.0);
         }
 
-        else if (gamepad1.right_bumper){
+        else if (gamepad1.x){
             right.setPower(0.0);
             left.setPower(0.0);
 }
 
-        else if (gamepad1.left_bumper){
+        else if (gamepad1.y){
             right.setPower(1.0);
             left.setPower(1.0);
         }

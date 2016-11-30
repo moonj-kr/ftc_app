@@ -9,10 +9,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-/**
- * Created by Harry and Steven on 11/14/2016.
- */
 @TeleOp(name = "firstCompTeleop", group = "Test")
+ /*
+    Updated: 11.19.16
+  */
+
 
 public class firstCompTeleop extends OpMode {
 
