@@ -79,11 +79,6 @@ public class AutonomousRed extends LinearOpMode {
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
         //adafruit range sensor right
 
-        //ColorSensor Values
-        int redValue = colorSensorLeft.red();
-        int greenValue = colorSensorLeft.green();
-        int blueValue = colorSensorLeft.blue();
-
         //Motor Setup
         M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -129,8 +124,6 @@ public class AutonomousRed extends LinearOpMode {
             DriveBackwardsDistance(.2,60);       //end time:
         }
 
-
-
         DriveBackwardsDistance(.5,2086);         //end time:
         //drive backwards
         //original -4170
@@ -155,15 +148,13 @@ public class AutonomousRed extends LinearOpMode {
             DriveFowardDistance(.2,-60);
         }
 
-        while (redValue > blueValue && redValue > greenValue){
+        while (colorSensorLeft.red() > colorSensorLeft.blue()){
 
             S_button_FL.setPosition(1.0); //if red
             sleep(1500);
         }
 
-        //UNTESTED CODE
-
-        while (blueValue > redValue){
+        while (colorSensorLeft.blue() > colorSensorLeft.red()){
             DriveFowardDistance(.2,-1120); //to other beacon backwards
             S_button_FL.setPosition(1.0);
             sleep(1500);
@@ -172,19 +163,20 @@ public class AutonomousRed extends LinearOpMode {
         //FROM FIRST TO SECOND BEACON
 
         DriveFowardDistance(.5,-8666);
-
+/*
         while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected()< .40){
 
             DriveFowardDistance(.2,-60);
         }
+        */
 
-        while (redValue > blueValue && redValue > greenValue){
+        while (colorSensorLeft.red() > colorSensorLeft.blue()){
 
             S_button_FL.setPosition(1.0); //if red
             sleep(1500);
         }
 
-        while (blueValue > redValue){
+        while (colorSensorLeft.blue() > colorSensorLeft.red()){
             DriveFowardDistance(.2,-1120); //to other beacon backwards
             S_button_FL.setPosition(1.0);
             sleep(1500);
