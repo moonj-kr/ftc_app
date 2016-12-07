@@ -1,15 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
 
 @TeleOp(name = "secondCompTeleop", group = "Test")
 
@@ -52,9 +46,20 @@ public class secondCompTeleop extends OpMode {
 
     @Override
     public void loop() {
-        M_drive_BL.setPower(gamepad1.left_stick_y);
+        /*
+        Drive motors
+        - Controller 1
+        - Joysticks
+        */
+        M_drive_BL.setPower(gamepad1.left_stick_x);
         M_drive_BR.setPower(-gamepad1.right_stick_y);
 
+        /*
+        Front Right Servos
+        - Controller 1
+        - Right Bumper extends servo
+        - Right Trigger detracts servo
+        */
         if(gamepad1.right_bumper) {
             S_button_FR.setPosition(S_button_FR.getPosition() + 0.01);
         }
@@ -62,6 +67,12 @@ public class secondCompTeleop extends OpMode {
             S_button_FR.setPosition(S_button_FR.getPosition()-0.01);
         }
 
+        /*
+        Front Left Servos
+        - Controller 1
+        - Left Bumper extends servo
+        - Left Trigger detracts servo
+         */
         if(gamepad1.left_bumper){
             S_button_FL.setPosition(S_button_FL.getPosition()+0.01);
         }
@@ -69,8 +80,23 @@ public class secondCompTeleop extends OpMode {
             S_button_FL.setPosition(S_button_FL.getPosition()-0.01);
         }
 
+        /*
+        Capball Lift Motors
+        - Controller 2
+        - Joysticks
+         */
         M_lift_FR.setPower(gamepad2.left_stick_x);
         M_lift_FL.setPower(gamepad2.left_stick_y);
+
+        /*
+        Shooter Motor
+        - Gamepad 2
+        - Button b
+        - Runs motor if button B is returning true value
+         */
+        if(gamepad2.b = true){
+            M_shooter.setPower(0.5);
+        }
     }
 
 }

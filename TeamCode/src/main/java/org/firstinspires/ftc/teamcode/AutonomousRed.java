@@ -1,10 +1,11 @@
 
 /**
- Updated: November 19, 2016
- First Competition Autonomous Red Side:
+
+ Second Competition Autonomous Red Side:
  - Drives using encoder methods
  - MR Optical Distance for white line
  - MR Color Sensors for beacon light detection
+ -MR Range Sensor for distance from wall after turn
 
 Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
 */
@@ -30,18 +31,20 @@ public class AutonomousRed extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-    DcMotor M_drive_BL,
-            M_drive_BR,
-            M_lift_FL,
-            M_lift_FR;
+        DcMotor M_drive_BL,
+                M_drive_BR,
+                M_lift_FL,
+                M_lift_FR,
+                M_shooter;
 
-    Servo S_button_FL,
-          S_button_FR = null;
+
+        Servo S_button_FL,
+              S_button_FR,
+              S_liftSide_L,
+              S_liftSide_R;
 
     final double OPEN = 1.0;
 
-    //ColorSensor colorSensorLeft;
-    //ColorSensor colorSensorRight; //different address
     ColorSensor colorSensorLeft;
     ColorSensor colorSensorRight; //different address
 
@@ -50,7 +53,6 @@ public class AutonomousRed extends LinearOpMode {
 
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-    //adafruit range sensor right
 
     boolean LEDState = false;
 
@@ -74,7 +76,14 @@ public class AutonomousRed extends LinearOpMode {
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
-        //adafruit range sensor right
+
+        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
+        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
+
+        M_shooter = hardwareMap.dcMotor.get("M_shooter");
+
+        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
+        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
 
         //Motor Setup
         M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -89,7 +98,7 @@ public class AutonomousRed extends LinearOpMode {
 
 
         ///////////////Drive//////////////////
-//Test:
+//TEST SERVO VALUES FOR EACH SIDE!
 
         S_button_FL.setPosition(0.0);
         S_button_FR.setPosition(0.0);

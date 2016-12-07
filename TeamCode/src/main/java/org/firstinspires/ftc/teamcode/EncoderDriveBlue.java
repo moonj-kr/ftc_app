@@ -1,11 +1,14 @@
-/**
- Updated: November 19, 2016
- First Competition Autonomous Red Side:
+/*
+
+ Second Competition Autonomous Blue Side:
  - Drives using encoder methods
  - MR Optical Distance for white line
  - MR Color Sensors for beacon light detection
+ -MR Range Sensor for distance from wall after turn
 
- Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
+ Additional Notes:
+ - Change color sensor position for blue side
+ - If possible, change range sensor location for blue side
  */
 
 package org.firstinspires.ftc.teamcode;
@@ -18,10 +21,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-/*
-    Updated: 11.29.16
- */
 
 @Autonomous(name = "EncoderDriveBlue", group = "Linear Opmode")
 
