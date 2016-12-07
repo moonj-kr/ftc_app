@@ -1,6 +1,4 @@
-/*
-Gyro Test 12.6.16
-*/
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;

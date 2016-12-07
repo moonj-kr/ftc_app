@@ -12,10 +12,6 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @TeleOp(name = "secondCompTeleop", group = "Test")
- /*
-    Updated: 12.1.16
-  */
-
 
 public class secondCompTeleop extends OpMode {
 
@@ -76,6 +72,5 @@ public class secondCompTeleop extends OpMode {
         M_lift_FR.setPower(gamepad2.left_stick_x);
         M_lift_FL.setPower(gamepad2.left_stick_y);
     }
-
 
 }

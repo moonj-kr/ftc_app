@@ -23,9 +23,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-/*
-    Updated: 11.29.16
- */
 
 @Autonomous(name = "Autonomous_Red", group = "Linear Opmode")
 
