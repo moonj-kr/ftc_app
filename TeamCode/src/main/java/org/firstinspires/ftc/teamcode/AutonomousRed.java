@@ -11,7 +11,6 @@ Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
 */
 
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

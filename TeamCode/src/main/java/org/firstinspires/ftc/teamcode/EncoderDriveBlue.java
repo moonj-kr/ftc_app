@@ -1,5 +1,4 @@
 /*
-
  Second Competition Autonomous Blue Side:
  - Drives using encoder methods
  - MR Optical Distance for white line
@@ -27,7 +26,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class EncoderDriveBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
-    private ElapsedTime runtime = new ElapsedTime();
+    ElapsedTime runtime = new ElapsedTime();
     DcMotor M_drive_BL = null;
     DcMotor M_drive_BR = null;
 

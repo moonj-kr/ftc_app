@@ -9,17 +9,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class secondCompTeleop extends OpMode {
 
+    DcMotor M_drive_BL,
+            M_drive_BR,
+            M_lift_FL,
+            M_lift_FR,
+            M_shooter;
 
-    private DcMotor M_drive_BL,
-                    M_drive_BR,
-                    M_lift_FL,
-                    M_lift_FR,
-                    M_shooter;
-
-    private Servo   S_button_FL,
-                    S_button_FR,
-                    S_liftSide_L,
-                    S_liftSide_R;
+    Servo   S_button_FL,
+            S_button_FR,
+            S_liftSide_L,
+            S_liftSide_R;
 
     final double CLOSED = 0;
     final double OPEN = 1.0;
