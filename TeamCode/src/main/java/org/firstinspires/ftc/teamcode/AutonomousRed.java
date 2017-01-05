@@ -11,6 +11,8 @@ Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
 */
 
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,10 +23,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
-@Autonomous(name = "Autonomous_Red", group = "Linear Opmode")
+import java.util.Locale;
+@Autonomous(name = "AutonomousRed", group = "Linear Opmode")
 
 public class AutonomousRed extends LinearOpMode {
 
@@ -36,7 +43,6 @@ public class AutonomousRed extends LinearOpMode {
                 M_lift_FR,
                 M_shooter;
 
-
         Servo S_button_FL,
               S_button_FR,
               S_liftSide_L,
@@ -44,8 +50,12 @@ public class AutonomousRed extends LinearOpMode {
 
     final double OPEN = 1.0;
 
-    ColorSensor colorSensorLeft;
-    ColorSensor colorSensorRight; //different address
+    ColorSensor colorSensorLeft; //0x3c
+    ColorSensor colorSensorRight; //different address 0x3a
+
+    BNO055IMU imu;
+    Orientation angles;
+    Acceleration gravity;
 
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
@@ -62,6 +72,8 @@ public class AutonomousRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
         M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
 
@@ -70,6 +82,9 @@ public class AutonomousRed extends LinearOpMode {
 
         colorSensorLeft = hardwareMap.colorSensor.get("color_FL");
         colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+
+        colorSensorLeft.setI2cAddress(I2cAddr.create7bit(0x3c)); //check if 7 bit is a problem if an error occurs
+        colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
@@ -98,16 +113,42 @@ public class AutonomousRed extends LinearOpMode {
 
         ///////////////Drive//////////////////
 //TEST SERVO VALUES FOR EACH SIDE!
+/*
+Today's goals:
+Finish testing gyro
+-Configure robot
 
+- Test servo vaules 1 to -1
+- Test distance of robot per rotation
+- Test angles of robot per distance
+- Decide if gyro is a necessity
+
+ */
+/*
+        //servo testing
         S_button_FL.setPosition(0.0);
-        S_button_FR.setPosition(0.0);
+        sleep(1000); //OUT LEFT
+
         S_button_FL.setPosition(1.0);
-        sleep(1500);
+        sleep(1000); //IN LEFT
+
+        S_button_FR.setPosition(1.0);
+        sleep(1000); //OUT RIGHT
+
+        S_button_FR.setPosition(0.0);
+        sleep(1000); //IN RIGHT
+*/
+        DriveFowardDistance(.5,3604);
 
         TurnRight(.5,937);                        //end time:
-        //turn 45 degrees
+        //turn 45 degrees //TURNS LEFT
         //1875/2 = 937
 
+        TurnLeft(.5, 937);
+
+
+
+/*
         DriveFowardDistance(.5, 3604);           //end time:
         //drive forwards
 
@@ -173,7 +214,7 @@ public class AutonomousRed extends LinearOpMode {
 
             DriveFowardDistance(.2,-60);
         }
-        */
+
 
         while (colorSensorLeft.red() > colorSensorLeft.blue()){
 
@@ -305,5 +346,46 @@ public class AutonomousRed extends LinearOpMode {
         idle();
 
     }
+    public double[] getAngles() {
+        Quaternion quatAngles = imu.getQuaternionOrientation();
+
+        double w = quatAngles.w;
+        double x = quatAngles.x;
+        double y = quatAngles.y;
+        double z = quatAngles.z;
+
+        //for Adafruit IMU, yaw and roll are switched
+        //equations from Wikipedia. Converts quaternion values to euler angles
+        double roll = Math.atan2( 2*(w*x +y*z), 1 - 2*(x*x + y*y)) * 180.0 / Math.PI;
+        double pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
+        double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) ) * 180.0 / Math.PI;
+
+        return new double[]{yaw, pitch, roll};
+    }
+
+    // This method returns a string that can be used to output telemetry data easily in other classes.
+    public String telemetrize() {
+        double[] angles = getAngles();
+        return String.format(Locale.US, "Yaw: %.3f  Pitch: %.3f  Roll: %.3f", angles[0], angles[1], angles[2]);
+    }
+
+
+    public void gyroAngle(double [] initValsArray){
+        //get double gyro values after turn to do calculations with
+        double [] finalValsArray = getAngles();
+        //store gyro values as string in order to display to phone
+        String finalVals = telemetrize();
+        telemetry.addData("Data after turning:", finalVals);
+        telemetry.update(); //might be incorrect
+
+        //add difference of final and initial to telemetry
+        double turnAngle = finalValsArray[0] - initValsArray[0];
+        String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+        telemetry.addData("Current ", turnAngleString);
+
+
 
     }
+
+
+}

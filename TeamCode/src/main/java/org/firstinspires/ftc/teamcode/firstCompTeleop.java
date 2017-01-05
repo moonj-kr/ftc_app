@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp(name = "firstCompTeleop", group = "Test")
+@Disabled
  /*
     Updated: 11.19.16
   */

@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "EncoderDriveBlue", group = "Linear Opmode")
-
+@Disabled
 public class EncoderDriveBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
