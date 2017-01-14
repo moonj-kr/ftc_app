@@ -1,14 +1,24 @@
 
 /**
+ * Created by Jisook Moon on 1/5/17
+ * Third Competition Autonomous for RED side
+ * /
 
- Second Competition Autonomous Red Side:
+ Notes:
  - Drives using encoder methods
  - MR Optical Distance for white line
  - MR Color Sensors for beacon light detection
  -MR Range Sensor for distance from wall after turn
 
-Additional Notes: ANDYMARK_TICKS_PER_REV = 1120;
+Additional Notes:
+ ANDYMARK_TICKS_PER_REV = 1120;
+ Original color sensor address: 0x3c
+ Gyro:
+ BNO055IMU imu;
+ Orientation angles;
+ Acceleration gravity;
 */
+
 
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
@@ -37,53 +47,60 @@ public class AutonomousRed extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-        DcMotor M_drive_BL,
-                M_drive_BR,
-                M_lift_FL,
-                M_lift_FR,
-                M_shooter;
 
-        Servo S_button_FL,
-              S_button_FR,
-              S_liftSide_L,
-              S_liftSide_R;
+    // motor declarations
+    DcMotor M_drive_BL,
+            M_drive_BR,
+            M_lift_FL,
+            M_lift_FR,
+            M_shooter;
 
-    final double OPEN = 1.0;
+    //servo declarations
+    Servo   S_button_FL,
+            S_liftSide_L,
+            S_liftSide_R,
+            S_ballDrop;
 
-    ColorSensor colorSensorLeft; //0x3c
+    // sensor declarations
     ColorSensor colorSensorRight; //different address 0x3a
-
-    BNO055IMU imu;
-    Orientation angles;
-    Acceleration gravity;
-
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
-
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-
+    // color sensor constant
     boolean LEDState = false;
 
-    int TICKS_PER_REV = 1120; //one motor rotation
-    int HALF_BLOCK = 861; // about 6 inches
-    int ONE_BLOCK = 3444; // about 12 inches
+    final int first = 4004;
+    final int oneAndHalfBlock = 5406;
+    final int twoBlock = 7208;
+    final int cornerToVortex = 8610;
+    final int rightTurn = 2041;
+    //1874+ 967 = 2841 right degree turn
+    final int leftTurn = 937;
+
+    final double ARM_INIT_POS_L = 0.8,
+            ARM_INIT_POS_R = 0.235,
+            BUTTON_INIT_POS = 0.8;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-
+        // mapping motor variables to their hardware counter parts
         M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
         M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
+        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
+        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
+        M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
+        // mapping servo variables to their hardware counter parts
+        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
+        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
         S_button_FL = hardwareMap.servo.get("S_button_FL");
-        S_button_FR = hardwareMap.servo.get("S_button_FR");
+        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
-        colorSensorLeft = hardwareMap.colorSensor.get("color_FL");
+        // mapping sensor variables to their hardware counter parts
         colorSensorRight = hardwareMap.colorSensor.get("color_FR");
-
-        colorSensorLeft.setI2cAddress(I2cAddr.create7bit(0x3c)); //check if 7 bit is a problem if an error occurs
         colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
@@ -91,60 +108,153 @@ public class AutonomousRed extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
 
-        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
-        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
-
-        M_shooter = hardwareMap.dcMotor.get("M_shooter");
-
-        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
-        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
-
-        //Motor Setup
+        // motor encoder setup
         M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // fixing motor
         M_drive_BL.setDirection(DcMotor.Direction.REVERSE);
+
+        //this.S_button_FL.setPosition(BUTTON_INIT_POS);
+
+        this.S_liftSide_L.setPosition(ARM_INIT_POS_L);
+        this.S_liftSide_R.setPosition(ARM_INIT_POS_R);
+        this.S_button_FL.setPosition(BUTTON_INIT_POS);
+        this.S_ballDrop.setPosition(0.02);
 
         waitForStart();
 
         //ColorSensor state passive mode for beacons
-        colorSensorLeft.enableLed(LEDState);
-
 
         ///////////////Drive//////////////////
-//TEST SERVO VALUES FOR EACH SIDE!
+
+        DriveForwardDistance(0.5,1502);
+
+        shooterRUN(0.5, 2340);
+
+
+        //shooterRUN(0.5,-2340);
+        /*
+
+        //sleep(1500);
+        S_ballDrop.setPosition(0.5);
+
+        shooterRUN(0.5,-2340);
+        S_ballDrop.setPosition(0.0);
+        sleep(1500);
+
+        //shooterRUN(0.5,2340);
+        //shooterRUN(0.5,-2340);
+
+
+        /*
+
+        DriveForwardDistance(.5,1502);
+
+        shooterRUN(0.5, 1120); // runs shooter motor one rotation
+
+        TurnRight(.5, 3736); //turns towards wall 45 degrees
+
+        DriveBackwardsDistance(.5, 3004); // drives straight from wall
+
+        TurnLeft(.3, 1801); // turns so that it is alligned against the wall
+
+        while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+            DriveForwardDistance(.2,-60);       // while the white line on the ground is not detected, run robot -60
+        }
+
+
+        if(colorSensorRight.red() > colorSensorRight.blue()){ //if beacon is red
+            S_button_FL.setPosition(0.1); //extends servo
+            sleep(1500);
+            S_button_FL.setPosition(0.8); //reteract servo
+            sleep(1500);
+        }
+
+        /*
+        shooterRUN(0.5, 1120); // runs shooter motor one rotation
+
+        DriveBackwardsDistance(.5, 3004); // drives straight from wall
+
+        TurnRight(.5, 2491); //turns towards wall 90 degrees
+
+        DriveForwardDistance(.5,4450); //drives towards wall after turn
+
+        TurnLeft(.3, 1801); // turns so that it is alligned against the wall
+
+        while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+            DriveForwardDistance(.2,-60);       // while the white line on the ground is not detected, run robot -60
+        }
+        //after robot stops on white line
+
+        if(colorSensorRight.red() > colorSensorRight.blue()){ //if beacon is red
+            S_button_FL.setPosition(0.1); //extends servo
+            sleep(1500);
+            S_button_FL.setPosition(0.8); //reteract servo
+            sleep(1500);
+         }
+        else if (colorSensorRight.blue() > colorSensorRight.red()){ //if beacon is blue
+            DriveForwardDistance(.5,1214); //drive so it is in front of red
+            S_button_FL.setPosition(0.1); //extend servo
+            sleep(1500);
+            S_button_FL.setPosition(0.8); //detract servo
+            sleep(1500);
+        }
+        DriveForwardDistance(0.5,3104);
+
+        /*
+
+
+         */
+
+
+
 /*
-Today's goals:
-Finish testing gyro
--Configure robot
 
-- Test servo vaules 1 to -1
-- Test distance of robot per rotation
-- Test angles of robot per distance
-- Decide if gyro is a necessity
+        TurnRight(.5,-rightTurn);
+        DriveFowardDistance(.5,1402);
+        TurnRight(.5,rightTurn);
+        //DriveFowardDistance(.5,
+        /*
 
- */
-/*
-        //servo testing
-        S_button_FL.setPosition(0.0);
-        sleep(1000); //OUT LEFT
+        TurnRight(.5, leftTurn); //45 degrees
 
-        S_button_FL.setPosition(1.0);
-        sleep(1000); //IN LEFT
+        while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0) {
+            TurnLeft(.3, 10);
+        }
 
-        S_button_FR.setPosition(1.0);
-        sleep(1000); //OUT RIGHT
+        if (colorSensorLeft.red() > colorSensorLeft.blue()){
+            S_button_FL.setPosition(0.1); //if red
+            sleep(1500);
+        }
+        else {
+            while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+                DriveFowardDistance(.2,60);       //end time:
+            }
+        }
 
-        S_button_FR.setPosition(0.0);
-        sleep(1000); //IN RIGHT
-*/
-        DriveFowardDistance(.5,3604);
+        if(colorSensorLeft.red() > colorSensorLeft.blue()){
+            S_button_FL.setPosition(0.1);
+        }
 
-        TurnRight(.5,937);                        //end time:
+
+
+
+            //DriveFowardDistance(.5, );
+        /*
         //turn 45 degrees //TURNS LEFT
         //1875/2 = 937
+        DriveFowardDistance(.5,oneBlock);
+        TurnLeft(.5, leftTurn);
 
-        TurnLeft(.5, 937);
+        /*
+        DriveFowardDistance(.5,oneAndHalfBlock);
+        //hits wall
+
+
+
 
 
 
@@ -232,13 +342,33 @@ Finish testing gyro
         TurnLeft(.3,2813);
 
         //HITS CAPBALL
-        DriveFowardDistance (.7, 8610);
+        DriveFowardDistance (.7, cornerToVortex);
         //*/
 
+        }
+
+
+    //////////////METHODS//////////////////////////
+
+    public void shooterRUN (double power, int distance) throws InterruptedException{
+        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        M_shooter.setTargetPosition(distance);
+
+        M_shooter.setPower(power);
+
+        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(M_shooter.isBusy()){
+            //wait
+        }
+
+
+
+        idle();
     }
 
-
-    public void DriveFowardDistance(double power, int distance) throws InterruptedException{
+    public void DriveForwardDistance(double power, int distance) throws InterruptedException{
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -259,10 +389,8 @@ Finish testing gyro
             //wait until target position is reached
         }
 
-        //stop and change modes back to normal
-        //StopDriving(power, distance);
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
@@ -288,10 +416,9 @@ Finish testing gyro
             //wait until target position is reached
         }
 
-        //stop and change modes back to normal
-        //StopDriving(power, distance);
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //reset encoders
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
@@ -307,8 +434,8 @@ Finish testing gyro
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        M_drive_BR.setTargetPosition(distance);
-        M_drive_BL.setTargetPosition(-distance);
+        M_drive_BR.setTargetPosition(-distance);
+        M_drive_BL.setTargetPosition(distance);
 
         M_drive_BR.setPower(power);
         M_drive_BL.setPower(power);
@@ -319,18 +446,20 @@ Finish testing gyro
         while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
         }
 
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         idle();
     }
 
     public void TurnRight(double power, int distance)throws InterruptedException{
-        telemetry.addData("Encoder",M_drive_BR.getCurrentPosition());
-        telemetry.addData("Encoder",M_drive_BL.getCurrentPosition());
+
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-        M_drive_BR.setTargetPosition(-distance);
-        M_drive_BL.setTargetPosition(distance);
+        M_drive_BR.setTargetPosition(distance);
+        M_drive_BL.setTargetPosition(-distance);
 
         // M_drive_BL.setPower(power);
         M_drive_BR.setPower(power);
@@ -343,49 +472,9 @@ Finish testing gyro
 
         }
 
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         idle();
 
-    }
-    public double[] getAngles() {
-        Quaternion quatAngles = imu.getQuaternionOrientation();
-
-        double w = quatAngles.w;
-        double x = quatAngles.x;
-        double y = quatAngles.y;
-        double z = quatAngles.z;
-
-        //for Adafruit IMU, yaw and roll are switched
-        //equations from Wikipedia. Converts quaternion values to euler angles
-        double roll = Math.atan2( 2*(w*x +y*z), 1 - 2*(x*x + y*y)) * 180.0 / Math.PI;
-        double pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
-        double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) ) * 180.0 / Math.PI;
-
-        return new double[]{yaw, pitch, roll};
-    }
-
-    // This method returns a string that can be used to output telemetry data easily in other classes.
-    public String telemetrize() {
-        double[] angles = getAngles();
-        return String.format(Locale.US, "Yaw: %.3f  Pitch: %.3f  Roll: %.3f", angles[0], angles[1], angles[2]);
-    }
-
-
-    public void gyroAngle(double [] initValsArray){
-        //get double gyro values after turn to do calculations with
-        double [] finalValsArray = getAngles();
-        //store gyro values as string in order to display to phone
-        String finalVals = telemetrize();
-        telemetry.addData("Data after turning:", finalVals);
-        telemetry.update(); //might be incorrect
-
-        //add difference of final and initial to telemetry
-        double turnAngle = finalValsArray[0] - initValsArray[0];
-        String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
-        telemetry.addData("Current ", turnAngleString);
-
-
-
-    }
-
-
-}
+    }}

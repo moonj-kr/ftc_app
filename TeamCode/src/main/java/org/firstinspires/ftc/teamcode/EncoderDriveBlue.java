@@ -33,6 +33,19 @@ public class EncoderDriveBlue extends LinearOpMode {
     Servo S_button_FL = null;
     Servo S_button_FR = null;
 
+    // all of the starting servo positions
+    final double ARM_INIT_POS_L = 0.8,
+                 ARM_INIT_POS_R = 0.235,
+                 BUTTON_INIT_POS = 0.8;
+
+    double       ARM_POS_L = ARM_INIT_POS_L,
+                 ARM_POS_R = ARM_INIT_POS_R,
+                 BUTTON_POS = BUTTON_INIT_POS;
+
+    // servo constant
+    double SERVO_TICK = 0.03;
+
+
     final double OPEN = 1.0;
 
     ColorSensor colorSensorLeft;
@@ -69,6 +82,11 @@ public class EncoderDriveBlue extends LinearOpMode {
         M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         M_drive_BL.setDirection(DcMotor.Direction.REVERSE);
+
+
+        // initializing servo position
+        this.S_button_FL.setPosition(BUTTON_INIT_POS);
+
 
         waitForStart();
 
