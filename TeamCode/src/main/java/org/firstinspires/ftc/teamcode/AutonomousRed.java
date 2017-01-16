@@ -130,17 +130,27 @@ public class AutonomousRed extends LinearOpMode {
 
         ///////////////Drive//////////////////
 
-        DriveForwardDistance(0.5,1502);
+        //sleep(15000);
 
-        shooterRUN(0.5, 2340);
+        DriveForwardDistance(0.5,2202);
 
+        shooterRUN(0.5,-2340);
 
-        //shooterRUN(0.5,-2340);
+        S_ballDrop.setPosition(1.0);
+        sleep(1500);
+
+        S_ballDrop.setPosition(0.0);
+        sleep(1500);
+
+        shooterRUN(0.5,-2340);
+
+        DriveForwardDistance(0.5,3903);
+
         /*
 
-        //sleep(1500);
-        S_ballDrop.setPosition(0.5);
 
+        S_ballDrop.setPosition(0.5);
+        sleep(1500);
         shooterRUN(0.5,-2340);
         S_ballDrop.setPosition(0.0);
         sleep(1500);
