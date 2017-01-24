@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Jisook Moon on 1/5/17
- * Third Competition Teleop
+ * State Competition
  * /
 
 /////////Instructions///////////////
@@ -49,6 +49,8 @@ public class Teleop_1_5 extends LinearOpMode {
     // motor declarations
     DcMotor     M_drive_BL = null,
                 M_drive_BR = null,
+                M_drive_FL = null,
+                M_drive_FR = null,
                 M_lift_FL = null,
                 M_lift_FR = null,
                 M_shooter = null;
@@ -78,6 +80,9 @@ public class Teleop_1_5 extends LinearOpMode {
         // mapping motor variables to their hardware counterparts
         this.M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
         this.M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
+     
+        this.M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL);
+        this.M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR);                                           
 
         this.M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
         this.M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
@@ -92,6 +97,9 @@ public class Teleop_1_5 extends LinearOpMode {
         // fixing motor directions
         this.M_drive_BL.setDirection(DcMotor.Direction.FORWARD);
         this.M_drive_BR.setDirection(DcMotor.Direction.REVERSE);
+        
+        this.M_drive_FL.setDirection(DcMotor.Direction.FORWARD);
+        this.M_drive_FR.setDirection(DcMotor.Direction.REVERSE);                                          
 
         this.M_lift_FL.setDirection(DcMotor.Direction.FORWARD);
         this.M_lift_FR.setDirection(DcMotor.Direction.REVERSE);
@@ -109,6 +117,8 @@ public class Teleop_1_5 extends LinearOpMode {
             // motor control block
             M_drive_BL.setPower(gamepad1.right_stick_y);
             M_drive_BR.setPower(gamepad1.left_stick_y);
+            M_drive_FL.setPower(gamepad1.right_stick_y);
+            M_drive_FR.setPower(gamepad1.left_stick_y);
             M_lift_FL.setPower(gamepad2.right_stick_y);
             M_lift_FR.setPower(gamepad2.left_stick_y);
 
