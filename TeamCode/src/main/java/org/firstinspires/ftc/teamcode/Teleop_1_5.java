@@ -81,8 +81,8 @@ public class Teleop_1_5 extends LinearOpMode {
         this.M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
         this.M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
      
-        this.M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL);
-        this.M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR);                                           
+        this.M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
+        this.M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
 
         this.M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
         this.M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
