@@ -113,6 +113,7 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
 
             /***FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES***/
             double turnAngle = finalValsArray[0] - initValsArray[0];
+            turnAngle = Math.abs(turnAngle);
             //convert double into string in order to display to phone
             String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
             //display to phone
@@ -121,29 +122,34 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
 
             //WILL PROBABLY HAVE TO ADD A LARGER ROOM FOR ERROR HERE (85-95 deg)
             /***MAKE SURE TURN IS 90 DEGREES***/
-            while (turnAngle != 90) {
-                while (turnAngle < 90) {
-                    TurnRight(.5, 30);  //move wheels to compensate for turn that does not equal 90 deg
+        //if ((gyro.getHeading() <= 90 + TOLERANCE) && (gyro.getHeading() >= 90 - TOLERANCE)) {
+
+           if (turnAngle > 95 || turnAngle < 85) {
+
+            if (turnAngle < 85) {
+                    TurnLeft(.5, 50);  //move wheels to compensate for turn that does not equal 90 deg
 
                     /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG***/
                     //read new compensated position
                     finalValsArray = getAngles();
                     //calculate difference from initial value AGAIN
                     turnAngle = finalValsArray[0] - initValsArray[0];
-                    //convert double into string in order to display to phone
-                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                    turnAngle = Math.abs(turnAngle);
+                //convert double into string in order to display to phone
+                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", Math.abs(turnAngle));
                     //display to phone
                     telemetry.addData("Current ", turnAngleString);
                     telemetry.update();
                 }
-                while (turnAngle > 90) {
-                    TurnLeft(.5, 30); //move wheels to compensate for turn that does not equal 90 deg
+                if (turnAngle > 95) {
+                    TurnRight(.5, 50); //move wheels to compensate for turn that does not equal 90 deg
 
                     /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG***/
                     //read new compensated position
                     finalValsArray = getAngles();
                     //calculate difference from initial value AGAIN
                     turnAngle = finalValsArray[0] - initValsArray[0];
+                    turnAngle = Math.abs(turnAngle);
                     //convert double into string in order to display to phone
                     turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                     //display to phone
