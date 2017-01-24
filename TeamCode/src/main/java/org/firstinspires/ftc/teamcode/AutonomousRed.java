@@ -1,7 +1,7 @@
 
 /**
  * Created by Jisook Moon on 1/5/17
- * Third Competition Autonomous for RED side
+ * State Autonomous for RED side
  * /
 
  Notes:
@@ -51,6 +51,8 @@ public class AutonomousRed extends LinearOpMode {
     // motor declarations
     DcMotor M_drive_BL,
             M_drive_BR,
+            M_drive_FL,
+            M_drive_FR,
             M_lift_FL,
             M_lift_FR,
             M_shooter;
@@ -89,6 +91,8 @@ public class AutonomousRed extends LinearOpMode {
         // mapping motor variables to their hardware counter parts
         M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
         M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
+        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
+        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
         M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
         M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
         M_shooter = hardwareMap.dcMotor.get("M_shooter");
@@ -111,11 +115,14 @@ public class AutonomousRed extends LinearOpMode {
         // motor encoder setup
         M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // fixing motor
         M_drive_BL.setDirection(DcMotor.Direction.REVERSE);
+        M_drive_FL.setDirection(DcMotor.Direction.REVERSE);
 
         //this.S_button_FL.setPosition(BUTTON_INIT_POS);
 
@@ -382,25 +389,35 @@ public class AutonomousRed extends LinearOpMode {
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
 
         //set target position
         M_drive_BL.setTargetPosition(distance);
         M_drive_BR.setTargetPosition(distance);
+        M_drive_FL.setTargetPosition(distance);
+        M_drive_FR.setTargetPosition(distance);
 
+        M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
         M_drive_BL.setPower(power);
         M_drive_BR.setPower(power);
 
         //set to RUN_TO_POSITION mode
         M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
             //wait until target position is reached
         }
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
@@ -409,26 +426,37 @@ public class AutonomousRed extends LinearOpMode {
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
+
 
         //set target position
         M_drive_BL.setTargetPosition(-distance);
         M_drive_BR.setTargetPosition(-distance);
+        M_drive_FL.setTargetPosition(-distance);
+        M_drive_FR.setTargetPosition(-distance);
 
         M_drive_BL.setPower(power);
         M_drive_BR.setPower(power);
+        M_drive_FL.setPower(power);
+        M_drive_FR.setPower(power);     
 
         //set to RUN_TO_POSITION mode
         M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
             //wait until target position is reached
         }
 
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
@@ -436,6 +464,8 @@ public class AutonomousRed extends LinearOpMode {
     public void StopDriving(double power, int distance) {
         M_drive_BL.setPower(0);
         M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
         sleep(1500);
         idle();
     }
@@ -443,21 +473,31 @@ public class AutonomousRed extends LinearOpMode {
     public void TurnLeft(double power, int distance) throws InterruptedException{
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);     
 
         M_drive_BR.setTargetPosition(-distance);
         M_drive_BL.setTargetPosition(distance);
+        M_drive_FR.setTargetPosition(-distance);
+        M_drive_FL.setTargetPosition(distance);
 
         M_drive_BR.setPower(power);
         M_drive_BL.setPower(power);
+        M_drive_FR.setPower(power);
+        M_drive_FL.setPower(power);
 
         M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
         }
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
@@ -466,24 +506,34 @@ public class AutonomousRed extends LinearOpMode {
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         M_drive_BR.setTargetPosition(distance);
         M_drive_BL.setTargetPosition(-distance);
+        M_drive_FR.setTargetPosition(distance);
+        M_drive_FL.setTargetPosition(-distance);
 
         // M_drive_BL.setPower(power);
         M_drive_BR.setPower(power);
         M_drive_BL.setPower(power);
+        M_drive_FR.setPower(power);
+        M_drive_FL.setPower(power);
 
         M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy()) {
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
 
         }
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
 
