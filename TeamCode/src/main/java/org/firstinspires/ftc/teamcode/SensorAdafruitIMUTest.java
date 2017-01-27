@@ -48,6 +48,7 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
    DcMotor rightMotor = null,
            leftMotor = null;
 
+
    //----------------------------------------------------------------------------------------------
    // Main logic 
    //----------------------------------------------------------------------------------------------
@@ -101,7 +102,7 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
            double turnAngle = turnAngle(finalValsArray, initValsArray);
 
            //fix the turn to match X degrees
-           fixTurn(turnAngle, finalValsArray);          
+           fixTurn(turnAngle, finalValsArray, initValsArray);
        }
    }
 
@@ -253,10 +254,11 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
        return turnAngle;
    }
     
-   public void fixTurn(double turnAngle, double[] finalValsArray) {
+   public void fixTurn(double turnAngle, double[] finalValsArray, double[] initValsArray) throws InterruptedException {
        //WILL PROBABLY HAVE TO ADD A LARGER ROOM FOR ERROR HERE (85-95 deg) 
        if (turnAngle > 95 || turnAngle < 85) {
                if (turnAngle < 85) {
+
                    TurnLeft(.5, 50);  //move wheels to compensate for turn that does not equal 90 deg
 
                    /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
