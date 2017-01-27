@@ -389,8 +389,8 @@ public class AutonomousRed extends LinearOpMode {
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set target position
         M_drive_BL.setTargetPosition(distance);
@@ -426,8 +426,8 @@ public class AutonomousRed extends LinearOpMode {
         //reset encoders
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_REST_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         //set target position
