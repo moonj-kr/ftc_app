@@ -21,6 +21,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+
 import java.util.Locale;
 
 /**
@@ -31,37 +40,107 @@ import java.util.Locale;
 *
 * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
 */
-@Autonomous(name = "SensorAdafruitIMUTest", group = "Sensor")
+@Autonomous(name = "SensorAdafruitIMUTest", group = "Linear Opmode")
 // Uncomment this to add to the opmode list
 public class SensorAdafruitIMUTest extends LinearOpMode {
    //----------------------------------------------------------------------------------------------
    // State
    //----------------------------------------------------------------------------------------------
 
-   // The IMU sensor object
-   BNO055IMU imu;
+    /* Declare OpMode members. */
+    private ElapsedTime runtime = new ElapsedTime();
+
+    // motor declarations
+    DcMotor M_drive_BL,
+            M_drive_BR,
+            M_drive_FL,
+            M_drive_FR,
+            M_lift_FL,
+            M_lift_FR,
+            M_shooter;
+
+    //servo declarations
+    Servo   S_button_FL,
+            S_liftSide_L,
+            S_liftSide_R,
+            S_ballDrop;
 
    // State used for updating telemetry
    Orientation angles;
    Acceleration gravity;
+   
+   // The IMU sensor object
+   BNO055IMU imu;
+   
+    // sensor declarations
+    ColorSensor colorSensorRight; //different address 0x3a
+    OpticalDistanceSensor opticalDistanceSensor1;
+    OpticalDistanceSensor opticalDistanceSensor2;
+    ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-   DcMotor rightMotor = null,
-           leftMotor = null;
+    // color sensor constant
+    boolean LEDState = false;
 
+    final int first = 4004;
+    final int oneAndHalfBlock = 5406;
+    final int twoBlock = 7208;
+    final int cornerToVortex = 8610;
+    final int rightTurn = 2041;
+    //1874+ 967 = 2841 right degree turn
+    final int leftTurn = 937;
 
-   //----------------------------------------------------------------------------------------------
-   // Main logic 
-   //----------------------------------------------------------------------------------------------
-
+    final double ARM_INIT_POS_L = 0.8,
+            ARM_INIT_POS_R = 0.235,
+            BUTTON_INIT_POS = 0.8;
+   
    @Override
    public void runOpMode() throws InterruptedException {
 
-       rightMotor = hardwareMap.dcMotor.get("rightMotor");
-       leftMotor = hardwareMap.dcMotor.get("leftMotor");
-       rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       leftMotor.setDirection(DcMotor.Direction.REVERSE);
+      
+        // mapping motor variables to their hardware counter parts
+        M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
+        M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
+        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
+        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
+        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
+        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
+        M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
+        // mapping servo variables to their hardware counter parts
+        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
+        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
+        S_button_FL = hardwareMap.servo.get("S_button_FL");
+        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
+
+        // mapping sensor variables to their hardware counter parts
+        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+        colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
+
+        opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
+        opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
+
+        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
+
+        // motor encoder setup
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // fixing motor
+        M_drive_BL.setDirection(DcMotor.Direction.REVERSE);
+        M_drive_FL.setDirection(DcMotor.Direction.REVERSE);
+
+        //this.S_button_FL.setPosition(BUTTON_INIT_POS);
+
+        this.S_liftSide_L.setPosition(ARM_INIT_POS_L);
+        this.S_liftSide_R.setPosition(ARM_INIT_POS_R);
+        this.S_button_FL.setPosition(BUTTON_INIT_POS);
+        this.S_ballDrop.setPosition(0.02);
+
+       //Gyro Mapping Hardware
        // Set up the parameters with which we will use our IMU. Note that integration
        // algorithm here just reports accelerations to the logcat log; it doesn't actually
        // provide positional information.
@@ -81,8 +160,6 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
        imu = hardwareMap.get(BNO055IMU.class, "imu");
        imu.initialize(parameters);
 
-       // Set up our telemetry dashboard
-       //composeTelemetry();
 
        // Wait until we're told to go
        waitForStart();
@@ -276,50 +353,179 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
                }
            }
    }
+   
+    public void shooterRUN (double power, int distance) throws InterruptedException{
+        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-   public void TurnRight(double power, int distance) {
-       leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_shooter.setTargetPosition(distance);
 
-       rightMotor.setTargetPosition(distance);
-       leftMotor.setTargetPosition(-distance);
+        M_shooter.setPower(power);
 
-       rightMotor.setPower(power);
-       leftMotor.setPower(power);
+        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-       leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-       while (leftMotor.isBusy() || rightMotor.isBusy()) {
-       }
-
-       idle();
-   }
-
-   public void TurnLeft(double power, int distance) throws InterruptedException {
-       telemetry.addData("Encoder",rightMotor.getCurrentPosition());
-       telemetry.addData("Encoder",leftMotor.getCurrentPosition());
-       leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while(M_shooter.isBusy()){
+            //wait
+        }
 
 
-       rightMotor.setTargetPosition(-distance);
-       leftMotor.setTargetPosition(distance);
 
-       // M_drive_BL.setPower(power);
-       rightMotor.setPower(power);
-       leftMotor.setPower(power);
+        idle();
+    }
 
-       leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void DriveForwardDistance(double power, int distance) throws InterruptedException{
+        //reset encoders
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-       while (leftMotor.isBusy() || rightMotor.isBusy()) {
+        //set target position
+        M_drive_BL.setTargetPosition(distance);
+        M_drive_BR.setTargetPosition(distance);
+        M_drive_FL.setTargetPosition(distance);
+        M_drive_FR.setTargetPosition(distance);
 
-       }
+        M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
+        M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
 
-       idle();
+        //set to RUN_TO_POSITION mode
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-   }
+
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+            //wait until target position is reached
+        }
+
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        idle();
+    }
+
+    public void DriveBackwardsDistance(double power, int distance) throws InterruptedException{
+        //reset encoders
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        //set target position
+        M_drive_BL.setTargetPosition(-distance);
+        M_drive_BR.setTargetPosition(-distance);
+        M_drive_FL.setTargetPosition(-distance);
+        M_drive_FR.setTargetPosition(-distance);
+
+        M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
+        M_drive_FL.setPower(power);
+        M_drive_FR.setPower(power);     
+
+        //set to RUN_TO_POSITION mode
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+            //wait until target position is reached
+        }
+
+        //reset encoders
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        idle();
+    }
+
+    public void StopDriving(double power, int distance) {
+        M_drive_BL.setPower(0);
+        M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
+        sleep(1500);
+        idle();
+    }
+
+
+    public void TurnLeft(double power, int distance) throws InterruptedException{
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);     
+
+        M_drive_BR.setTargetPosition(-distance);
+        M_drive_BL.setTargetPosition(distance);
+        M_drive_FR.setTargetPosition(-distance);
+        M_drive_FL.setTargetPosition(distance);
+
+        M_drive_BR.setPower(power);
+        M_drive_BL.setPower(power);
+        M_drive_FR.setPower(power);
+        M_drive_FL.setPower(power);
+
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+        }
+
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        idle();
+    }
+
+    public void TurnRight(double power, int distance)throws InterruptedException{
+
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        M_drive_BR.setTargetPosition(distance);
+        M_drive_BL.setTargetPosition(-distance);
+        M_drive_FR.setTargetPosition(distance);
+        M_drive_FL.setTargetPosition(-distance);
+
+        // M_drive_BL.setPower(power);
+        M_drive_BR.setPower(power);
+        M_drive_BL.setPower(power);
+        M_drive_FR.setPower(power);
+        M_drive_FL.setPower(power);
+
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+
+        }
+
+        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        idle();
+
+    }}
 }
 
 
