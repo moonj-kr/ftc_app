@@ -19,7 +19,6 @@ Additional Notes:
  Acceleration gravity;
 */
 
-
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
