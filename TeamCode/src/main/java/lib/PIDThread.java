@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 
 /**
- * Created by Andrew on 11/18/2015.
+ * Revised 1/28/17
  */
 public class PIDThread extends Thread implements PIDInterface{
     protected double[] kP, kI, kD, PIDValue, powers;

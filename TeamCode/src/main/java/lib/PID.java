@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Andrew on 10/31/2015.
+ * Revised 1/28/17
  */
 public abstract class PID implements Runnable {
     protected float kP,

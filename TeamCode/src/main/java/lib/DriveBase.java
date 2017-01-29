@@ -3,7 +3,7 @@ package lib;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by Andrew on 1/8/16.
+ * Revised 1/28/17
  */
 public class DriveBase extends MotorComponent {
     public DriveBase() {

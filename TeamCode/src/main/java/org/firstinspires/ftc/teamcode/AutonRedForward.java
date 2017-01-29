@@ -15,14 +15,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.Arrays;
 
-@Autonomous(name = "AutonRed", group = "Linear Opmode")
+@Autonomous(name = "AutonRedForward", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 11/29/17.
  */
 
 
-public class AutonRed extends LinearOpMode {
+public class AutonRedForward extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_BL = null, // back left drive motors
@@ -248,123 +248,29 @@ public class AutonRed extends LinearOpMode {
                     }
                     break;
                 case 5:
-                    //turn -45 aligned with wall
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-42.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    //play around with range
-                    while(rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0){
-                        motorTargetsTurn = setTurnTarget(1.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
+
 
                 case 6:
-                    if(!isRed()) {
-                        M_drivePowerR = 0.2d;
-                        M_drivePowerL = 0.2d;
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //retract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-
-                    } else {
-                        stopDriving();
-                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //reteract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-                        counter++;
+                    if(!hasBeenSet){
+                        while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0){
+                            motorTargetsTurn = setTurnTarget(1.0d);
+                            hasBeenSet = true;
+                            clock.reset();
+                        }
+                        finished = turnRight();
+                        if (finished || isPastTime(0.6d)) {
+                            hasBeenSet = false;
+                            counter++;
+                            stopDriving();
                             telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
                             telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
                             telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                             telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                             sleep(100);
-                    }
-                    break;
-                case 7:
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(5.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-                case 8:
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(90.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                     break;
-                case 9:
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(25.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
+                        }
 
+                    }
+                    break;
                     /*
                 case 2:
                     if(!hasBeenSet) {

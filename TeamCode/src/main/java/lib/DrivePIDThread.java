@@ -3,7 +3,7 @@ package lib;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by hoangam on 11/19/2015.
+ * Revised 1/28/17
  */
 public class DrivePIDThread extends PIDThread {
     final private double INCHES_TO_TICKS = 1.0d;

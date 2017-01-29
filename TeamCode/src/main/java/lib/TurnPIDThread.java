@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Andrew on 11/19/2015.
+ * Revised 1/28/17
  */
 public class TurnPIDThread extends PIDThread {
     final private double DEGREES_TO_TICKS = 1.0d;

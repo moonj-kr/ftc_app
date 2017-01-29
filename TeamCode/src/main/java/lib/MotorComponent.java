@@ -3,7 +3,7 @@ package lib;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by Andrew on 1/7/2016.
+ * Revised 1/28/17
  */
 public abstract class MotorComponent {
     protected final int TICKS_PER_REVOLUTION = 1120;

@@ -5,13 +5,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Andrew on 10/31/2015.
+ * Revised 1/28/17
  */
 public class Drive {
-    DcMotor M_driveFR, // front right drive motor
-            M_driveFL, // front left drive motor
-            M_driveBR, // back right drive motor
-            M_driveBL; // back left drive motor
+    DcMotor M_drive_FR, // front right drive motor
+            M_drive_FL, // front left drive motor
+            M_drive_BR, // back right drive motor
+            M_drive_BL; // back left drive motor
 
     private class DriveThread implements Runnable {
         private final float kP = 0.25f,

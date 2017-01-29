@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Andrew on 1/7/2016.
+ * Revised 1/28/17
  */
 public class PIDController {
     public PIDController(int wheelDiameter, int gearRatio, int threshold, double slowDownStart, double fineTuneStart, double powerMin, TypePID typePID, double[] drivePowers, DcMotor... motors) {
