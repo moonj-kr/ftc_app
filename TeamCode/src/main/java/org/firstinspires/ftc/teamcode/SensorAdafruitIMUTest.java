@@ -122,10 +122,12 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
 
         // motor encoder setup
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        M_drive_BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        M_drive_BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        M_drive_FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        M_drive_FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 
         M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -164,23 +166,79 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
        // Wait until we're told to go
        waitForStart();
 
-       /***READ INITIAL GYROSCOPE VALUES***/
-       double[] initValsArray = readInitialGyro();
+/***READ INITIAL GYROSCOPE VALUES***/
+       //read initial (double) gyro values to do calculations with
+       double[] initValsArray = getAngles();
+       //store gyro values as string in order to display to phone
+       String initVals = telemetrize();
+       //display data to phone - can take this out later
+       telemetry.addData("Data:", initVals);
+       telemetry.update();
 
        /*************turn 90******/
        TurnLeft(0.5,3000); //<90
 
+       DriveForwardDistance(0.5,3000);
+
        while (opModeIsActive()) {
+
            /***READ FINAL GYROSCOPE VALUES***/
            //read (double) gyro values after turn to do calculations with
-           double[] finalValsArray = readFinalGyro();
+           double[] finalValsArray = getAngles();
+           //store gyro values as string in order to display to phone
+           String finalVals = telemetrize();
+           //display to phone - can take this out later
+           telemetry.addData("Data after turning:", finalVals);
+           telemetry.update();
 
            /***FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES***/
-           double turnAngle = turnAngle(finalValsArray, initValsArray);
+           double turnAngle = finalValsArray[0] - initValsArray[0];
+           turnAngle = Math.abs(turnAngle);
+           //convert double into string in order to display to phone
+           String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+           //display to phone
+           telemetry.addData("Turn Angle: ", turnAngleString);
+           telemetry.update();
 
-           //fix the turn to match X degrees
-           fixTurn(turnAngle, finalValsArray, initValsArray);
+           //WILL PROBABLY HAVE TO ADD A LARGER ROOM FOR ERROR HERE (85-95 deg)
+           /***MAKE SURE TURN IS 90 DEGREES***/
+           //if ((gyro.getHeading() <= 90 + TOLERANCE) && (gyro.getHeading() >= 90 - TOLERANCE)) {
+
+           if (turnAngle > 95 || turnAngle < 85) {
+
+               if (turnAngle < 85) {
+                   TurnLeft(.5, 50);  //move wheels to compensate for turn that does not equal 90 deg
+
+                   /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG***/
+                   //read new compensated position
+                   finalValsArray = getAngles();
+                   //calculate difference from initial value AGAIN
+                   turnAngle = finalValsArray[0] - initValsArray[0];
+                   turnAngle = Math.abs(turnAngle);
+                   //convert double into string in order to display to phone
+                   turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", Math.abs(turnAngle));
+                   //display to phone
+                   telemetry.addData("Current ", turnAngleString);
+                   telemetry.update();
+               }
+               if (turnAngle > 95) {
+                   TurnRight(.5, 50); //move wheels to compensate for turn that does not equal 90 deg
+
+                   /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG***/
+                   //read new compensated position
+                   finalValsArray = getAngles();
+                   //calculate difference from initial value AGAIN
+                   turnAngle = finalValsArray[0] - initValsArray[0];
+                   turnAngle = Math.abs(turnAngle);
+                   //convert double into string in order to display to phone
+                   turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                   //display to phone
+                   telemetry.addData("Current ", turnAngleString);
+                   telemetry.update();
+               }
+           }
        }
+
    }
 
    //----------------------------------------------------------------------------------------------
@@ -292,6 +350,20 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
        return new double[]{yaw, pitch, roll};
    }
 
+    public void perfectTurn(double [] initValsArray, boolean b) throws InterruptedException {
+        while (b == true) {
+            /***READ FINAL GYROSCOPE VALUES***/
+            //read (double) gyro values after turn to do calculations with
+            double[] finalValsArray = readFinalGyro();
+
+            /***FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES***/
+            double turnAngle = turnAngle(finalValsArray, initValsArray);
+
+            //fix the turn to match X degrees
+            fixTurn(turnAngle, finalValsArray, initValsArray, b);
+        }
+    }
+
    // This method returns a string that can be used to output telemetry data easily in other classes.
    public String telemetrize() {
        double[] angles = getAngles();
@@ -332,7 +404,7 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
        return turnAngle;
    }
     
-   public void fixTurn(double turnAngle, double[] finalValsArray, double[] initValsArray) throws InterruptedException {
+   public void fixTurn(double turnAngle, double[] finalValsArray, double[] initValsArray, boolean b) throws InterruptedException {
        //WILL PROBABLY HAVE TO ADD A LARGER ROOM FOR ERROR HERE (85-95 deg) 
        if (turnAngle > 95 || turnAngle < 85) {
                if (turnAngle < 85) {
@@ -353,6 +425,9 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
                    turnAngle = turnAngle(finalValsArray, initValsArray);
                }
            }
+       else {
+           b = false;
+       }
    }
    
     public void shooterRUN (double power, int distance) throws InterruptedException{
@@ -374,33 +449,24 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
     }
 
     public void DriveForwardDistance(double power, int distance) throws InterruptedException{
-        //reset encoders
+
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //set target position
-        M_drive_BL.setTargetPosition(distance);
-        M_drive_BR.setTargetPosition(distance);
-        M_drive_FL.setTargetPosition(distance);
-        M_drive_FR.setTargetPosition(distance);
+
 
         M_drive_BL.setPower(power);
         M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
-        M_drive_BR.setPower(power);
+        M_drive_FL.setPower(power);
+        M_drive_FR.setPower(power);
 
-        //set to RUN_TO_POSITION mode
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(opModeIsActive() && M_drive_BL.getCurrentPosition() < distance){
 
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
-            //wait until target position is reached
         }
+
+        M_drive_BL.setPower(0);
+        M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -410,37 +476,23 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
         idle();
     }
 
-    public void DriveBackwardsDistance(double power, int distance) throws InterruptedException{
-        //reset encoders
+    public void DriveBackwardsDistance(double power, int distance) throws InterruptedException {
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        M_drive_BL.setPower(-power);
+        M_drive_BR.setPower(-power);
+        M_drive_FL.setPower(-power);
+        M_drive_FR.setPower(-power);
 
-        //set target position
-        M_drive_BL.setTargetPosition(-distance);
-        M_drive_BR.setTargetPosition(-distance);
-        M_drive_FL.setTargetPosition(-distance);
-        M_drive_FR.setTargetPosition(-distance);
+        while (opModeIsActive() && M_drive_BL.getCurrentPosition() < distance) {
 
-        M_drive_BL.setPower(power);
-        M_drive_BR.setPower(power);
-        M_drive_FL.setPower(power);
-        M_drive_FR.setPower(power);     
-
-        //set to RUN_TO_POSITION mode
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
-            //wait until target position is reached
         }
 
-        //reset encoders
+        M_drive_BL.setPower(0);
+        M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
+
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -460,73 +512,63 @@ public class SensorAdafruitIMUTest extends LinearOpMode {
 
 
     public void TurnLeft(double power, int distance) throws InterruptedException{
+
+
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);     
 
-        M_drive_BR.setTargetPosition(-distance);
-        M_drive_BL.setTargetPosition(distance);
-        M_drive_FR.setTargetPosition(-distance);
-        M_drive_FL.setTargetPosition(distance);
-
-        M_drive_BR.setPower(power);
         M_drive_BL.setPower(power);
-        M_drive_FR.setPower(power);
+        M_drive_BR.setPower(-power);
         M_drive_FL.setPower(power);
-
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
-        }
+        M_drive_FR.setPower(-power);
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        while(opModeIsActive() && M_drive_BL.getCurrentPosition() < distance){
+
+        }
+
+        M_drive_BL.setPower(0);
+        M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
+
+        telemetry.addData("telemetry",M_drive_BL.getCurrentPosition());
+        telemetry.update();
+
         idle();
+
     }
 
     public void TurnRight(double power, int distance)throws InterruptedException{
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-
-        M_drive_BR.setTargetPosition(distance);
-        M_drive_BL.setTargetPosition(-distance);
-        M_drive_FR.setTargetPosition(distance);
-        M_drive_FL.setTargetPosition(-distance);
-
-        // M_drive_BL.setPower(power);
+        M_drive_BL.setPower(-power);
         M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
+        M_drive_FL.setPower(-power);
         M_drive_FR.setPower(power);
-        M_drive_FL.setPower(power);
-
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
-
-        }
 
         M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        idle();
+        while(opModeIsActive() && M_drive_BL.getCurrentPosition() < distance){
 
+        }
+
+        M_drive_BL.setPower(0);
+        M_drive_BR.setPower(0);
+        M_drive_FL.setPower(0);
+        M_drive_FR.setPower(0);
+
+        idle();
     }}
-}
+
 
 

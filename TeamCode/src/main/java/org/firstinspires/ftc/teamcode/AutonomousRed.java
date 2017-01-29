@@ -42,7 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 import java.util.Locale;
 @Autonomous(name = "AutonomousRed", group = "Linear Opmode")
-
+@Disabled
 public class AutonomousRed extends LinearOpMode {
 
     /* Declare OpMode members. */
