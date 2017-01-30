@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,6 +57,9 @@ public class AutonRed extends LinearOpMode {
                     MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
 
+    final double TurnRight45 = 45.0d,
+                 TurnLeft45 = -45.0d;
+
 
     // motor powers
     double  M_drivePowerR = STOP,
@@ -86,6 +90,7 @@ public class AutonRed extends LinearOpMode {
 
         // mapping sensor variables to their hardware counter parts
         colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+        //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
@@ -101,8 +106,6 @@ public class AutonRed extends LinearOpMode {
         this.M_drive_FR.setDirection(DcMotor.Direction.REVERSE);
         this.M_drive_BR.setDirection(DcMotor.Direction.REVERSE);
 
-        //this.M_hangL.setDirection(DcMotor.Direction.REVERSE);
-
         // resets all the encoder values
         this.M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -117,7 +120,6 @@ public class AutonRed extends LinearOpMode {
         M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
         this.S_liftSide_L.setPosition(ARM_INIT_POS_L);
         this.S_liftSide_R.setPosition(ARM_INIT_POS_R);
@@ -156,22 +158,78 @@ public class AutonRed extends LinearOpMode {
         int deltaMotorPos = 0;
         double increment = 0.05d;
         while(opModeIsActive()) {
+            colorSensorRight.enableLed(false);
 
             switch (counter) {
+
                 case 0:
-                    shooterRUN(0.5,-2340);
-                    S_ballDrop.setPosition(1.0);
-                    sleep(1500);
 
-                    S_ballDrop.setPosition(0.0);
-                    sleep(1500);
+                        while (colorSensorRight.red() < colorSensorRight.blue()){
+                            telemetry.addData("blue","blue");
+                            telemetry.addData("blue","blue");
+                            telemetry.addData("blue","blue");
+                            telemetry.addData("blue","blue");
+                            telemetry.addData("blue","blue");
+                            telemetry.addData("blue","blue");
+                            telemetry.update();
+                        }
+                        while(colorSensorRight.red() > colorSensorRight.blue()) {
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
 
-                    shooterRUN(0.5,-2340);
+                            telemetry.update();
+                        }
+                    telemetry.addData("here","iam");
+                    telemetry.addData("here","iam");
+                    telemetry.addData("here","iam");
+                    telemetry.addData("here","iam");
+                    telemetry.addData("here","iam");
+
+                    telemetry.update();
+                    break;
+                case 1:
+                    if(!hasBeenSet){
+                        while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0) {
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.addData("range HERE", "rangeahhhhh");
+                            telemetry.update();
+                        }
+
+                    }
+
+
+
+/*
+                case 0:
+                    //shooter run
+                    if(!hasBeenSet) {
+                        shooterRUN(0.5, -2160);
+                        shooterRUN(0.0,0);
+                        S_ballDrop.setPosition(1.0);
+                        sleep(1500);
+                        S_ballDrop.setPosition(0.0);
+                        sleep(1500);
+                        shooterRUN(0.5, -2160);
+                        shooterRUN(0.0,0);
+                        hasBeenSet = true;
+                        clock.reset();
+                        }
+                    hasBeenSet = false;
+                    counter++;
+                    break;
+
 
                 case 1:
                     //turn 45 degrees from starting position
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(42.0d);
+                        motorTargetsTurn = setTurnTarget(TurnRight45);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -191,7 +249,7 @@ public class AutonRed extends LinearOpMode {
                 case 2:
                     //drive forwards towards corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(19.0d);
+                        motorTargetsDrive = setDriveTarget(5.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -211,7 +269,7 @@ public class AutonRed extends LinearOpMode {
                 case 3:
                     //turn -45 aligned with corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-42.0d);
+                        motorTargetsTurn = setTurnTarget(TurnLeft45);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -247,10 +305,11 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
+
                 case 5:
                     //turn -45 aligned with wall
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-42.0d);
+                        motorTargetsTurn = setTurnTarget(TurnLeft45);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -285,7 +344,9 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 6:
-                    if(!isRed()) {
+                    if(colorSensorRight.red() < colorSensorRight.blue()) {
+                        telemetry.addData("blue","itisnotred");
+                        telemetry.update();
                         M_drivePowerR = 0.2d;
                         M_drivePowerL = 0.2d;
                         S_button_FL.setPosition(0.1); //extends servo
@@ -293,8 +354,11 @@ public class AutonRed extends LinearOpMode {
                         S_button_FL.setPosition(0.8); //retract servo
                         sleep(1500);
                         S_button_FL.setPosition(0.5); //stop servo
+                        counter++;
 
                     } else {
+                        telemetry.addData("red","it is red");
+                        telemetry.update();
                         stopDriving();
                         deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
                         S_button_FL.setPosition(0.1); //extends servo
@@ -310,6 +374,7 @@ public class AutonRed extends LinearOpMode {
                             sleep(100);
                     }
                     break;
+
                 case 7:
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(5.0d);
@@ -364,7 +429,7 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
+*/
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;

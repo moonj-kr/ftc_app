@@ -87,7 +87,7 @@ public class SensorMRGyro extends LinearOpMode {
       // if the A and B buttons are pressed just now, reset Z heading.
       curResetState = (gamepad1.a && gamepad1.b);
       if(curResetState && !lastResetState)  {
-        gyro.resetZAxisIntegrator();
+          gyro.resetZAxisIntegrator();
       }
       lastResetState = curResetState;
 

@@ -168,12 +168,12 @@ public class Teleop_1_5 extends LinearOpMode {
                 S_liftSide_R.setPosition(ARM_POS_R);
             }
 
-            if(gamepad1.left_bumper){
+            if(gamepad2.right_bumper){
                 BALL_DROP -= SERVO_TICK;
                 BALL_DROP = Range.clip(BALL_DROP, 0, 1);
                 S_ballDrop.setPosition(BALL_DROP);
             }
-            if(gamepad1.left_trigger > 0.0){
+            if(gamepad2.right_trigger > 0.0){
                 BALL_DROP += SERVO_TICK;
                 S_ballDrop.setPosition(BALL_DROP);
             }
