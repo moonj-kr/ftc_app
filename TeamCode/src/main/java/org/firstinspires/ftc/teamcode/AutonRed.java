@@ -162,6 +162,79 @@ public class AutonRed extends LinearOpMode {
 
             switch (counter) {
 
+            /*
+                case 0:
+                    while (!hasBeenSet) {
+                        double currentDistance = rangeSensorLeft.getDistance(DistanceUnit.CM);
+                        if (currentDistance > 7.0 || currentDistance < 9.0) {
+
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.addData("Range", currentDistance);
+                            telemetry.update();
+
+                            motorTargetsDrive = setDriveTarget(10.0d);
+                            clock.reset();
+                        }
+                        finished = driveForward();
+                        if (finished || isPastTime(1.0d)) {
+                            hasBeenSet = true;
+                            counter++;
+                            stopDriving();
+                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                            sleep(100);
+                        }
+
+                        while (currentDistance <= 7.0){
+                            if (!hasBeenSet) { //decide if this is needed
+                                motorTargetsTurn = setTurnTarget(-2);
+                                clock.reset();
+                            }
+                            hasBeenSet = true;
+                            finished = turnRight();
+                            if (finished || isPastTime(0.6d)) {
+                                hasBeenSet = false;
+                                stopDriving();
+                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                                sleep(100);
+                            }
+                            break;
+                        }
+
+                        while (currentDistance >=9.0){
+                            if (!hasBeenSet) { //decide if this is needed
+                                motorTargetsTurn = setTurnTarget(2);
+                                clock.reset();
+                            }
+                            hasBeenSet = true;
+                            finished = turnRight();
+                            if (finished || isPastTime(0.6d)) {
+                                hasBeenSet = false;
+                                stopDriving();
+                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                                sleep(100);
+                            }
+                            break;
+                        }
+                    }
+                    hasBeenSet = false;
+                    break;
+
+
+
+    /*
                 case 0:
 
                         while (colorSensorRight.red() < colorSensorRight.blue()){
@@ -203,29 +276,91 @@ public class AutonRed extends LinearOpMode {
                         }
 
                     }
+*/
+            /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
 
+            case 0:
+                //shooter run
+                if (!hasBeenSet) {
+                    shooterRUN(0.5, -2160);
+                    shooterRUN(0.0, 0);
+                    S_ballDrop.setPosition(1.0);
+                    sleep(1500);
+                    S_ballDrop.setPosition(0.0);
+                    sleep(1500);
+                    shooterRUN(0.5, -2160);
+                    shooterRUN(0.0, 0);
+                    hasBeenSet = true;
+                    clock.reset();
+                }
+                hasBeenSet = false;
+                counter++;
+                break;
 
-/*
-                case 0:
-                    //shooter run
-                    if(!hasBeenSet) {
-                        shooterRUN(0.5, -2160);
-                        shooterRUN(0.0,0);
-                        S_ballDrop.setPosition(1.0);
-                        sleep(1500);
-                        S_ballDrop.setPosition(0.0);
-                        sleep(1500);
-                        shooterRUN(0.5, -2160);
-                        shooterRUN(0.0,0);
+                case 1:
+                    //drive forwards towards corner vortex
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-20.0d);
                         hasBeenSet = true;
                         clock.reset();
-                        }
-                    hasBeenSet = false;
-                    counter++;
+                    }
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 2:
+                    //turn 45 degrees from starting position
+                    if (!hasBeenSet) {
+                        motorTargetsTurn = setTurnTarget(-135.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = turnRight();
+                    if (finished || isPastTime(0.6d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 3:
+                    //drive forwards towards corner vortex
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-176.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
                     break;
 
 
+
+            /*
                 case 1:
                     //turn 45 degrees from starting position
                     if (!hasBeenSet) {

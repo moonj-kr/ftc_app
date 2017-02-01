@@ -33,99 +33,119 @@ public class testingAllSensors extends LinearOpMode {
 
 
 
-    ElapsedTime clock;
-
     private void mapStuff() {
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
-
+        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        colorSensorRight.enableLed(false);
 
     }
 
 
-    private boolean waitingForClick() {
-        telemetry.addData("Waiting for click", "waiting");
-        if(gamepad1.a) {
-            return false;
-        }
-        return true;
-    }
     @Override
     public void runOpMode() throws InterruptedException {
-        int xVal, yVal, zVal = 0;     // Gyro rate Values
-        int heading = 0;              // Gyro integrated heading
-        int angleZ = 0;
-        boolean lastResetState = false;
-        boolean curResetState  = false;
+
 
         mapStuff();
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
+
         double case1Time = 0;
         boolean hasBeenSet = false;
         boolean finished = false;
 
-        // start calibrating the gyro.
-        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
-        telemetry.update();
-        gyroSensor.calibrate();
-
-        // make sure the gyro is calibrated.
-        while (!isStopRequested() && gyroSensor.isCalibrating())  {
-            sleep(50);
-            idle();
-        }
-
-        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
-        telemetry.update();
-
         waitForStart();
-        clock.startTime();
+
         int tempMotorPosR = 0;
         int deltaMotorPos = 0;
         double increment = 0.05d;
-        while(opModeIsActive()) {
-            colorSensorRight.enableLed(false);
 
+        while(opModeIsActive()) {
 
             switch (counter) {
-
                 case 0:
-                    if(!hasBeenSet) {
-                        while (colorSensorRight.red() < colorSensorRight.blue()) {
-                            telemetry.addData("blue", "blue");
-                            telemetry.addData("blue", "blue");
-                            telemetry.addData("blue", "blue");
-                            telemetry.addData("blue", "blue");
-                            telemetry.addData("blue", "blue");
-                            telemetry.addData("blue", "blue");
-                            telemetry.update();
-                        }
-                        while (colorSensorRight.red() > colorSensorRight.blue()) {
-                            telemetry.addData("red", "red");
-                            telemetry.addData("red", "red");
-                            telemetry.addData("red", "red");
-                            telemetry.addData("red", "red");
-                            telemetry.addData("red", "red");
 
-                            telemetry.update();
-                        }
-                        telemetry.addData("here", "CASE0");
-                        telemetry.addData("here", "CASE0");
-                        telemetry.addData("here", "CASE0");
-                        telemetry.addData("here", "CASE0");
-                        telemetry.addData("here", "CASE0");
+                    //use if opmode is active to continually check status
 
+                    if(opticalDistanceSensor1.getLightDetected() < .4){
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
+                        telemetry.addData("HERE","HERE");
                         telemetry.update();
                         counter++;
                     }
                     break;
+                case 1:
+                    if(colorSensorRight.red() > colorSensorRight.blue()){
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.addData("RED","RED");
+                        telemetry.update();
+                        counter++;
+                        }
+                    break;
+                case 2:
+                    if(rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0){
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.addData("GREATERTHAN88888", "RANGE");
+                        telemetry.update();
+                    }
+
+
+
+
+/*
+                        if (colorSensorRight.red() < colorSensorRight.blue()) {
+                            telemetry.addData("blue", "blue");
+                            telemetry.addData("blue", "blue");
+                            telemetry.addData("blue", "blue");
+                            telemetry.addData("blue", "blue");
+                            telemetry.addData("blue", "blue");
+                            telemetry.addData("blue", "blue");
+                            telemetry.update();
+                        }
+                        else if (colorSensorRight.red() > colorSensorRight.blue()) {
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+                            telemetry.addData("red", "red");
+
+                            telemetry.update();
+                        }
+                        else {
+                            telemetry.addData("here", "CASE0");
+                            telemetry.addData("here", "CASE0");
+                            telemetry.addData("here", "CASE0");
+                            telemetry.addData("here", "CASE0");
+                            telemetry.addData("here", "CASE0");
+
+                            telemetry.update();
+                        }
+                        counter++;
+
+                    break;
+                /*
                 case 1:
                     if(!hasBeenSet) {
                         while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0) {
@@ -169,5 +189,19 @@ public class testingAllSensors extends LinearOpMode {
 
 
                         }
+                        break;
+                        */
+                default:
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
+                    telemetry.addData("default","default");
 
-                    }}}}
+                    telemetry.update();
+                    break;
+            }
+
+                    }}}
