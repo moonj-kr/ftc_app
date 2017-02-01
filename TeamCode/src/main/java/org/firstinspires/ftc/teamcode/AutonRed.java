@@ -399,7 +399,91 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 6:
+                    if(colorSensorRight.red() < colorSensorRight.blue()) {
+                        telemetry.addData("blue","itisnotred");
+                        telemetry.update();
+                        M_drivePowerR = 0.2d;
+                        M_drivePowerL = 0.2d;
+                        S_button_FL.setPosition(0.1); //extends servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.8); //retract servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.5); //stop servo
+                        counter++;
 
+                    } else {
+                        telemetry.addData("red","it is red");
+                        telemetry.update();
+                        stopDriving();
+                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
+                        S_button_FL.setPosition(0.1); //extends servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.8); //reteract servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.5); //stop servo
+                        counter++;
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 7:
+                    //drives to second beacon
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-120.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 8:
+
+                    if(colorSensorRight.red() < colorSensorRight.blue()) {
+                        telemetry.addData("blue","itisnotred");
+                        telemetry.update();
+                        M_drivePowerR = 0.2d;
+                        M_drivePowerL = 0.2d;
+                        S_button_FL.setPosition(0.1); //extends servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.8); //retract servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.5); //stop servo
+                        counter++;
+
+                    } else {
+                        telemetry.addData("red","it is red");
+                        telemetry.update();
+                        stopDriving();
+                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
+                        S_button_FL.setPosition(0.1); //extends servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.8); //reteract servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.5); //stop servo
+                        counter++;
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 9:
 
 
             /*
