@@ -319,7 +319,7 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 2:
-                    //turn 45 degrees from starting position
+                    //turn -135 degrees from starting position
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-135.0d);
                         hasBeenSet = true;
@@ -339,7 +339,7 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 3:
-                    //drive forwards towards corner vortex
+                    //drives towards wall from turn
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(-176.0d);
                         hasBeenSet = true;
@@ -357,6 +357,48 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
+
+                case 4:
+                    //turn 45 towards wall so is aligned
+                    if (!hasBeenSet) {
+                        motorTargetsTurn = setTurnTarget(-45.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = turnRight();
+                    if (finished || isPastTime(0.6d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 5:
+                    //drive forwards first beacon
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(60.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                case 6:
 
 
 
