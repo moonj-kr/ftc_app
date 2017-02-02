@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,7 +13,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Arrays;
 
@@ -98,6 +101,14 @@ public class AutonRed extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+
+
+
+        // The IMU sensor object
+        BNO055IMU imu;
+        Orientation angles;
+        Acceleration gravity;
+
 
     }
 
@@ -278,9 +289,11 @@ public class AutonRed extends LinearOpMode {
                     }
 */
             /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
-
+/*
 
             case 0:
+
+                /*
                 //shooter run
                 if (!hasBeenSet) {
                     shooterRUN(0.5, -2160);
@@ -294,6 +307,9 @@ public class AutonRed extends LinearOpMode {
                     hasBeenSet = true;
                     clock.reset();
                 }
+
+
+                telemetry.addData("shooter","shooter");
                 hasBeenSet = false;
                 counter++;
                 break;
@@ -357,11 +373,31 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
                 case 4:
+                    //drives towards wall from turn
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-180.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+                    break;
+
+                */
+                case 0:
                     //turn 45 towards wall so is aligned
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-45.0d);
+                        motorTargetsTurn = setTurnTarget(-720.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -377,7 +413,7 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
+/*
                 case 5:
                     //drive forwards first beacon
                     if (!hasBeenSet) {
