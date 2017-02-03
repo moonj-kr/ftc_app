@@ -652,8 +652,25 @@ public class AutonRed extends LinearOpMode {
                     if(colorSensorRight.red() < colorSensorRight.blue()) {
                         telemetry.addData("blue","itisnotred");
                         telemetry.update();
-                        M_drivePowerR = 0.2d;
-                        M_drivePowerL = 0.2d;
+
+
+                        //drive forwards towards corner vortex
+                        if (!hasBeenSet) {
+                            motorTargetsDrive = setDriveTarget(-5.0d);
+                            hasBeenSet = true;
+                            clock.reset();
+                        }
+                        finished = driveForward();
+                        if (finished || isPastTime(1.0d)) {
+                            hasBeenSet = false;
+                            stopDriving();
+                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                            sleep(100);
+                        }
+
                         S_button_FL.setPosition(0.1); //extends servo
                         sleep(1500);
                         S_button_FL.setPosition(0.8); //retract servo
