@@ -540,7 +540,6 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("blue", "itisnotred");
                         telemetry.addData("blue", "itisnotred");
                         telemetry.addData("blue", "itisnotred");
-
                         telemetry.update();
                         if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(-5.0d);
@@ -558,11 +557,6 @@ public class AutonRed extends LinearOpMode {
                             telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                             sleep(100);
                         }
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //retract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
 
                         if (colorSensorRight.red() > colorSensorRight.blue()){
                         telemetry.addData("red", "it is red");
