@@ -214,21 +214,21 @@ public class AutonRed extends LinearOpMode {
 
                 case 0:
 
-                    //shooter run
-                    if (!hasBeenSet) {
-
-                        shooterRUN(0.5, -2160);
-                        shooterRUN(0.0, 0);
-                        S_ballDrop.setPosition(1.0);
-                        sleep(1500);
-                        S_ballDrop.setPosition(0.0);
-                        sleep(1500);
-                        shooterRUN(0.5, -2160);
-                        shooterRUN(0.0, 0);
-                        hasBeenSet = true;
-                        clock.reset();
-
-                    }
+//                    //shooter run
+//                    if (!hasBeenSet) {
+//
+//                        shooterRUN(0.5, -2160);
+//                        shooterRUN(0.0, 0);
+//                        S_ballDrop.setPosition(1.0);
+//                        sleep(1500);
+//                        S_ballDrop.setPosition(0.0);
+//                        sleep(1500);
+//                        shooterRUN(0.5, -2160);
+//                        shooterRUN(0.0, 0);
+//                        hasBeenSet = true;
+//                        clock.reset();
+//
+//                    }
 
                     hasBeenSet = false;
                     counter++;
@@ -302,7 +302,14 @@ public class AutonRed extends LinearOpMode {
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
-                    double[] finalValsArray = readFinalGyro();
+                    //double[] finalValsArray = readFinalGyro();
+                    //read (double) gyro values after turn to do calculations with
+                    double[] finalValsArray = getAngles();
+                    //store gyro values as string in order to display to phone
+                    String finalVals = telemetrize();
+                    //display to phone - can take this out later
+                    telemetry.addData("Data after turning:", finalVals);
+                    telemetry.update();
 
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
                     //double turnAngle = turnAngle(finalValsArray, initValsArray1);
@@ -317,6 +324,7 @@ public class AutonRed extends LinearOpMode {
                     while (turnAngle > deg + 5 || turnAngle < deg - 5) { //2/1/17 - changed from IF to WHILE
                         telemetry.addData("here", "here");
 
+                        //LEFT
                         if (turnAngle < deg-5) {
 
 //                            if (!hasBeenSet) {
@@ -335,37 +343,77 @@ public class AutonRed extends LinearOpMode {
 //                                sleep(100);
 //                            }
 
+                            M_drive_FR.setPower(-0.5d);
+                            M_drive_FL.setPower(0.5d);
+                            M_drive_BR.setPower(-0.5d);
+                            M_drive_BL.setPower(0.5d);
 
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
                             //calculate difference from initial value AGAIN
-                            turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray1[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
                         }
 
-
+                        //RIGHT
                         if (turnAngle > deg+5) {
-                            if (!hasBeenSet) {
-                                motorTargetsTurn = setTurnTarget(3.0d);
-                                hasBeenSet = true;
-                                clock.reset();
-                            }
-                            finished = turnRight();
-                            if (finished || isPastTime(0.6d)) {
-                                hasBeenSet = false;
-                                stopDriving();
-                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                                sleep(100);
-                            }
+//                            if (!hasBeenSet) {
+//                                motorTargetsTurn = setTurnTarget(3.0d);
+//                                hasBeenSet = true;
+//                                clock.reset();
+//                            }
+//                            finished = turnRight();
+//                            if (finished || isPastTime(0.6d)) {
+//                                hasBeenSet = false;
+//                                stopDriving();
+//                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+//                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+//                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+//                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+//                                sleep(100);
+//                            }
 
+                            M_drive_FR.setPower(0.5d);
+                            M_drive_FL.setPower(-0.5d);
+                            M_drive_BR.setPower(0.5d);
+                            M_drive_BL.setPower(-0.5d);
 
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
-                            finalValsArray = getAngles();
+                            //finalValsArray = getAngles();
                             //calculate difference from initial value AGAIN
-                            turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
 
+                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
+                            finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
+                            //calculate difference from initial value AGAIN
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray1[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
 
                             //else {
                             //  b = false;
@@ -467,7 +515,7 @@ public class AutonRed extends LinearOpMode {
 
                     break;
                     */
-                /*
+
                 case 9:
                     //turn 45 towards wall so is aligned
 
@@ -585,7 +633,7 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
-                    }
+                    }}
                     break;
 
                 case 13:
