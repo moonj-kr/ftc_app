@@ -213,7 +213,6 @@ public class AutonRed extends LinearOpMode {
 
 
                 case 0:
-
 //                    //shooter run
 //                    if (!hasBeenSet) {
 //
@@ -254,7 +253,6 @@ public class AutonRed extends LinearOpMode {
                     }
                     break;
 
-
                 case 2:
                     //read init gyro
                     //double[] initValsArray = readInitialGyro();
@@ -294,8 +292,8 @@ public class AutonRed extends LinearOpMode {
 
                     break;
 
-
                 case 4:
+                    //gyro test
                     double[] initValsArray1 = {0, 0, 0};
                     boolean b = true;
                     double deg = 45;
@@ -464,7 +462,6 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
 
                 case 7:
                     //drives towards wall from turn
@@ -655,8 +652,6 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
-
 
                 case 14:
 
