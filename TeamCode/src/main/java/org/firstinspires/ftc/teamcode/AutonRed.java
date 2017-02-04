@@ -602,11 +602,11 @@ public class AutonRed extends LinearOpMode {
                     telemetry.addData("Turn Angle: ", turnAngleString);
                     telemetry.update();
 
-                    while (turnAngle > deg1 + 5 || turnAngle < deg1 - 5) { //2/1/17 - changed from IF to WHILE
+                    while (turnAngle > deg1 + 1 || turnAngle < deg1 - 1) { //2/1/17 - changed from IF to WHILE
                         telemetry.addData("here", "here");
 
                         //LEFT
-                        if (turnAngle < deg1 - 5) {
+                        if (turnAngle < deg1 - 1) {
 
 //                            if (!hasBeenSet) {
 //                                motorTargetsTurn = setTurnTarget(-3.0d);
@@ -624,12 +624,12 @@ public class AutonRed extends LinearOpMode {
 //                                sleep(100);
 //                            }
 
-                            M_drive_FR.setPower(1.0d);
-                            M_drive_FL.setPower(-1.0d);
-                            M_drive_BR.setPower(1.0d);
-                            M_drive_BL.setPower(-1.0d);
+                            M_drive_FR.setPower(0.5d);
+                            M_drive_FL.setPower(-0.5d);
+                            M_drive_BR.setPower(0.5d);
+                            M_drive_BL.setPower(-0.5d);
 
-                            //sleep(100);
+                            sleep(50);
 
                             M_drive_FR.setPower(0.0d);
                             M_drive_FL.setPower(0.0d);
@@ -658,7 +658,7 @@ public class AutonRed extends LinearOpMode {
                         }
 
                         //RIGHT
-                        if (turnAngle > deg1 + 5) {
+                        if (turnAngle > deg1 + 1) {
 //                            if (!hasBeenSet) {
 //                                motorTargetsTurn = setTurnTarget(3.0d);
 //                                hasBeenSet = true;
@@ -675,12 +675,12 @@ public class AutonRed extends LinearOpMode {
 //                                sleep(100);
 //                            }
 
-                            M_drive_FR.setPower(-1.0d);
-                            M_drive_FL.setPower(1.0d);
-                            M_drive_BR.setPower(-1.0d);
-                            M_drive_BL.setPower(1.0d);
+                            M_drive_FR.setPower(-0.5d);
+                            M_drive_FL.setPower(0.5d);
+                            M_drive_BR.setPower(-0.5d);
+                            M_drive_BL.setPower(0.5d);
 
-                            //sleep(100);
+                            sleep(50);
 
 
                             M_drive_FR.setPower(0.0d);
@@ -721,12 +721,14 @@ public class AutonRed extends LinearOpMode {
 
                     // perfectTurn(deg, initValsArray1, b, hasBeenSet, finished);
                     hasBeenSet = false;
-                    //counter++;
-                    //break;
+                    counter++;
+                    break;
 
-                /*case 13:
+                case 13:
+
                     //drive forwards first beacon
                     if (!hasBeenSet) {
+                        /*
                         motorTargetsDrive = setDriveTarget(55.0d);
                         hasBeenSet = true;
                         clock.reset();
@@ -741,8 +743,11 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
+                        */
                     }
-                    break;*/
+
+                    telemetry.update();
+                    break;
 /*
 
                 case 14:
