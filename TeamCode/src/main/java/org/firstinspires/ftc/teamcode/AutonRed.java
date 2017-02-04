@@ -728,8 +728,7 @@ public class AutonRed extends LinearOpMode {
 
                     //drive forwards first beacon
                     if (!hasBeenSet) {
-                        /*
-                        motorTargetsDrive = setDriveTarget(55.0d);
+                        motorTargetsDrive = setDriveTarget(50.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -743,12 +742,12 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
-                        */
+
                     }
 
                     telemetry.update();
                     break;
-/*
+
 
                 case 14:
                     if (colorSensorRight.red() < colorSensorRight.blue()) {
