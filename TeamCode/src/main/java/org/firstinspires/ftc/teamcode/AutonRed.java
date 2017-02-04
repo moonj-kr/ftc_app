@@ -192,6 +192,7 @@ public class AutonRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         mapStuff();
         configureStuff();
+
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
         double case1Time = 0;
@@ -213,22 +214,19 @@ public class AutonRed extends LinearOpMode {
 
 
                 case 0:
-//                    //shooter run
-//                    if (!hasBeenSet) {
-//
-//                        shooterRUN(0.5, -2160);
-//                        shooterRUN(0.0, 0);
-//                        S_ballDrop.setPosition(1.0);
-//                        sleep(1500);
-//                        S_ballDrop.setPosition(0.0);
-//                        sleep(1500);
-//                        shooterRUN(0.5, -2160);
-//                        shooterRUN(0.0, 0);
-//                        hasBeenSet = true;
-//                        clock.reset();
-//
-//                    }
-
+                    //shooter run
+                    if (!hasBeenSet) {
+                        shooterRUN(0.5, -2200); // previous -2160
+                        shooterRUN(0.0, 0);
+                        S_ballDrop.setPosition(1.0);
+                        sleep(700); //previous 1500
+                        S_ballDrop.setPosition(0.0);
+                        sleep(700); //previous 1500
+                        shooterRUN(0.5, -2200); //previous -2160
+                        shooterRUN(0.0, 0);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
                     hasBeenSet = false;
                     counter++;
                     break;
@@ -254,9 +252,6 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 2:
-                    //read init gyro
-                    //double[] initValsArray = readInitialGyro();
-
                     //read initial (double) gyro values to do calculations with
                     double[] initValsArray = getAngles();
                     //store gyro values as string in order to display to phone
@@ -285,11 +280,6 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-
-                    //boolean b = true;
-                    //double deg = 45;
-                    //perfectTurn(deg, initValsArray, b, hasBeenSet, finished);
-
                     break;
 
                 case 4:
@@ -299,8 +289,6 @@ public class AutonRed extends LinearOpMode {
                     double deg = 45;
 
                     //READ FINAL GYROSCOPE VALUES
-                    //read (double) gyro values after turn to do calculations with
-                    //double[] finalValsArray = readFinalGyro();
                     //read (double) gyro values after turn to do calculations with
                     double[] finalValsArray = getAngles();
                     //store gyro values as string in order to display to phone
@@ -324,22 +312,6 @@ public class AutonRed extends LinearOpMode {
 
                         //LEFT
                         if (turnAngle < deg-2) {
-
-//                            if (!hasBeenSet) {
-//                                motorTargetsTurn = setTurnTarget(-3.0d);
-//                                hasBeenSet = true;
-//                                clock.reset();
-//                            }
-//                            finished = turnRight();
-//                            if (finished || isPastTime(0.6d)) {
-//                                hasBeenSet = false;
-//                                stopDriving();
-//                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-//                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-//                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-//                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-//                                sleep(100);
-//                            }
 
                             M_drive_FR.setPower(0.5d);
                             M_drive_FL.setPower(-0.5d);
@@ -369,21 +341,6 @@ public class AutonRed extends LinearOpMode {
 
                         //RIGHT
                         if (turnAngle > deg+2) {
-//                            if (!hasBeenSet) {
-//                                motorTargetsTurn = setTurnTarget(3.0d);
-//                                hasBeenSet = true;
-//                                clock.reset();
-//                            }
-//                            finished = turnRight();
-//                            if (finished || isPastTime(0.6d)) {
-//                                hasBeenSet = false;
-//                                stopDriving();
-//                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-//                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-//                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-//                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-//                                sleep(100);
-//                            }
 
                             M_drive_FR.setPower(-0.5d);
                             M_drive_FL.setPower(0.5d);
@@ -413,17 +370,13 @@ public class AutonRed extends LinearOpMode {
                             //display to phone
                             telemetry.addData("Turn Angle: ", turnAngleString);
                             telemetry.update();
-
-                            //else {
-                            //  b = false;
-                            //}
-
-                        }}
+                        }
+                    }
                     M_drive_FR.setPower(0.0d);
                     M_drive_FL.setPower(0.0d);
                     M_drive_BR.setPower(0.0d);
                     M_drive_BL.setPower(0.0d);
-                    // perfectTurn(deg, initValsArray1, b, hasBeenSet, finished);
+
                     counter++;
                     break;
 
@@ -447,9 +400,7 @@ public class AutonRed extends LinearOpMode {
                     }
                     break;
 
-
                 case 6:
-                    //drives towards wall from turn
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(-190.0d);
                         hasBeenSet = true;
@@ -489,9 +440,6 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 8:
-                    //read init gyro
-                    //double[] initValsArray = readInitialGyro();
-
                     //read initial (double) gyro values to do calculations with
                     initValsArray = getAngles();
                     //store gyro values as string in order to display to phone
@@ -503,11 +451,7 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 9:
-                    //read init gyro
-                    //initValsArray = readInitialGyro();
-
                     //turn 45 towards wall so is aligned
-
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-215.0d);
                         hasBeenSet = true;
@@ -524,17 +468,9 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-/*
-                    b = true;
-                    deg = 135;
-                    perfectTurn(deg, initValsArray, b, hasBeenSet, finished);
-
-                    break;
-                    */
 
                 case 10:
                     //turn 45 towards wall so is aligned
-
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-215.0d);
                         hasBeenSet = true;
@@ -551,11 +487,10 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-
                     break;
+
                 case 11:
                     //turn 45 towards wall so is aligned
-
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-250.0d); //215
                         hasBeenSet = true;
@@ -572,7 +507,6 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-
                     break;
 
                 case 12:
@@ -583,21 +517,22 @@ public class AutonRed extends LinearOpMode {
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
-                    //double[] finalValsArray = readFinalGyro();
-                    //read (double) gyro values after turn to do calculations with
                     finalValsArray = getAngles();
+
                     //store gyro values as string in order to display to phone
                     finalVals = telemetrize();
+
                     //display to phone - can take this out later
                     telemetry.addData("Data after turning:", finalVals);
                     telemetry.update();
 
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
-                    //double turnAngle = turnAngle(finalValsArray, initValsArray1);
                     turnAngle = finalValsArray[0] - initValsArray2[0];
                     turnAngle = Math.abs(turnAngle);
+
                     //convert double into string in order to display to phone
                     turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+
                     //display to phone
                     telemetry.addData("Turn Angle: ", turnAngleString);
                     telemetry.update();
@@ -607,22 +542,6 @@ public class AutonRed extends LinearOpMode {
 
                         //LEFT
                         if (turnAngle < deg1 - 1) {
-
-//                            if (!hasBeenSet) {
-//                                motorTargetsTurn = setTurnTarget(-3.0d);
-//                                hasBeenSet = true;
-//                                clock.reset();
-//                            }
-//                            finished = turnRight();
-//                            if (finished || isPastTime(0.6d)) {
-//                                hasBeenSet = false;
-//                                stopDriving();
-//                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-//                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-//                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-//                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-//                                sleep(100);
-//                            }
 
                             M_drive_FR.setPower(0.5d);
                             M_drive_FL.setPower(-0.5d);
@@ -639,14 +558,15 @@ public class AutonRed extends LinearOpMode {
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
+
                             //store gyro values as string in order to display to phone
                             finalVals = telemetrize();
+
                             //display to phone - can take this out later
                             telemetry.addData("Data after turning:", finalVals);
                             telemetry.update();
 
                             //calculate difference from initial value AGAIN
-                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray2[0];
                             turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
@@ -654,27 +574,10 @@ public class AutonRed extends LinearOpMode {
                             //display to phone
                             telemetry.addData("Turn Angle: ", turnAngleString);
                             telemetry.update();
-
                         }
 
                         //RIGHT
                         if (turnAngle > deg1 + 1) {
-//                            if (!hasBeenSet) {
-//                                motorTargetsTurn = setTurnTarget(3.0d);
-//                                hasBeenSet = true;
-//                                clock.reset();
-//                            }
-//                            finished = turnRight();
-//                            if (finished || isPastTime(0.6d)) {
-//                                hasBeenSet = false;
-//                                stopDriving();
-//                                telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-//                                telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-//                                telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-//                                telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-//                                sleep(100);
-//                            }
-
                             M_drive_FR.setPower(-0.5d);
                             M_drive_FL.setPower(0.5d);
                             M_drive_BR.setPower(-0.5d);
@@ -682,53 +585,42 @@ public class AutonRed extends LinearOpMode {
 
                             sleep(50);
 
-
                             M_drive_FR.setPower(0.0d);
                             M_drive_FL.setPower(0.0d);
                             M_drive_BR.setPower(0.0d);
                             M_drive_BL.setPower(0.0d);
 
-
-                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
-                            //finalValsArray = getAngles();
-                            //calculate difference from initial value AGAIN
-                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
-
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
+
                             //store gyro values as string in order to display to phone
                             finalVals = telemetrize();
+
                             //display to phone - can take this out later
                             telemetry.addData("Data after turning:", finalVals);
                             telemetry.update();
 
                             //calculate difference from initial value AGAIN
-                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray2[0];
                             turnAngle = Math.abs(turnAngle);
+
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+
                             //display to phone
                             telemetry.addData("Turn Angle: ", turnAngleString);
                             telemetry.update();
-
-                            //else {
-                            //  b = false;
-                            //}
-
-                        }}
-
-                    // perfectTurn(deg, initValsArray1, b, hasBeenSet, finished);
+                        }
+                    }
                     hasBeenSet = false;
                     counter++;
                     break;
 
                 case 13:
-
                     //drive forwards first beacon
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(50.0d);
+                        motorTargetsDrive = setDriveTarget(40.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -742,12 +634,9 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
-
                     }
-
                     telemetry.update();
                     break;
-
 
                 case 14:
                     if (colorSensorRight.red() < colorSensorRight.blue()) {
@@ -757,11 +646,13 @@ public class AutonRed extends LinearOpMode {
                         telemetry.addData("blue", "itisnotred");
                         telemetry.addData("blue", "itisnotred");
                         telemetry.update();
+
                         if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-5.0d);
-                        hasBeenSet = true;
-                        clock.reset();
+                            motorTargetsDrive = setDriveTarget(-5.5d);
+                            hasBeenSet = true;
+                            clock.reset();
                         }
+
                         finished = driveForward();
 
                         if (finished || isPastTime(1.0d)) {
@@ -775,36 +666,38 @@ public class AutonRed extends LinearOpMode {
                         }
 
                         if (colorSensorRight.red() > colorSensorRight.blue()){
-                        telemetry.addData("red", "it is red");
-                        telemetry.addData("red", "it is red");
-                        telemetry.addData("red", "it is red");
-                        telemetry.addData("red", "it is red");
-                        telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.update();
 
-                        telemetry.update();
-                        stopDriving();
-                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //reteract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-                        counter++;
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }}
+                            stopDriving();
+
+                            S_button_FL.setPosition(0.1); //extends servo
+                            sleep(1500);
+                            S_button_FL.setPosition(0.8); //reteract servo
+                            sleep(1500);
+                            S_button_FL.setPosition(0.5); //stop servo
+                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                            sleep(100);
+                            counter++;
+                        }
+                    }
                     break;
 
                 case 15:
                     //drives to second beacon
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-120.0d);
+                        motorTargetsDrive = setDriveTarget(-122.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
+
                     finished = driveForward();
                     if (finished || isPastTime(1.0d)) {
                         hasBeenSet = false;
@@ -819,18 +712,17 @@ public class AutonRed extends LinearOpMode {
                     break;
 
                 case 16:
-
                     if(colorSensorRight.red() < colorSensorRight.blue()) {
                         telemetry.addData("blue","itisnotred");
                         telemetry.update();
 
-
-                        //drive forwards towards corner vortex
+                        //drive forwards to second button
                         if (!hasBeenSet) {
-                            motorTargetsDrive = setDriveTarget(-5.0d);
+                            motorTargetsDrive = setDriveTarget(-5.5d);
                             hasBeenSet = true;
                             clock.reset();
                         }
+
                         finished = driveForward();
                         if (finished || isPastTime(1.0d)) {
                             hasBeenSet = false;
@@ -848,190 +740,18 @@ public class AutonRed extends LinearOpMode {
                         sleep(1500);
                         S_button_FL.setPosition(0.5); //stop servo
                         counter++;
+                    }
 
-                    } else {
+                    else {
                         telemetry.addData("red","it is red");
                         telemetry.update();
                         stopDriving();
-                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //reteract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-                        counter++;
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-
-
-
-            /*
-                case 1:
-                    //turn 45 degrees from starting position
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(TurnRight45);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 2:
-                    //drive forwards towards corner vortex
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(5.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 3:
-                    //turn -45 aligned with corner vortex
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(TurnLeft45);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 4:
-                    //drive towards button presser wall
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(19.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 5:
-                    //turn -45 aligned with wall
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(TurnLeft45);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    //play around with range
-                    while(rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0){
-                        motorTargetsTurn = setTurnTarget(1.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 6:
-                    if(colorSensorRight.red() < colorSensorRight.blue()) {
-                        telemetry.addData("blue","itisnotred");
-                        telemetry.update();
-                        M_drivePowerR = 0.2d;
-                        M_drivePowerL = 0.2d;
                         S_button_FL.setPosition(0.1); //extends servo
                         sleep(1500);
                         S_button_FL.setPosition(0.8); //retract servo
                         sleep(1500);
                         S_button_FL.setPosition(0.5); //stop servo
                         counter++;
-
-                    } else {
-                        telemetry.addData("red","it is red");
-                        telemetry.update();
-                        stopDriving();
-                        deltaMotorPos = M_drive_FR.getCurrentPosition() - tempMotorPosR;
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //reteract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-                        counter++;
-                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                            sleep(100);
-                    }
-                    break;
-
-                case 7:
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(5.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
                         telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
                         telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
@@ -1039,9 +759,10 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-                case 8:
+
+                case 17:
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(90.0d);
+                        motorTargetsTurn = setTurnTarget(-215.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -1050,16 +771,35 @@ public class AutonRed extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
                         telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-                     break;
-                case 9:
+
+                case 18:
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(25.0d);
+                        motorTargetsTurn = setTurnTarget(-215.0d);
+                        hasBeenSet = true;
+                        clock.reset();
+                    }
+                    finished = turnRight();
+                    if (finished || isPastTime(0.6d)) {
+                        hasBeenSet = false;
+                        counter++;
+                        stopDriving();
+                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                    }
+
+                case 19:
+                    //drive forwards towards corner vortex
+                    if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-20.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -1075,7 +815,7 @@ public class AutonRed extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-*/
+
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
@@ -1090,31 +830,25 @@ public class AutonRed extends LinearOpMode {
                     telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
-            //M_drivePowerR = drivePowers[0];
-            //M_drivePowerL = drivePowers[1];
+
             M_drive_FR.setPower(M_drivePowerR);
             M_drive_FL.setPower(M_drivePowerL);
             M_drive_BR.setPower(M_drivePowerR);
             M_drive_BL.setPower(M_drivePowerL);
 
-
             telemetry.addData("Counter", counter);
             telemetry.addData("Supposed Power R", M_drivePowerR);
             telemetry.addData("Supposed Power L", M_drivePowerL);
             telemetry.addData("time", clock.time());
-            //waitOneFullHardwareCycle();
             sleep(20);
         }
-    }
-
-    private boolean isRed() {
-        return colorSensorRight.red() > colorSensorRight.blue();
     }
 
     public boolean isPastTime(double maxTime) {
         if (clock.time() > maxTime) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -1127,7 +861,6 @@ public class AutonRed extends LinearOpMode {
         M_drive_BR.setPower(STOP);
         M_drive_BL.setPower(STOP);
     }
-
 
     public void shooterRUN(double power, int distance) throws InterruptedException {
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -1388,12 +1121,13 @@ public class AutonRed extends LinearOpMode {
                     sleep(100);
                 }
 
-
                 /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
                 finalValsArray = getAngles();
+
                 //calculate difference from initial value AGAIN
                 turnAngle = turnAngle(finalValsArray, initValsArray);
             }
+
             if (turnAngle > deg+5) {
                 if (!hasBeenSet) {
                     motorTargetsTurn = setTurnTarget(3.0d);
@@ -1411,15 +1145,11 @@ public class AutonRed extends LinearOpMode {
                     sleep(100);
                 }
 
-
                 /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
                 finalValsArray = getAngles();
                 //calculate difference from initial value AGAIN
                 turnAngle = turnAngle(finalValsArray, initValsArray);
             }
-            //else {
-            //  b = false;
-            //}
         }
     }
 }
@@ -1427,3 +1157,5 @@ public class AutonRed extends LinearOpMode {
 
 
 
+
+//drives towards wall from turn
