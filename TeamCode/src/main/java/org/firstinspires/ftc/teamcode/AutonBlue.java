@@ -312,12 +312,17 @@ public class AutonBlue extends LinearOpMode {
                         //LEFT
                         if (turnAngle < deg-2) {
 
-                            M_drive_FR.setPower(0.5d);
-                            M_drive_FL.setPower(-0.5d);
-                            M_drive_BR.setPower(0.5d);
-                            M_drive_BL.setPower(-0.5d);
+                            M_drive_FR.setPower(-0.5d);
+                            M_drive_FL.setPower(0.5d);
+                            M_drive_BR.setPower(-0.5d);
+                            M_drive_BL.setPower(0.5d);
 
+                            sleep(50);
 
+                            M_drive_FR.setPower(0.0d);
+                            M_drive_FL.setPower(0.0d);
+                            M_drive_BR.setPower(0.0d);
+                            M_drive_BL.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
@@ -341,11 +346,17 @@ public class AutonBlue extends LinearOpMode {
                         //RIGHT
                         if (turnAngle > deg+2) {
 
-                            M_drive_FR.setPower(-0.5d);
-                            M_drive_FL.setPower(0.5d);
-                            M_drive_BR.setPower(-0.5d);
-                            M_drive_BL.setPower(0.5d);
+                            M_drive_FR.setPower(0.5d);
+                            M_drive_FL.setPower(-0.5d);
+                            M_drive_BR.setPower(0.5d);
+                            M_drive_BL.setPower(-0.5d);
 
+                            sleep(50);
+
+                            M_drive_FR.setPower(0.0d);
+                            M_drive_FL.setPower(0.0d);
+                            M_drive_BR.setPower(0.0d);
+                            M_drive_BL.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //finalValsArray = getAngles();
                             //calculate difference from initial value AGAIN
@@ -371,10 +382,11 @@ public class AutonBlue extends LinearOpMode {
                             telemetry.update();
                         }
                     }
-                    M_drive_FR.setPower(0.0d);
-                    M_drive_FL.setPower(0.0d);
-                    M_drive_BR.setPower(0.0d);
-                    M_drive_BL.setPower(0.0d);
+//                    M_drive_FR.setPower(0.0d);
+//                    M_drive_FL.setPower(0.0d);
+//                    M_drive_BR.setPower(0.0d);
+//                    M_drive_BL.setPower(0.0d);
+                    hasBeenSet = false;
 
                     counter++;
                     break;
@@ -572,30 +584,68 @@ public class AutonBlue extends LinearOpMode {
                             telemetry.addData("Turn Angle: ", turnAngleString);
                             telemetry.update();
                         }
+                         telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                        telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+
+                         telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                        telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                        telemetry.update();
+                         hasBeenSet = false;
+                        counter++;
+                        break;
                     }
-                    hasBeenSet = false;
-                    counter++;
-                    break;
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", turnAngleString);
+                    telemetry.update();
+
+                    //hasBeenSet = false;
+                    //counter++;
+                    //break;
 
                 case 13:
-                    //drive forwards first beacon
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(40.0d);
-                        hasBeenSet = true;
-                        clock.reset();
+                    while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.update();
+                        M_drive_FR.setPower(0.5d);
+                        M_drive_FL.setPower(0.5d);
+                        M_drive_BR.setPower(0.5d);
+                        M_drive_BL.setPower(0.5d);
+
+                        sleep(50);
+
+                        M_drive_FR.setPower(0.0d);
+                        M_drive_FL.setPower(0.0d);
+                        M_drive_BR.setPower(0.0d);
+                        M_drive_BL.setPower(0.0d);
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.addData("IN OPTICAL","SDJIGHIOSEI");
+                        telemetry.update();
                     }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
+
+                    telemetry.addData("AHHHHHH","OPTICAL");
+                    telemetry.addData("AHHHHHH","OPTICAL");
+                    telemetry.addData("AHHHHHH","OPTICAL");
+                    telemetry.addData("AHHHHHH","OPTICAL");
+                    telemetry.addData("AHHHHHH","OPTICAL");
+                    telemetry.addData("AHHHHHH","OPTICAL");
                     telemetry.update();
+                    counter++;
                     break;
 
                 case 14:
@@ -625,6 +675,18 @@ public class AutonBlue extends LinearOpMode {
                             sleep(100);
                         }
 
+                        S_button_FL.setPosition(0.1); //extends servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.8); //reteract servo
+                        sleep(1500);
+                        S_button_FL.setPosition(0.5); //stop servo
+                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        sleep(100);
+                        counter++;
+                    }
                         if (colorSensorRight.red() > colorSensorRight.blue()){
                             telemetry.addData("red", "it is red");
                             telemetry.addData("red", "it is red");
@@ -647,10 +709,10 @@ public class AutonBlue extends LinearOpMode {
                             sleep(100);
                             counter++;
                         }
-                    }
+
                     break;
 
-                case 15:
+                /*case 15:
                     //drives to second beacon
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(-122.0d);
@@ -719,7 +781,7 @@ public class AutonBlue extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
+*/
                 case 17:
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-215.0d);
@@ -737,7 +799,7 @@ public class AutonBlue extends LinearOpMode {
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                     }
-
+/*
                 case 18:
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-215.0d);
@@ -754,12 +816,12 @@ public class AutonBlue extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
-                    }
+                    }*/
 
-                case 19:
+                case 18:
                     //drive forwards towards corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-20.0d);
+                        motorTargetsDrive = setDriveTarget(-90.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }

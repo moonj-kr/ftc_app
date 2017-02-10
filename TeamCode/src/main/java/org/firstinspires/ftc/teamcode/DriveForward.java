@@ -1,46 +1,33 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-//IMU imports
-import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
-import org.firstinspires.ftc.robotcontroller.internal.FtcOpModeRegister;
-import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import java.util.Locale;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.Arrays;
+import java.util.Locale;
 
-@Autonomous(name = "AutonRedWGyro", group = "Linear Opmode")
-@Disabled
+@Autonomous(name = "DriveForward", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 11/29/17.
  */
 
 
-public class AutonRedWGyro extends LinearOpMode {
+public class DriveForward extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_BL = null, // back left drive motors
@@ -52,7 +39,7 @@ public class AutonRedWGyro extends LinearOpMode {
             M_shooter = null;  //shooter motor
 
     //servo declarations
-    Servo   S_button_FL = null,  //button presser servo
+    Servo S_button_FL = null,  //button presser servo
             S_liftSide_L = null, //left lift release servo
             S_liftSide_R = null, //right lift release servo
             S_ballDrop = null;   // second ball release servo
@@ -61,7 +48,6 @@ public class AutonRedWGyro extends LinearOpMode {
     ColorSensor colorSensorRight; //different address 0x3a
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
-    ModernRoboticsI2cGyro gyroSensor;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
     // The IMU sensor object
@@ -70,21 +56,21 @@ public class AutonRedWGyro extends LinearOpMode {
     Acceleration gravity;
 
     // all of the important constants
-    final double    ARM_INIT_POS_L = 0.8d,
+    final double ARM_INIT_POS_L = 0.8d,
             ARM_INIT_POS_R = 0.235d,
             BUTTON_INIT_POS = 0.8d;
 
 
-    final double    STOP                   = 0.0d,
-            MAX_POWER              = 1.0d;
-    final int       TICKS_PER_REVOLUTION   = 1120;
+    final double STOP = 0.0d,
+            MAX_POWER = 1.0d;
+    final int TICKS_PER_REVOLUTION = 1120;
 
     final double TurnRight45 = 45.0d,
             TurnLeft45 = -45.0d;
 
 
     // motor powers
-    double  M_drivePowerR = STOP,
+    double M_drivePowerR = STOP,
             M_drivePowerL = STOP;
     double[] drivePowers;
 
@@ -119,7 +105,7 @@ public class AutonRedWGyro extends LinearOpMode {
 
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
-        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -178,15 +164,17 @@ public class AutonRedWGyro extends LinearOpMode {
 
     private boolean waitingForClick() {
         telemetry.addData("Waiting for click", "waiting");
-        if(gamepad1.a) {
+        if (gamepad1.a) {
             return false;
         }
         return true;
     }
+
     @Override
     public void runOpMode() throws InterruptedException {
         mapStuff();
         configureStuff();
+
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
         double case1Time = 0;
@@ -199,17 +187,18 @@ public class AutonRedWGyro extends LinearOpMode {
         int tempMotorPosR = 0;
         int deltaMotorPos = 0;
         double increment = 0.05d;
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             colorSensorRight.enableLed(false);
-
+            //double[]  initValsArray;
             switch (counter) {
 
                 /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
+
                 case 0:
                     //drive forwards towards corner vortex
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-20.0d);
+                    /*if (!hasBeenSet) {
+                        motorTargetsDrive = setDriveTarget(-5.0d); //it was 20
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -223,44 +212,33 @@ public class AutonRedWGyro extends LinearOpMode {
                         telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
                         telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
-                    }
+                    }*/
+                    counter++;
                     break;
 
+
                 case 1:
-                    //SURABHI COMMENT: Added new IMU stuff for turning - Need to change values
-                    //Read initial IMU values
-                    double[] initValsArray = readInitialGyro();
-
-                    //turn X degrees
-                    TurnLeft(0.2,1000); //<90
-
-                    boolean b = true;
-                    perfectTurn(initValsArray, b);
-
-                    //SURABHI COMMENT: DO WE HAVE TO TAKE THE CODE BELOW WITHIN CASE 2 OUT?
-                    //turn -135 degrees from starting position
+                    //shooter run
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-135.0d);
+                        shooterRUN(0.5, -2300); // previous -2160
+                        shooterRUN(0.0, 0);
+                        S_ballDrop.setPosition(1.0);
+                        sleep(700); //previous 1500
+                        S_ballDrop.setPosition(0.0);
+                        sleep(700); //previous 1500
+                        shooterRUN(0.5, -2300); //previous -2160
+                        shooterRUN(0.0, 0);
                         hasBeenSet = true;
                         clock.reset();
                     }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
+                    hasBeenSet = false;
+                    counter++;
                     break;
 
                 case 2:
-                    //drives towards wall from turn
+                    //drive forwards towards corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-176.0d);
+                        motorTargetsDrive = setDriveTarget(-80.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -278,25 +256,14 @@ public class AutonRedWGyro extends LinearOpMode {
                     break;
 
                 case 3:
-                    //SURABHI COMMENT: Added new IMU stuff for turning - Need to change values
-                    //Read initial IMU values
-                    initValsArray = readInitialGyro();
-
-                    //turn X degrees
-                    TurnLeft(0.2,1000); //<90
-
-                    b = true;
-                    perfectTurn(initValsArray, b);
-
-                    //SURABHI COMMENT: DO WE HAVE TO TAKE THE CODE BELOW WITHIN CASE 2 OUT?
-                    //turn 45 towards wall so is aligned
+                    //drive forwards towards corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-45.0d);
+                        motorTargetsDrive = setDriveTarget(-60.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
+                    finished = driveForward();
+                    if (finished || isPastTime(1.0d)) {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
@@ -307,11 +274,10 @@ public class AutonRedWGyro extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
                 case 4:
-                    //drive forwards first beacon
+                    //drive forwards towards corner vortex
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(60.0d);
+                        motorTargetsDrive = setDriveTarget(-1.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -342,29 +308,25 @@ public class AutonRedWGyro extends LinearOpMode {
                     telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
-            //M_drivePowerR = drivePowers[0];
-            //M_drivePowerL = drivePowers[1];
+
             M_drive_FR.setPower(M_drivePowerR);
             M_drive_FL.setPower(M_drivePowerL);
             M_drive_BR.setPower(M_drivePowerR);
             M_drive_BL.setPower(M_drivePowerL);
 
-
             telemetry.addData("Counter", counter);
             telemetry.addData("Supposed Power R", M_drivePowerR);
             telemetry.addData("Supposed Power L", M_drivePowerL);
             telemetry.addData("time", clock.time());
-            //waitOneFullHardwareCycle();
             sleep(20);
-        }}
-
-
-    private boolean isRed() {   return colorSensorRight.red() > colorSensorRight.blue();  }
+        }
+    }
 
     public boolean isPastTime(double maxTime) {
-        if(clock.time() > maxTime) {
+        if (clock.time() > maxTime) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -378,8 +340,7 @@ public class AutonRedWGyro extends LinearOpMode {
         M_drive_BL.setPower(STOP);
     }
 
-
-    public void shooterRUN (double power, int distance) throws InterruptedException{
+    public void shooterRUN(double power, int distance) throws InterruptedException {
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         M_shooter.setTargetPosition(distance);
@@ -388,10 +349,9 @@ public class AutonRedWGyro extends LinearOpMode {
 
         M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while(M_shooter.isBusy()){
+        while (M_shooter.isBusy()) {
             //wait
         }
-
 
 
         idle();
@@ -402,8 +362,8 @@ public class AutonRedWGyro extends LinearOpMode {
         final double INCHES_TO_TICKS = 1100.0d / 12.0d;
         DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
         int[] targets = new int[2];
-        targets[0] = (int)(motors[0].getCurrentPosition() + inches * INCHES_TO_TICKS);
-        targets[1] = (int)(motors[1].getCurrentPosition() + inches * INCHES_TO_TICKS);
+        targets[0] = (int) (motors[0].getCurrentPosition() + inches * INCHES_TO_TICKS);
+        targets[1] = (int) (motors[1].getCurrentPosition() + inches * INCHES_TO_TICKS);
         return targets;
     }
 
@@ -424,18 +384,18 @@ public class AutonRedWGyro extends LinearOpMode {
             accumError[i] += error;
             actualPIDValue[i] = kP * error;
             if (Math.abs(actualPIDValue[i]) > thresholdPower) {
-               /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
-               motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
-                if(i == 0) {
+                /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
+                motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
+                if (i == 0) {
                     M_drivePowerR = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
                 } else {
                     M_drivePowerL = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
                 }
                 //drivePowers[i] = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
             } else {
-               /*motors[i].setPower(0.0d);
-               motors[i + 2].setPower(0.0d);*/
-                if(i == 0) {
+                /*motors[i].setPower(0.0d);
+                motors[i + 2].setPower(0.0d);*/
+                if (i == 0) {
                     M_drivePowerR = STOP;
                 } else {
                     M_drivePowerL = STOP;
@@ -443,9 +403,9 @@ public class AutonRedWGyro extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if(Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
+        if (Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
             return false;
-        } else if(Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
+        } else if (Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
             return false;
         }
         return true;
@@ -457,8 +417,8 @@ public class AutonRedWGyro extends LinearOpMode {
         int[] targets = new int[2];
         //targets[0] = (int)((motors[0].getCurrentPosition() + motors[2].getCurrentPosition()) / 2 - degrees * DEGREES_TO_TICKS);
         //targets[1] = (int)((motors[1].getCurrentPosition() + motors[3].getCurrentPosition()) / 2 + degrees * DEGREES_TO_TICKS);
-        targets[0] = (int)(motors[0].getCurrentPosition() - degrees * DEGREES_TO_TICKS);
-        targets[1] = (int)(motors[1].getCurrentPosition() + degrees * DEGREES_TO_TICKS);
+        targets[0] = (int) (motors[0].getCurrentPosition() - degrees * DEGREES_TO_TICKS);
+        targets[1] = (int) (motors[1].getCurrentPosition() + degrees * DEGREES_TO_TICKS);
         return targets;
     }
 
@@ -478,18 +438,18 @@ public class AutonRedWGyro extends LinearOpMode {
             accumError[i] += error;
             actualPIDValue[i] = kP * error;
             if (Math.abs(actualPIDValue[i]) > 0.05) {
-               /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
-               motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
-                if(i == 0) {
+                /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
+                motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
+                if (i == 0) {
                     M_drivePowerR = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
                 } else {
                     M_drivePowerL = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
                 }
                 //drivePowers[i] = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
             } else {
-               /*motors[i].setPower(0.0d);
-               motors[i + 2].setPower(0.0d);*/
-                if(i == 0) {
+                /*motors[i].setPower(0.0d);
+                motors[i + 2].setPower(0.0d);*/
+                if (i == 0) {
                     M_drivePowerR = STOP;
                 } else {
                     M_drivePowerL = STOP;
@@ -497,103 +457,35 @@ public class AutonRedWGyro extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if(Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
+        if (Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
             return false;
-        } else if(Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
+        } else if (Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
             return false;
         }
         return true;
     }
 
-
-   /*private class DriveThread extends PID {
-       public DriveThread(int gearRatio, int objectCircumference) {
-           GEAR_RATIO = gearRatio;
-           OBJECT_CIRCUMFERENCE = objectCircumference;
-           kP = 0.0f;
-           kI = 0.0f;
-           kD = 0.0f;
-           maxPower = 1.0f;
-           minPower = -1.0f;
-           minPIDPower = 0.2f;
-           acceptableError = 50;
-       }
-       public void setTarget(float target) {
-           this.target = target;
-       }
-   }
-   */
-
-    /***************IMU METHODS***************/
-
-    public void TurnLeft(double power, int distance) throws InterruptedException{
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        M_drive_BR.setTargetPosition(-distance);
-        M_drive_BL.setTargetPosition(distance);
-        M_drive_FR.setTargetPosition(-distance);
-        M_drive_FL.setTargetPosition(distance);
-
-        M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
-        M_drive_FR.setPower(power);
-        M_drive_FL.setPower(power);
-
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+    /*private class DriveThread extends PID {
+        public DriveThread(int gearRatio, int objectCircumference) {
+            GEAR_RATIO = gearRatio;
+            OBJECT_CIRCUMFERENCE = objectCircumference;
+            kP = 0.0f;
+            kI = 0.0f;
+            kD = 0.0f;
+            maxPower = 1.0f;
+            minPower = -1.0f;
+            minPIDPower = 0.2f;
+            acceptableError = 50;
         }
-
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        idle();
-    }
-
-    public void TurnRight(double power, int distance)throws InterruptedException{
-
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        M_drive_BR.setTargetPosition(distance);
-        M_drive_BL.setTargetPosition(-distance);
-        M_drive_FR.setTargetPosition(distance);
-        M_drive_FL.setTargetPosition(-distance);
-
-        // M_drive_BL.setPower(power);
-        M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
-        M_drive_FR.setPower(power);
-        M_drive_FL.setPower(power);
-
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
-
+        public void setTarget(float target) {
+            this.target = target;
         }
-
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        idle();
-
     }
+    */
+
+    /***************
+     * IMU METHODS
+     ***************/
 
     //----------------------------------------------------------------------------------------------
     // IMU Formatting
@@ -616,6 +508,7 @@ public class AutonRedWGyro extends LinearOpMode {
     public double[] getAngles() {
         Quaternion quatAngles = imu.getQuaternionOrientation();
 
+
         double w = quatAngles.w;
         double x = quatAngles.x;
         double y = quatAngles.y;
@@ -624,14 +517,14 @@ public class AutonRedWGyro extends LinearOpMode {
 
         //for Adafruit IMU, yaw and roll are switched
         //equations from Wikipedia. Converts quaternion values to euler angles
-        double roll = Math.atan2( 2*(w*x +y*z), 1 - 2*(x*x + y*y)) * 180.0 / Math.PI;
-        double pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
-        double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) ) * 180.0 / Math.PI;
+        double roll = Math.atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y)) * 180.0 / Math.PI;
+        double pitch = Math.asin(2 * (w * y - x * z)) * 180.0 / Math.PI;
+        double yaw = Math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z)) * 180.0 / Math.PI;
 
         return new double[]{yaw, pitch, roll};
     }
 
-    public void perfectTurn(double [] initValsArray, boolean b) throws InterruptedException {
+    public void perfectTurn(double deg, double[] initValsArray, boolean b, boolean hasBeenSet, boolean finished) throws InterruptedException {
         // while (b == true) {
         /***READ FINAL GYROSCOPE VALUES***/
         //read (double) gyro values after turn to do calculations with
@@ -641,7 +534,7 @@ public class AutonRedWGyro extends LinearOpMode {
         double turnAngle = turnAngle(finalValsArray, initValsArray);
 
         //fix the turn to match X degrees
-        fixTurn(turnAngle, finalValsArray, initValsArray, b);
+        fixTurn(deg, turnAngle, finalValsArray, initValsArray, b, hasBeenSet, finished);
         // }
     }
 
@@ -685,31 +578,62 @@ public class AutonRedWGyro extends LinearOpMode {
         return turnAngle;
     }
 
-    public void fixTurn(double turnAngle, double[] finalValsArray, double[] initValsArray, boolean b) throws InterruptedException {
+    public void fixTurn(double deg, double turnAngle, double[] finalValsArray, double[] initValsArray, boolean b, boolean hasBeenSet, boolean finished) throws InterruptedException {
         //WILL PROBABLY HAVE TO ADD A LARGER ROOM FOR ERROR HERE (85-95 deg)
-        while (turnAngle > 95 || turnAngle < 85) { //2/1/17 - changed from IF to WHILE
-            if (turnAngle < 85) {
+        while (turnAngle > deg+5 || turnAngle < deg-5) { //2/1/17 - changed from IF to WHILE
+            if (turnAngle < deg-5) {
 
-                TurnLeft(.5, 50);  //move wheels to compensate for turn that does not equal 90 deg
+                if (!hasBeenSet) {
+                    motorTargetsTurn = setTurnTarget(-3.0d);
+                    hasBeenSet = true;
+                    clock.reset();
+                }
+                finished = turnRight();
+                if (finished || isPastTime(0.6d)) {
+                    hasBeenSet = false;
+                    stopDriving();
+                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                    sleep(100);
+                }
+
+                /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
+                finalValsArray = getAngles();
+
+                //calculate difference from initial value AGAIN
+                turnAngle = turnAngle(finalValsArray, initValsArray);
+            }
+
+            if (turnAngle > deg+5) {
+                if (!hasBeenSet) {
+                    motorTargetsTurn = setTurnTarget(3.0d);
+                    hasBeenSet = true;
+                    clock.reset();
+                }
+                finished = turnRight();
+                if (finished || isPastTime(0.6d)) {
+                    hasBeenSet = false;
+                    stopDriving();
+                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
+                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
+                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
+                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                    sleep(100);
+                }
 
                 /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
                 finalValsArray = getAngles();
                 //calculate difference from initial value AGAIN
                 turnAngle = turnAngle(finalValsArray, initValsArray);
             }
-            if (turnAngle > 95) {
-                TurnRight(.5, 50); //move wheels to compensate for turn that does not equal 90 deg
-
-                /***CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU***/
-                finalValsArray = getAngles();
-                //calculate difference from initial value AGAIN
-                turnAngle = turnAngle(finalValsArray, initValsArray);
-            }
-            //else {
-            //  b = false;
-            //}
         }
-
     }
-
 }
+
+
+
+
+
+//drives towards wall from turn

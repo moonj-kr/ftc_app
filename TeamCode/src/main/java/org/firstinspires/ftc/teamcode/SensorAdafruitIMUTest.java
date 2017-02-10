@@ -41,6 +41,7 @@ import java.util.Locale;
 * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
 */
 @Autonomous(name = "SensorAdafruitIMUTest", group = "Linear Opmode")
+@Disabled
 // Uncomment this to add to the opmode list
 public class SensorAdafruitIMUTest extends LinearOpMode {
    //----------------------------------------------------------------------------------------------
