@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.Range;
 
 
 /**
- * Created by Jisook Moon on 1/5/17
- * State Competition
+ * Created by Jisook Moon 2/10/17
+ * Super Regionals Competition
  * /
 
  /////////Instructions///////////////
@@ -20,21 +20,20 @@ import com.qualcomm.robotcore.util.Range;
  gamepad 1:
 
  Drive - Joysticks UP & DOWN
- Beacon Presser - right bumper is PUSH, right trigger is RETRACT
+ Beacon Pressers (left & right) - bumper is PUSH, trigger is RETRACT, additional sleep for no button
 
  gamepad 2:
 
  Shooter - button 'b' is STOP 'a' is RUN
- Arm Release - button 'a' is RELEASE, 'b' is servo facing back up
- Lift - Controller 2: Joysticks UP & DOWN
-
+ Ball drop (AUTON) - RIGHT trigger & bumper 
+ Ball drop (TELEOP) - LEFT trigger & bumper
+ Pickup - Joysticks UP & DOWN
 
  //Notes
  - fix directions for motors
  - check time for servo extending? unnecessary user STOP
  - add time for shooter? unnecessary user STOP
  */
-
 
 @TeleOp(name="SR_teleop", group="Linear Opmode")  // @Autonomous(...) is the other common choice
 
