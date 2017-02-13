@@ -39,17 +39,32 @@ import java.util.Arrays;
 
 public class AutonRedWGyro extends LinearOpMode {
 
+    
     // motor declarations
-    DcMotor M_drive_L = null, // left drive motor
-            M_drive_R = null, // right drive motor,
-            M_
-            M_shooter = null;  //shooter motor
+    DcMotor M_drive_L = null,
+            M_drive_R = null,
+            M_pickup_TOP = null,
+            M_pickup_BOTTOM = null,
+            M_shooter = null;
 
-    //servo declarations
-    Servo   S_button_FL = null,  //button presser servo
-            S_liftSide_L = null, //left lift release servo
-            S_liftSide_R = null, //right lift release servo
-            S_ballDrop = null;   // second ball release servo
+    // servo declarations
+    CRServo S_button_L;
+    CRServo S_button_R;
+    Servo S_ballDrop_TELEOP;
+    Servo S_ballDrop_AUTON;
+
+    // all of the starting servo positions
+    final double BUTTON_INIT_STOP = 0.5,
+                 BALL_DROP_AUTON_INIT = 0.2,
+                 BALL_DROP_TELEOP_INIT = 0.2,
+                 CR_SERVO_SLEEP = 1300;
+
+    double  BUTTON_POS = BUTTON_INIT_STOP,
+            BALL_DROP_AUTON_POS = BALL_DROP_AUTON_INIT,
+            BALL_DROP_TELEOP_POS = BALL_DROP_TELEOP_INIT;
+
+    // servo constant
+    double SERVO_TICK = 0.03;
 
     // sensor declarations
     ColorSensor colorSensorRight; //different address 0x3a
@@ -65,17 +80,16 @@ public class AutonRedWGyro extends LinearOpMode {
 
     // all of the important constants
     final double    ARM_INIT_POS_L = 0.8d,
-            ARM_INIT_POS_R = 0.235d,
-            BUTTON_INIT_POS = 0.8d;
+                    ARM_INIT_POS_R = 0.235d,
+                    BUTTON_INIT_POS = 0.8d;
 
 
     final double    STOP                   = 0.0d,
-            MAX_POWER              = 1.0d;
+                    MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
             TurnLeft45 = -45.0d;
-
 
     // motor powers
     double  M_drivePowerR = STOP,
