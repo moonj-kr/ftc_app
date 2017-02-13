@@ -36,6 +36,14 @@ import java.util.Arrays;
  * Created by Jisook on 2/13/17
  * Super Regionals - Red alliance starting from first block
  */
+ 
+ /*
+ Notes:
+ - change color sensor address
+ - test optical distance sensors
+ */
+ 
+ 
 
 public class AutonRedWGyro extends LinearOpMode {
 
@@ -89,7 +97,7 @@ public class AutonRedWGyro extends LinearOpMode {
     final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
-            TurnLeft45 = -45.0d;
+                 TurnLeft45 = -45.0d;
 
     // motor powers
     double  M_drivePowerR = STOP,
@@ -103,28 +111,35 @@ public class AutonRedWGyro extends LinearOpMode {
     ElapsedTime clock;
 
     private void mapStuff() {
+    
         // mapping motor variables to their hardware counterparts
-        M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
-        M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
-        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
-        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
-        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
-        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
-        M_shooter = hardwareMap.dcMotor.get("M_shooter");
+        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_BL");
+        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_BR");
+        this.M_pickup_TOP = hardwareMap.dcMotor.get("M_pickup_TOP");
+        this.M_pickup_BOTTOM = hardwareMap.dcMotor.get("M_pickup_BOTTOM");
+        this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        // mapping servo variables to their hardware counter parts
-        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
-        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
-        S_button_FL = hardwareMap.servo.get("S_button_FL");
-        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
+        this.S_button_L = hardwareMap.crservo.get("S_button_L");
+        this.S_button_R = hardwareMap.crservo.get("S_button_R");
+        this.S_ballDrop_TELEOP = hardwareMap.servo.get("S_ballDrop_TELEOP");
+        this.S_ballDrop_AUTON = hardwareMap.servo.get("S_ballDrop_AUTON");
+
+        // fixing motor directions
+        this.M_drive_L.setDirection(DcMotor.Direction.FORWARD);
+        this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
+
+        // initializing servo positions
+        this.S_button_L.setPower(BUTTON_INIT_STOP);
+        this.S_button_R.setPower(BUTTON_INIT_STOP);
 
         // mapping sensor variables to their hardware counter parts
         colorSensorRight = hardwareMap.colorSensor.get("color_FR");
         //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
-
+        colorSensorLeft = hardwareMap.colorSensor.get("color_FL");
+        //colorSensorLeft.setI2cAddress(I2cAddr.create7bit(CHANGE));
+        
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
-
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
