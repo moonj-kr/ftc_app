@@ -31,7 +31,8 @@ import com.qualcomm.robotcore.util.Range;
 
  //Notes
  - fix directions for motors
- -
+ - check time for servo extending? unnecessary user STOP
+ - add time for shooter? unnecessary user STOP
  */
 
 
@@ -57,7 +58,8 @@ public class SR_teleop extends LinearOpMode {
     // all of the starting servo positions
     final double BUTTON_INIT_STOP = 0.5,
                  BALL_DROP_AUTON_INIT = 0.2,
-                 BALL_DROP_TELEOP_INIT = 0.2;
+                 BALL_DROP_TELEOP_INIT = 0.2,
+                 CR_SERVO_SLEEP = 1300;
 
     double  BUTTON_POS = BUTTON_INIT_STOP,
             BALL_DROP_AUTON_POS = BALL_DROP_AUTON_INIT,
@@ -96,14 +98,31 @@ public class SR_teleop extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-            // motor control block
+        
+            // gamepad controller 1
+         
+            // drive motors 
             M_drive_BL.setPower(gamepad1.right_stick_y);
             M_drive_BR.setPower(gamepad1.left_stick_y);
-            M_drive_FL.setPower(gamepad1.right_stick_y);
-            M_drive_FR.setPower(gamepad1.left_stick_y);
-            M_lift_FL.setPower(gamepad2.right_stick_y);
-            M_lift_FR.setPower(gamepad2.left_stick_y);
+            // button pressers - continuous servos
+            if (gamepad1.right_bumper){
+                BUTTON_POS = 0.3;
+                S_button_L.setPower(BUTTON_POS);
+                sleep(CR_SERVO_SLEEP);
+                S_button_L.setPower(BUTTON_INIT_STOP);
+            }
+            if (gamepad1.right_trigger > 0.0){
+                BUTTON_POS = 0.7;
+                S_button_L.setPower(BUTTON_POS);
+                sleep(CR_SERVO_SLEEP);
+                S_button_L.setPower(BUTTON_INIT_STOP);
+            }
 
+            // gamepad controller 2
+         
+            // pickup motors
+            M_pickup_TOP.setPower(gamepad2.right_stick_y);
+            M_pickup_BOTTOM.setPower(gamepad2.left_stick_y);
             // shooter control block
             if(gamepad2.b){
                 M_shooter.setPower(0.0);
@@ -114,47 +133,28 @@ public class SR_teleop extends LinearOpMode {
             if(gamepad2.x){
                 M_shooter.setPower(-0.5);
             }
-
-            // beacon presser control block
-            if(gamepad1.right_bumper){
-                BUTTON_POS -= .2;
-                BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
-                S_button_FL.setPosition(BUTTON_POS);
-            }
-            if(gamepad1.right_trigger > 0.0){
-                BUTTON_POS += .2;
-                S_button_FL.setPosition(BUTTON_POS);
-            }
-
-            if(gamepad1.dpad_down){
-                BUTTON_POS = 0.5;
-                S_button_FL.setPosition(BUTTON_POS);
-            }
-
-            // arm releases control block
-            if(gamepad1.b){
-                ARM_POS_L += SERVO_TICK;
-                S_liftSide_L.setPosition(ARM_POS_L);
-                ARM_POS_R -= SERVO_TICK;
-                S_liftSide_R.setPosition(ARM_POS_R);
-            }
-            if(gamepad1.a){
-                ARM_POS_L -= SERVO_TICK ;
-                S_liftSide_L.setPosition(ARM_POS_L);
-                ARM_POS_R += SERVO_TICK;
-                S_liftSide_R.setPosition(ARM_POS_R);
-            }
-
+            // AUTON ball dropper
             if(gamepad2.right_bumper){
-                BALL_DROP -= SERVO_TICK;
-                BALL_DROP = Range.clip(BALL_DROP, 0, 1);
-                S_ballDrop.setPosition(BALL_DROP);
+                BALL_DROP_AUTON_POS -= SERVO_TICK;
+                BALL_DROP_AUTON_POS = Range.clip(BALL_DROP_AUTON_POS, 0, 1);
+                S_ballDrop_AUTON.setPosition(BALL_DROP_AUTON_POS);
             }
             if(gamepad2.right_trigger > 0.0){
-                BALL_DROP += SERVO_TICK;
-                S_ballDrop.setPosition(BALL_DROP);
+                BALL_DROP_AUTON_POS += SERVO_TICK;
+                BALL_DROP_AUTON_POS = Range.clip(BALL_DROP_AUTON_POS, 0, 1);
+                S_ballDrop_AUTON.setPosition(BALL_DROP_AUTON_POS);
             }
-
+            // TELEOP ball dropper
+            if(gamepad2.left_bumper){
+                BALL_DROP_TELEOP_POS -= SERVO_TICK;
+                BALL_DROP_TELEOP_POS = Range.clip(BALL_DROP_TELEOP_POS, 0, 1);
+                S_ballDrop_AUTON.setPosition(BALL_DROP_TELEOP_POS);
+            }
+            if(gamepad2.left_trigger > 0.0){
+                BALL_DROP_TELEOP_POS += SERVO_TICK;
+                BALL_DROP_TELEOP_POS = Range.clip(BALL_DROP_TELEOP_POS, 0, 1);
+                S_ballDrop_AUTON.setPosition(BALL_DROP_TELEOP_POS);
+                
             idle();
         }
     }
