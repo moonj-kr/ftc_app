@@ -1,5 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package srFile;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -7,72 +9,45 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-//IMU imports
-import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
-import org.firstinspires.ftc.robotcontroller.internal.FtcOpModeRegister;
-import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import java.util.Locale;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import java.util.Arrays;
 
-@Autonomous(name = "REDAuton_firstBlock", group = "Linear Opmode")
+import java.util.Arrays;
+import java.util.Locale;
+
+//IMU imports
+
+@Autonomous(name = "AutonRedWGyro", group = "Linear Opmode")
+
 
 /**
- * Created by Jisook on 2/13/17
- * Super Regionals - Red alliance starting from first block
+ * Created by Jisook on 11/29/17.
  */
- 
- /*
- Notes:
- - change color sensor address
- - test optical distance sensors
- */
- 
- 
 
-public class AutonRedWGyro extends LinearOpMode {
 
-    
+public class SR_redAutonCorner extends LinearOpMode {
+
     // motor declarations
-    DcMotor M_drive_L = null,
-            M_drive_R = null,
-            M_pickup_TOP = null,
-            M_pickup_BOTTOM = null,
-            M_shooter = null;
+    DcMotor M_drive_BL = null, // back left drive motors
+            M_drive_BR = null, // back right drive motor
+            M_drive_FL = null, //front left drive motor
+            M_drive_FR = null, //front right drive motor
+            M_lift_FL = null,  // front left lift motor
+            M_lift_FR = null,  //front right lift motor
+            M_shooter = null;  //shooter motor
 
-    // servo declarations
-    CRServo S_button_L;
-    CRServo S_button_R;
-    Servo S_ballDrop_TELEOP;
-    Servo S_ballDrop_AUTON;
-
-    // all of the starting servo positions
-    final double BUTTON_INIT_STOP = 0.5,
-                 BALL_DROP_AUTON_INIT = 0.2,
-                 BALL_DROP_TELEOP_INIT = 0.2,
-                 CR_SERVO_SLEEP = 1300;
-
-    double  BUTTON_POS = BUTTON_INIT_STOP,
-            BALL_DROP_AUTON_POS = BALL_DROP_AUTON_INIT,
-            BALL_DROP_TELEOP_POS = BALL_DROP_TELEOP_INIT;
-
-    // servo constant
-    double SERVO_TICK = 0.03;
+    //servo declarations
+    Servo   S_button_FL = null,  //button presser servo
+            S_liftSide_L = null, //left lift release servo
+            S_liftSide_R = null, //right lift release servo
+            S_ballDrop = null;   // second ball release servo
 
     // sensor declarations
     ColorSensor colorSensorRight; //different address 0x3a
@@ -88,16 +63,17 @@ public class AutonRedWGyro extends LinearOpMode {
 
     // all of the important constants
     final double    ARM_INIT_POS_L = 0.8d,
-                    ARM_INIT_POS_R = 0.235d,
-                    BUTTON_INIT_POS = 0.8d;
+            ARM_INIT_POS_R = 0.235d,
+            BUTTON_INIT_POS = 0.8d;
 
 
     final double    STOP                   = 0.0d,
-                    MAX_POWER              = 1.0d;
+            MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
-                 TurnLeft45 = -45.0d;
+            TurnLeft45 = -45.0d;
+
 
     // motor powers
     double  M_drivePowerR = STOP,
@@ -111,35 +87,28 @@ public class AutonRedWGyro extends LinearOpMode {
     ElapsedTime clock;
 
     private void mapStuff() {
-    
         // mapping motor variables to their hardware counterparts
-        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_BL");
-        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_BR");
-        this.M_pickup_TOP = hardwareMap.dcMotor.get("M_pickup_TOP");
-        this.M_pickup_BOTTOM = hardwareMap.dcMotor.get("M_pickup_BOTTOM");
-        this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
+        M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
+        M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
+        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
+        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
+        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
+        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
+        M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        this.S_button_L = hardwareMap.crservo.get("S_button_L");
-        this.S_button_R = hardwareMap.crservo.get("S_button_R");
-        this.S_ballDrop_TELEOP = hardwareMap.servo.get("S_ballDrop_TELEOP");
-        this.S_ballDrop_AUTON = hardwareMap.servo.get("S_ballDrop_AUTON");
-
-        // fixing motor directions
-        this.M_drive_L.setDirection(DcMotor.Direction.FORWARD);
-        this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
-
-        // initializing servo positions
-        this.S_button_L.setPower(BUTTON_INIT_STOP);
-        this.S_button_R.setPower(BUTTON_INIT_STOP);
+        // mapping servo variables to their hardware counter parts
+        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
+        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
+        S_button_FL = hardwareMap.servo.get("S_button_FL");
+        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
         colorSensorRight = hardwareMap.colorSensor.get("color_FR");
         //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
-        colorSensorLeft = hardwareMap.colorSensor.get("color_FL");
-        //colorSensorLeft.setI2cAddress(I2cAddr.create7bit(CHANGE));
-        
+
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
+
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
