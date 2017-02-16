@@ -7,6 +7,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
@@ -24,37 +25,36 @@ import java.util.Locale;
 
 //IMU imports
 
-@Autonomous(name = "AutonRedWGyro", group = "Linear Opmode")
+@Autonomous(name = "SR_redAutonCorner", group = "Linear Opmode")
 
 
 /**
- * Created by Jisook on 11/29/17.
+ * Created by Jisook on 2/16/17
+ * Super Regionals
+ * Autonomous for Red Alliance Starting from Corner
  */
 
 
 public class SR_redAutonCorner extends LinearOpMode {
 
     // motor declarations
-    DcMotor M_drive_BL = null, // back left drive motors
-            M_drive_BR = null, // back right drive motor
-            M_drive_FL = null, //front left drive motor
-            M_drive_FR = null, //front right drive motor
-            M_lift_FL = null,  // front left lift motor
-            M_lift_FR = null,  //front right lift motor
-            M_shooter = null;  //shooter motor
+    DcMotor M_drive_L = null,
+            M_drive_R = null,
+            M_shooter = null;
 
     //servo declarations
-    Servo   S_button_FL = null,  //button presser servo
-            S_liftSide_L = null, //left lift release servo
-            S_liftSide_R = null, //right lift release servo
-            S_ballDrop = null;   // second ball release servo
+    CRServo S_button_L = null,
+            S_button_R = null;
+    Servo   S_ballDrop = null;
 
     // sensor declarations
-    ColorSensor colorSensorRight; //different address 0x3a
+    ColorSensor colorSensorRight; // 0x3a
+    ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
     ModernRoboticsI2cGyro gyroSensor;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
+    ModernRoboticsI2cRangeSensor rangeSensorRight;
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -62,13 +62,13 @@ public class SR_redAutonCorner extends LinearOpMode {
     Acceleration gravity;
 
     // all of the important constants
-    final double    ARM_INIT_POS_L = 0.8d,
-            ARM_INIT_POS_R = 0.235d,
-            BUTTON_INIT_POS = 0.8d;
+    final double    BUTTON_INIT_POS = 0.05d;
+
+    double BUTTON_POS = BUTTON_INIT_POS;
 
 
     final double    STOP                   = 0.0d,
-            MAX_POWER              = 1.0d;
+                    MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
@@ -87,30 +87,26 @@ public class SR_redAutonCorner extends LinearOpMode {
     ElapsedTime clock;
 
     private void mapStuff() {
-        // mapping motor variables to their hardware counterparts
-        M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
-        M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
-        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
-        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
-        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
-        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
-        M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        // mapping servo variables to their hardware counter parts
-        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
-        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
-        S_button_FL = hardwareMap.servo.get("S_button_FL");
-        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
+        // mapping motor variables to their hardware counterparts
+        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_L");
+        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_R");
+        this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
+
+        this.S_button_L = hardwareMap.crservo.get("S_button_L");
+        this.S_button_R = hardwareMap.crservo.get("S_button_R");
+        this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+        colorSensorRight = hardwareMap.colorSensor.get("color_R");
+        colorSensorLeft = hardwareMap.colorSensor.get("color_L");
         //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
-
-        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
+        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
+        rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         //IMU Mapping Hardware
@@ -137,27 +133,19 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     private void configureStuff() {
         // fixing motor directions
-        this.M_drive_FR.setDirection(DcMotor.Direction.REVERSE);
-        this.M_drive_BR.setDirection(DcMotor.Direction.REVERSE);
+        this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
 
         // resets all the encoder values
-        this.M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        this.S_liftSide_L.setPosition(ARM_INIT_POS_L);
-        this.S_liftSide_R.setPosition(ARM_INIT_POS_R);
-        this.S_button_FL.setPosition(BUTTON_INIT_POS);
+        this.S_button_L.setPower(BUTTON_INIT_POS);
+        this.S_button_R.setPower(BUTTON_INIT_POS);
         this.S_ballDrop.setPosition(0.02);
 
         motorTargetsDrive = new int[2];
@@ -168,17 +156,11 @@ public class SR_redAutonCorner extends LinearOpMode {
         clock = new ElapsedTime();
     }
 
-    private boolean waitingForClick() {
-        telemetry.addData("Waiting for click", "waiting");
-        if(gamepad1.a) {
-            return false;
-        }
-        return true;
-    }
     @Override
     public void runOpMode() throws InterruptedException {
         mapStuff();
         configureStuff();
+
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
         double case1Time = 0;
@@ -199,27 +181,24 @@ public class SR_redAutonCorner extends LinearOpMode {
                 /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
                 case 0:
-                    //drive forwards towards corner vortex
+                    //shooter run
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-20.0d);
+                        shooterRUN(0.5, -2200); // previous -2160
+                        shooterRUN(0.0, 0);
+                        S_ballDrop.setPosition(1.0);
+                        sleep(700); //previous 1500
+                        S_ballDrop.setPosition(0.0);
+                        sleep(700); //previous 1500
+                        shooterRUN(0.5, -2200); //previous -2160
+                        shooterRUN(0.0, 0);
                         hasBeenSet = true;
                         clock.reset();
                     }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
-                        sleep(100);
-                    }
+                    hasBeenSet = false;
+                    counter++;
                     break;
 
                 case 1:
-                    //SURABHI COMMENT: Added new IMU stuff for turning - Need to change values
                     //Read initial IMU values
                     double[] initValsArray = readInitialGyro();
 
@@ -228,8 +207,6 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     boolean b = true;
                     perfectTurn(initValsArray, b);
-
-                    //SURABHI COMMENT: DO WE HAVE TO TAKE THE CODE BELOW WITHIN CASE 2 OUT?
                     //turn -135 degrees from starting position
                     if (!hasBeenSet) {
                         motorTargetsTurn = setTurnTarget(-135.0d);
@@ -241,10 +218,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -261,10 +236,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -292,10 +265,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -312,10 +283,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -324,22 +293,16 @@ public class SR_redAutonCorner extends LinearOpMode {
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
                     this.M_shooter.setPower(STOP);
-                    this.M_lift_FL.setPower(STOP);
-                    this.M_lift_FR.setPower(STOP);
-                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                    telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                    telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                     telemetry.addData("Target R", motorTargetsDrive[0]);
                     telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
             //M_drivePowerR = drivePowers[0];
             //M_drivePowerL = drivePowers[1];
-            M_drive_FR.setPower(M_drivePowerR);
-            M_drive_FL.setPower(M_drivePowerL);
-            M_drive_BR.setPower(M_drivePowerR);
-            M_drive_BL.setPower(M_drivePowerL);
+            M_drive_R.setPower(M_drivePowerR);
+            M_drive_L.setPower(M_drivePowerL);
 
 
             telemetry.addData("Counter", counter);
@@ -364,10 +327,8 @@ public class SR_redAutonCorner extends LinearOpMode {
     public void stopDriving() {
         M_drivePowerR = STOP;
         M_drivePowerL = STOP;
-        M_drive_FR.setPower(STOP);
-        M_drive_FL.setPower(STOP);
-        M_drive_BR.setPower(STOP);
-        M_drive_BL.setPower(STOP);
+        M_drive_R.setPower(STOP);
+        M_drive_L.setPower(STOP);
     }
 
 
@@ -392,7 +353,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     public int[] setDriveTarget(double inches) {
         final double INCHES_TO_TICKS = 1100.0d / 12.0d;
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L};
         int[] targets = new int[2];
         targets[0] = (int)(motors[0].getCurrentPosition() + inches * INCHES_TO_TICKS);
         targets[1] = (int)(motors[1].getCurrentPosition() + inches * INCHES_TO_TICKS);
@@ -402,7 +363,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     // 12 goes 14.5
 
     public boolean driveForward() {
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L};
         double[] PIDValue = new double[2];
         double[] accumError = new double[2];
         double kP = 0.002d;
@@ -435,9 +396,9 @@ public class SR_redAutonCorner extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if(Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
+        if(Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
             return false;
-        } else if(Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
+        } else if(Math.abs((M_drive_L.getCurrentPosition() + M_drive_L.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
             return false;
         }
         return true;
@@ -445,7 +406,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     public int[] setTurnTarget(double degrees) {
         final double DEGREES_TO_TICKS = 1160.0d / 90.0d;
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L};
         int[] targets = new int[2];
         //targets[0] = (int)((motors[0].getCurrentPosition() + motors[2].getCurrentPosition()) / 2 - degrees * DEGREES_TO_TICKS);
         //targets[1] = (int)((motors[1].getCurrentPosition() + motors[3].getCurrentPosition()) / 2 + degrees * DEGREES_TO_TICKS);
@@ -455,7 +416,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     }
 
     public boolean turnRight() {
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L};
         double[] PIDValue = new double[2];
         double[] accumError = new double[2];
         double kP = 0.002d;
@@ -489,9 +450,9 @@ public class SR_redAutonCorner extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if(Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
+        if(Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
             return false;
-        } else if(Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
+        } else if(Math.abs((M_drive_L.getCurrentPosition() + M_drive_L.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
             return false;
         }
         return true;
@@ -519,69 +480,48 @@ public class SR_redAutonCorner extends LinearOpMode {
     /***************IMU METHODS***************/
 
     public void TurnLeft(double power, int distance) throws InterruptedException{
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        M_drive_BR.setTargetPosition(-distance);
-        M_drive_BL.setTargetPosition(distance);
-        M_drive_FR.setTargetPosition(-distance);
-        M_drive_FL.setTargetPosition(distance);
+        M_drive_R.setTargetPosition(-distance);
+        M_drive_L.setTargetPosition(distance);
 
-        M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
-        M_drive_FR.setPower(power);
-        M_drive_FL.setPower(power);
+        M_drive_R.setPower(power);
+        M_drive_L.setPower(power);
 
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+        while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
         }
 
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
     }
 
     public void TurnRight(double power, int distance)throws InterruptedException{
 
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-
-        M_drive_BR.setTargetPosition(distance);
-        M_drive_BL.setTargetPosition(-distance);
-        M_drive_FR.setTargetPosition(distance);
-        M_drive_FL.setTargetPosition(-distance);
+        M_drive_R.setTargetPosition(distance);
+        M_drive_L.setTargetPosition(-distance);
 
         // M_drive_BL.setPower(power);
-        M_drive_BR.setPower(power);
-        M_drive_BL.setPower(power);
-        M_drive_FR.setPower(power);
-        M_drive_FL.setPower(power);
+        M_drive_R.setPower(power);
+        M_drive_L.setPower(power);
 
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (M_drive_BL.isBusy() || M_drive_BR.isBusy() || M_drive_FL.isBusy() || M_drive_FR.isBusy()) {
+        while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
 
         }
 
-        M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         idle();
 

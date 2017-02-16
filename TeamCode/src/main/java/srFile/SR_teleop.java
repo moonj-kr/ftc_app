@@ -67,8 +67,8 @@ public class SR_teleop extends LinearOpMode {
         telemetry.update();
 
         // mapping motor variables to their hardware counterparts
-        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_BL");
-        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_BR");
+        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_L");
+        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_R");
         this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
         this.S_button_L = hardwareMap.crservo.get("S_button_L");
