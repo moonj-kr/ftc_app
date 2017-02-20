@@ -23,17 +23,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import java.util.Arrays;
 import java.util.Locale;
 
-//IMU imports
-
 @Autonomous(name = "SR_redAutonCorner", group = "Linear Opmode")
-
 
 /**
  * Created by Jisook on 2/16/17
  * Super Regionals
  * Autonomous for Red Alliance Starting from Corner
  */
-
 
 public class SR_redAutonCorner extends LinearOpMode {
 
@@ -66,7 +62,6 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     double BUTTON_POS = BUTTON_INIT_POS;
 
-
     final double    STOP                   = 0.0d,
                     MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
@@ -76,8 +71,8 @@ public class SR_redAutonCorner extends LinearOpMode {
 
 
     // motor powers
-    double  M_drivePowerR = STOP,
-            M_drivePowerL = STOP;
+    double   M_drivePowerR = STOP,
+             M_drivePowerL = STOP;
     double[] drivePowers;
 
     // function necessity delcarations

@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Jisook Moon on 1/5/17
- * State Competition
+ * Super Regionals
  * /
 
  /////////Instructions///////////////
@@ -24,14 +24,13 @@ import com.qualcomm.robotcore.util.Range;
 
  gamepad 2:
 
- Shooter - button 'b' is STOP 'a' is RUN
- Arm Release - button 'a' is RELEASE, 'b' is servo facing back up
- Lift - Controller 2: Joysticks UP & DOWN
+ Shooter - same controls
 
 
  //Notes
  - fix directions for motors
- -
+ - Also added time for servo extensions so drivers don't have to press STOP for continuous servos...
+   edit times if too much or too less in sleep method
  */
 
 
