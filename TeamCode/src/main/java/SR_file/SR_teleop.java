@@ -1,5 +1,5 @@
 
-package srFile;
+package SR_file;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
