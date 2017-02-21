@@ -193,32 +193,113 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 1:
-                    //Read initial IMU values
-                    double[] initValsArray = readInitialGyro();
-
-                    //turn X degrees
-                    TurnLeft(0.2,1000); //<90
-
-                    boolean b = true;
-                    perfectTurn(initValsArray, b);
-                    //turn -135 degrees from starting position
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-135.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                        sleep(100);
-                    }
+                    //read initial (double) gyro values to do calculations with
+                    double[] initValsArray = getAngles();
+                    //store gyro values as string in order to display to phone
+                    String initVals = telemetrize();
+                    //display data to phone - can take this out later
+                    telemetry.addData("Data:", initVals);
+                    telemetry.update();
+                    counter++;
                     break;
 
                 case 2:
+                    //gyro turn
+                    double[] initValsArray1 = {0, 0, 0};
+                    boolean b = true;
+                    double deg = 22.5; //15 - 30 degrees
+
+                    //READ FINAL GYROSCOPE VALUES
+                    //read (double) gyro values after turn to do calculations with
+                    double[] finalValsArray = getAngles();
+                    //store gyro values as string in order to display to phone
+                    String finalVals = telemetrize();
+                    //display to phone - can take this out later
+                    telemetry.addData("Data after turning:", finalVals);
+                    telemetry.update();
+
+                    //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
+                    //double turnAngle = turnAngle(finalValsArray, initValsArray1);
+                    double turnAngle = finalValsArray[0] - initValsArray1[0];
+                    turnAngle = Math.abs(turnAngle);
+                    //convert double into string in order to display to phone
+                    String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                    //display to phone
+                    telemetry.addData("Turn Angle: ", turnAngleString);
+                    telemetry.update();
+
+                    while (turnAngle > deg + 2 || turnAngle < deg - 2) { //2/1/17 - changed from IF to WHILE
+                        telemetry.addData("here", "here");
+
+                        //LEFT
+                        if (turnAngle < deg-2) {
+
+                            M_drive_R.setPower(0.5d);
+                            M_drive_L.setPower(-0.5d);
+                        /*
+                            sleep(50);
+
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
+
+                        */
+                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
+                            finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
+                            //calculate difference from initial value AGAIN
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray1[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
+                        }
+
+                        //RIGHT
+                        if (turnAngle > deg+2) {
+
+                            M_drive_R.setPower(-0.5d);
+                            M_drive_L.setPower(0.5d);
+
+                            sleep(50);
+
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
+
+                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
+                            finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
+                            //calculate difference from initial value AGAIN
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray1[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
+                        }
+                    }
+                    hasBeenSet = false;
+
+                    counter++;
+                    break;
+
+                case 3:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(-176.0d);
@@ -236,36 +317,109 @@ public class SR_redAutonCorner extends LinearOpMode {
                     }
                     break;
 
-                case 3:
-                    //SURABHI COMMENT: Added new IMU stuff for turning - Need to change values
-                    //Read initial IMU values
-                    initValsArray = readInitialGyro();
-
-                    //turn X degrees
-                    TurnLeft(0.2,1000); //<90
-
+                case 4:
+                    //gyro test
+                    double [] initValsArray2 = {0, 0, 0};
                     b = true;
-                    perfectTurn(initValsArray, b);
+                    double deg1 = 105; //90 + (15-30)
 
-                    //SURABHI COMMENT: DO WE HAVE TO TAKE THE CODE BELOW WITHIN CASE 2 OUT?
-                    //turn 45 towards wall so is aligned
-                    if (!hasBeenSet) {
-                        motorTargetsTurn = setTurnTarget(-45.0d);
-                        hasBeenSet = true;
-                        clock.reset();
+                    //READ FINAL GYROSCOPE VALUES
+                    //read (double) gyro values after turn to do calculations with
+                    finalValsArray = getAngles();
+
+                    //store gyro values as string in order to display to phone
+                    finalVals = telemetrize();
+
+                    //display to phone - can take this out later
+                    telemetry.addData("Data after turning:", finalVals);
+                    telemetry.update();
+
+                    //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
+                    turnAngle = finalValsArray[0] - initValsArray2[0];
+                    turnAngle = Math.abs(turnAngle);
+
+                    //convert double into string in order to display to phone
+                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+
+                    //display to phone
+                    telemetry.addData("Turn Angle: ", turnAngleString);
+                    telemetry.update();
+
+                    while (turnAngle > deg1 + 2 || turnAngle < deg1 - 2) { //2/1/17 - changed from IF to WHILE
+                        telemetry.addData("here", "here");
+
+                        //LEFT
+                        if (turnAngle < deg1 -2) {
+
+                            M_drive_R.setPower(-0.5d);
+                            M_drive_L.setPower(0.5d);
+
+                            sleep(50);
+
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
+                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
+                            finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
+                            //calculate difference from initial value AGAIN
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray2[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
+                        }
+
+                        //RIGHT
+                        if (turnAngle > deg1+2) {
+
+                            M_drive_R.setPower(0.5d);
+                            M_drive_L.setPower(-0.5d);
+
+                            sleep(50);
+
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
+
+                            //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                            //read (double) gyro values after turn to do calculations with
+                            finalValsArray = getAngles();
+                            //store gyro values as string in order to display to phone
+                            finalVals = telemetrize();
+                            //display to phone - can take this out later
+                            telemetry.addData("Data after turning:", finalVals);
+                            telemetry.update();
+
+                            //calculate difference from initial value AGAIN
+                            //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                            turnAngle = finalValsArray[0] - initValsArray2[0];
+                            turnAngle = Math.abs(turnAngle);
+                            //convert double into string in order to display to phone
+                            turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                            //display to phone
+                            telemetry.addData("Turn Angle: ", turnAngleString);
+                            telemetry.update();
+                        }
+                        telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                        telemetry.update();
                     }
-                    finished = turnRight();
-                    if (finished || isPastTime(0.6d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                        sleep(100);
-                    }
+                    telemetry.addData("HHHHHHHHHIIIIIIIIIIIIIIIIIIIIi Angle: ", "hi");
+                    telemetry.update();
+
+                    hasBeenSet = false;
+
+                    counter++;
                     break;
 
-                case 4:
+                case 7:
                     //drive forwards first beacon
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(60.0d);
@@ -282,6 +436,106 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(100);
                     }
                     break;
+
+
+                case 8:
+                    //gyro turn
+                    double[] initValsArray3 = {0, 0, 0};
+                    b = true;
+                    deg = 15; //15 - 30 degrees
+
+                    //READ FINAL GYROSCOPE VALUES
+                    //read (double) gyro values after turn to do calculations with
+                    finalValsArray = getAngles();
+                    //store gyro values as string in order to display to phone
+                    finalVals = telemetrize();
+                    //display to phone - can take this out later
+                    telemetry.addData("Data after turning:", finalVals);
+                    telemetry.update();
+
+                    //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
+                    //double turnAngle = turnAngle(finalValsArray, initValsArray1);
+                    turnAngle = finalValsArray[0] - initValsArray3[0];
+                    turnAngle = Math.abs(turnAngle);
+                    //convert double into string in order to display to phone
+                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                    //display to phone
+                    telemetry.addData("Turn Angle: ", turnAngleString);
+                    telemetry.update();
+
+                    while (turnAngle > deg + 2 || turnAngle < deg - 2) { //2/1/17 - changed from IF to WHILE
+                          telemetry.addData("here", "here");
+
+                          //LEFT
+                          if (turnAngle < deg-2) {
+
+                                M_drive_R.setPower(0.5d);
+                                M_drive_L.setPower(-0.5d);
+
+                                /*
+                                sleep(50);
+
+                                M_drive_R.setPower(0.0d);
+                                M_drive_L.setPower(0.0d);
+                                */
+                                    //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                                    //read (double) gyro values after turn to do calculations with
+                                    finalValsArray = getAngles();
+                                    //store gyro values as string in order to display to phone
+                                    finalVals = telemetrize();
+                                    //display to phone - can take this out later
+                                    telemetry.addData("Data after turning:", finalVals);
+                                    telemetry.update();
+
+                                    //calculate difference from initial value AGAIN
+                                    //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                                    turnAngle = finalValsArray[0] - initValsArray3[0];
+                                    turnAngle = Math.abs(turnAngle);
+                                    //convert double into string in order to display to phone
+                                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                                    //display to phone
+                                    telemetry.addData("Turn Angle: ", turnAngleString);
+                                    telemetry.update();
+                                }
+
+                                //RIGHT
+                                if (turnAngle > deg+2) {
+
+                                    M_drive_R.setPower(-0.5d);
+                                    M_drive_L.setPower(0.5d);
+
+                                    sleep(50);
+
+                                    M_drive_R.setPower(0.0d);
+                                    M_drive_L.setPower(0.0d);
+
+                                    //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
+                                    //read (double) gyro values after turn to do calculations with
+                                    finalValsArray = getAngles();
+                                    //store gyro values as string in order to display to phone
+                                    finalVals = telemetrize();
+                                    //display to phone - can take this out later
+                                    telemetry.addData("Data after turning:", finalVals);
+                                    telemetry.update();
+
+                                    //calculate difference from initial value AGAIN
+                                    //turnAngle = turnAngle(finalValsArray, initValsArray1);
+                                    turnAngle = finalValsArray[0] - initValsArray3[0];
+                                    turnAngle = Math.abs(turnAngle);
+                                    //convert double into string in order to display to phone
+                                    turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
+                                    //display to phone
+                                    telemetry.addData("Turn Angle: ", turnAngleString);
+                                    telemetry.update();
+                                }
+                            }
+                            hasBeenSet = false;
+
+                            counter++;
+                            break;
+
+                case 9:
+
 
                 default:
                     M_drivePowerR = STOP;
