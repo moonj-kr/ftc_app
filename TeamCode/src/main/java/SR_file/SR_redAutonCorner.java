@@ -321,7 +321,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //gyro test
                     double [] initValsArray2 = {0, 0, 0};
                     b = true;
-                    double deg1 = 105; //90 + (15-30)
+                    double deg1 = -112.5; //90 + (15-30)
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
