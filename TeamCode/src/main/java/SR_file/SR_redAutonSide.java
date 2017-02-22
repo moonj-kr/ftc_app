@@ -23,32 +23,30 @@ import java.util.Locale;
 @Autonomous(name = "SR_redAutonSide", group = "Linear Opmode")
 
 /**
- * Created by Jisook on 11/29/17.
+ * Created by Jisook on 2/21/17.
  */
 
 
 public class SR_redAutonSide extends LinearOpMode {
 
     // motor declarations
-    DcMotor M_drive_BL = null, // back left drive motors
-            M_drive_BR = null, // back right drive motor
-            M_drive_FL = null, //front left drive motor
-            M_drive_FR = null, //front right drive motor
-            M_lift_FL = null,  // front left lift motor
-            M_lift_FR = null,  //front right lift motor
-            M_shooter = null;  //shooter motor
+    DcMotor M_drive_L = null,
+            M_drive_R = null,
+            M_shooter = null;
 
     //servo declarations
-    Servo S_button_FL = null,  //button presser servo
-            S_liftSide_L = null, //left lift release servo
-            S_liftSide_R = null, //right lift release servo
-            S_ballDrop = null;   // second ball release servo
+    CRServo S_button_L = null,
+            S_button_R = null;
+    Servo   S_ballDrop = null;
 
     // sensor declarations
-    ColorSensor colorSensorRight; //different address 0x3a
+    ColorSensor colorSensorRight; // 0x3a
+    ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
+    ModernRoboticsI2cGyro gyroSensor;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
+    ModernRoboticsI2cRangeSensor rangeSensorRight;
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -56,22 +54,21 @@ public class SR_redAutonSide extends LinearOpMode {
     Acceleration gravity;
 
     // all of the important constants
-    final double ARM_INIT_POS_L = 0.8d,
-            ARM_INIT_POS_R = 0.235d,
-            BUTTON_INIT_POS = 0.8d;
+    final double    BUTTON_INIT_POS = 0.05d;
 
+    double BUTTON_POS = BUTTON_INIT_POS;
 
-    final double STOP = 0.0d,
-            MAX_POWER = 1.0d;
-    final int TICKS_PER_REVOLUTION = 1120;
+    final double    STOP                   = 0.0d,
+                    MAX_POWER              = 1.0d;
+    final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
             TurnLeft45 = -45.0d;
 
 
     // motor powers
-    double M_drivePowerR = STOP,
-            M_drivePowerL = STOP;
+    double   M_drivePowerR = STOP,
+             M_drivePowerL = STOP;
     double[] drivePowers;
 
     // function necessity delcarations
@@ -81,31 +78,27 @@ public class SR_redAutonSide extends LinearOpMode {
     ElapsedTime clock;
 
     private void mapStuff() {
-        // mapping motor variables to their hardware counterparts
-        M_drive_BL = hardwareMap.dcMotor.get("M_drive_BL");
-        M_drive_BR = hardwareMap.dcMotor.get("M_drive_BR");
-        M_drive_FL = hardwareMap.dcMotor.get("M_drive_FL");
-        M_drive_FR = hardwareMap.dcMotor.get("M_drive_FR");
-        M_lift_FL = hardwareMap.dcMotor.get("M_lift_FL");
-        M_lift_FR = hardwareMap.dcMotor.get("M_lift_FR");
-        M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        // mapping servo variables to their hardware counter parts
-        S_liftSide_L = hardwareMap.servo.get("S_liftSide_L");
-        S_liftSide_R = hardwareMap.servo.get("S_liftSide_R");
-        S_button_FL = hardwareMap.servo.get("S_button_FL");
-        S_ballDrop = hardwareMap.servo.get("S_ballDrop");
+        // mapping motor variables to their hardware counterparts
+        this.M_drive_L = hardwareMap.dcMotor.get("M_drive_L");
+        this.M_drive_R = hardwareMap.dcMotor.get("M_drive_R");
+        this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
+
+        this.S_button_L = hardwareMap.crservo.get("S_button_L");
+        this.S_button_R = hardwareMap.crservo.get("S_button_R");
+        this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_FR");
+        colorSensorRight = hardwareMap.colorSensor.get("color_R");
+        colorSensorLeft = hardwareMap.colorSensor.get("color_L");
         //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
-
-        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_FL");
-
+        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
+        rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
+        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -131,27 +124,19 @@ public class SR_redAutonSide extends LinearOpMode {
 
     private void configureStuff() {
         // fixing motor directions
-        this.M_drive_FR.setDirection(DcMotor.Direction.REVERSE);
-        this.M_drive_BR.setDirection(DcMotor.Direction.REVERSE);
+        this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
 
         // resets all the encoder values
-        this.M_drive_FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.M_drive_BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        M_drive_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        M_drive_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        this.S_liftSide_L.setPosition(ARM_INIT_POS_L);
-        this.S_liftSide_R.setPosition(ARM_INIT_POS_R);
-        this.S_button_FL.setPosition(BUTTON_INIT_POS);
+        this.S_button_L.setPower(BUTTON_INIT_POS);
+        this.S_button_R.setPower(BUTTON_INIT_POS);
         this.S_ballDrop.setPosition(0.02);
 
         motorTargetsDrive = new int[2];
@@ -160,14 +145,6 @@ public class SR_redAutonSide extends LinearOpMode {
         Arrays.fill(motorTargetsTurn, 0);
 
         clock = new ElapsedTime();
-    }
-
-    private boolean waitingForClick() {
-        telemetry.addData("Waiting for click", "waiting");
-        if (gamepad1.a) {
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -187,9 +164,9 @@ public class SR_redAutonSide extends LinearOpMode {
         int tempMotorPosR = 0;
         int deltaMotorPos = 0;
         double increment = 0.05d;
-        while (opModeIsActive()) {
+        while(opModeIsActive()) {
             colorSensorRight.enableLed(false);
-            //double[]  initValsArray;
+
             switch (counter) {
 
                 /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
@@ -197,7 +174,6 @@ public class SR_redAutonSide extends LinearOpMode {
 
                 case 0:
                     //shooter run
-                    /*
                     if (!hasBeenSet) {
                         shooterRUN(0.5, -2200); // previous -2160
                         shooterRUN(0.0, 0);
@@ -209,7 +185,7 @@ public class SR_redAutonSide extends LinearOpMode {
                         shooterRUN(0.0, 0);
                         hasBeenSet = true;
                         clock.reset();
-                    }*/
+                    }
                     hasBeenSet = false;
                     counter++;
                     break;
