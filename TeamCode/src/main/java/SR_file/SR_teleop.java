@@ -107,30 +107,30 @@ public class SR_teleop extends LinearOpMode {
             if(gamepad1.right_bumper){
                 BUTTON_POS -= .2;
                 BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
-                S_button_L.setPower(BUTTON_POS);
+                S_button_R.setPower(BUTTON_POS);
                 sleep(1300);
-                S_button_L.setPower(BUTTON_INIT_STOP);
+                S_button_R.setPower(BUTTON_INIT_STOP);
             }
             if(gamepad1.right_trigger > 0.0){
                 BUTTON_POS += .2;
-                S_button_L.setPower(BUTTON_POS);
+                S_button_R.setPower(BUTTON_POS);
                 sleep(1300);
-                S_button_L.setPower(BUTTON_INIT_STOP);
+                S_button_R.setPower(BUTTON_INIT_STOP);
             }
 
             // beacon presser control block
             if(gamepad1.left_bumper){
                 BUTTON_POS -= .2;
                 BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
-                S_button_R.setPower(BUTTON_POS);
+                S_button_L.setPower(BUTTON_POS);
                 sleep(1300);
-                S_button_R.setPower(BUTTON_INIT_STOP);
+                S_button_L.setPower(BUTTON_INIT_STOP);
             }
             if(gamepad1.left_trigger > 0.0){
                 BUTTON_POS += .2;
-                S_button_R.setPower(BUTTON_POS);
+                S_button_L.setPower(BUTTON_POS);
                 sleep(1300);
-                S_button_R.setPower(BUTTON_INIT_STOP);
+                S_button_L.setPower(BUTTON_INIT_STOP);
             }
 
             if(gamepad2.right_bumper){
