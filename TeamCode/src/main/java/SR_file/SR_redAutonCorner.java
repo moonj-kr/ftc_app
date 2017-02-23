@@ -39,7 +39,7 @@ public class SR_redAutonCorner extends LinearOpMode {
             M_shooter = null;
 
     //servo declarations
-    CRServo S_button_L = null,
+    Servo S_button_L = null,
             S_button_R = null;
     Servo   S_ballDrop = null;
 
@@ -48,7 +48,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
-    ModernRoboticsI2cGyro gyroSensor;
+
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
     ModernRoboticsI2cRangeSensor rangeSensorRight;
 
@@ -79,6 +79,18 @@ public class SR_redAutonCorner extends LinearOpMode {
     int[] motorTargetsDrive;
     int[] motorTargetsTurn;
 
+    // all of the starting servo positions
+    final double BUTTON_INIT_STOP_RIGHT = 0.5,
+            BUTTON_INIT_STOP_LEFT = 0.5,
+            BALL_DROP_INIT = 0.2;
+
+    double  BUTTON_POS_R = BUTTON_INIT_STOP_RIGHT,
+            BUTTON_POS_L = BUTTON_INIT_STOP_LEFT,
+            BALL_DROP_POS = BALL_DROP_INIT;
+
+    // servo constant
+    double SERVO_TICK = 0.03;
+
     ElapsedTime clock;
 
     private void mapStuff() {
@@ -88,8 +100,8 @@ public class SR_redAutonCorner extends LinearOpMode {
         this.M_drive_R = hardwareMap.dcMotor.get("M_drive_R");
         this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        this.S_button_L = hardwareMap.crservo.get("S_button_L");
-        this.S_button_R = hardwareMap.crservo.get("S_button_R");
+        this.S_button_L = hardwareMap.servo.get("S_button_L");
+        this.S_button_R = hardwareMap.servo.get("S_button_R");
         this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
@@ -102,7 +114,6 @@ public class SR_redAutonCorner extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
         rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
-        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -124,6 +135,11 @@ public class SR_redAutonCorner extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
+        // initializing servo positions
+        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
+        S_ballDrop.setPosition(BALL_DROP_INIT);
+
     }
 
     private void configureStuff() {
@@ -139,8 +155,8 @@ public class SR_redAutonCorner extends LinearOpMode {
         this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        this.S_button_L.setPower(BUTTON_INIT_POS);
-        this.S_button_R.setPower(BUTTON_INIT_POS);
+        this.S_button_L.setPosition(BUTTON_INIT_POS);
+        this.S_button_R.setPosition(BUTTON_INIT_POS);
         this.S_ballDrop.setPosition(0.02);
 
         motorTargetsDrive = new int[2];
@@ -178,6 +194,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                 case 0:
                     //shooter run
                     if (!hasBeenSet) {
+                        /*
                         shooterRUN(0.5, -2200); // previous -2160
                         shooterRUN(0.0, 0);
                         S_ballDrop.setPosition(1.0);
@@ -186,6 +203,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(700); //previous 1500
                         shooterRUN(0.5, -2200); //previous -2160
                         shooterRUN(0.0, 0);
+                        */
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -208,7 +226,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //gyro turn towards wall
                     double[] initValsArray1 = {0, 0, 0};
                     boolean b = true;
-                    double deg = -22.5; //15 - 30 degrees. Should be negative bc it's a LEFT turn
+                    double deg = 22.5; //1-22.5 turned 360-22.5 and 22.5 turned 180???
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
@@ -298,7 +316,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     counter++;
                     break;
-
+/*
                 case 3:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
@@ -629,6 +647,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                     }
                     break;
 
+
+*/
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
