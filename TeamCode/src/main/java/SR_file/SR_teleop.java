@@ -46,13 +46,13 @@ public class SR_teleop extends LinearOpMode {
             M_shooter = null;
 
     // servo declarations
-    CRServo S_button_L;
-    CRServo S_button_R;
+    Servo S_button_L;
+    Servo S_button_R;
     Servo S_ballDrop;
 
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
-                 BUTTON_INIT_STOP_LEFT = 0.4,
+                 BUTTON_INIT_STOP_LEFT = 0.5,
                  BALL_DROP_INIT = 0.2;
 
     double  BUTTON_POS_R = BUTTON_INIT_STOP_RIGHT,
@@ -72,8 +72,8 @@ public class SR_teleop extends LinearOpMode {
         this.M_drive_R = hardwareMap.dcMotor.get("M_drive_R");
         this.M_shooter = hardwareMap.dcMotor.get("M_shooter");
 
-        this.S_button_L = hardwareMap.crservo.get("S_button_L");
-        this.S_button_R = hardwareMap.crservo.get("S_button_R");
+        this.S_button_L = hardwareMap.servo.get("S_button_L");
+        this.S_button_R = hardwareMap.servo.get("S_button_R");
         this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // fixing motor directions
@@ -81,8 +81,8 @@ public class SR_teleop extends LinearOpMode {
         this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
 
         // initializing servo positions
-        this.S_button_L.setPower(BUTTON_INIT_STOP_LEFT);
-        this.S_button_R.setPower(BUTTON_INIT_STOP_RIGHT);
+        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
         S_ballDrop.setPosition(BALL_DROP_INIT);
 
         // wait for the game to start
@@ -107,32 +107,32 @@ public class SR_teleop extends LinearOpMode {
 
             // beacon presser control block
             if(gamepad1.right_bumper){
-                BUTTON_POS_R -= .2;
+                BUTTON_POS_R +=2;
                 BUTTON_POS_R = Range.clip(BUTTON_POS_R, 0, 1);
-                S_button_R.setPower(BUTTON_POS_R);
-                sleep(1300);
-                S_button_R.setPower(BUTTON_INIT_STOP_RIGHT);
+                S_button_R.setPosition(BUTTON_POS_R);
+                sleep(100);
+                S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
             }
             if(gamepad1.right_trigger > 0.0){
-                BUTTON_POS_R += .2;
-                S_button_R.setPower(BUTTON_POS_R);
-                sleep(1300);
-                S_button_R.setPower(BUTTON_INIT_STOP_RIGHT);
+                BUTTON_POS_R -= .2;
+                S_button_R.setPosition(BUTTON_POS_R);
+                sleep(100);
+                S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
             }
 
             // beacon presser control block
             if(gamepad1.left_bumper){
                 BUTTON_POS_L -= .2;
                 BUTTON_POS_L = Range.clip(BUTTON_POS_L, 0, 1);
-                S_button_L.setPower(BUTTON_POS_L);
-                sleep(1300);
-                S_button_L.setPower(BUTTON_INIT_STOP_LEFT);
+                S_button_L.setPosition(BUTTON_POS_L);
+                sleep(900);
+                S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
             }
             if(gamepad1.left_trigger > 0.0){
                 BUTTON_POS_L += .2;
-                S_button_L.setPower(BUTTON_POS_L);
-                sleep(1300);
-                S_button_L.setPower(BUTTON_INIT_STOP_LEFT);
+                S_button_L.setPosition(BUTTON_POS_L);
+                sleep(900);
+                S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
             }
 
             if(gamepad2.right_bumper){
