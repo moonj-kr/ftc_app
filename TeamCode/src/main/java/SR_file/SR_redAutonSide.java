@@ -2,9 +2,11 @@ package SR_file;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
@@ -44,7 +46,6 @@ public class SR_redAutonSide extends LinearOpMode {
     ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
-    ModernRoboticsI2cGyro gyroSensor;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
     ModernRoboticsI2cRangeSensor rangeSensorRight;
 
@@ -98,7 +99,6 @@ public class SR_redAutonSide extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
         rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
-        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -202,10 +202,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -233,10 +231,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -272,17 +268,13 @@ public class SR_redAutonSide extends LinearOpMode {
                         //LEFT
                         if (turnAngle < deg-2) {
 
-                            M_drive_FR.setPower(0.5d);
-                            M_drive_FL.setPower(-0.5d);
-                            M_drive_BR.setPower(0.5d);
-                            M_drive_BL.setPower(-0.5d);
+                            M_drive_R.setPower(0.5d);
+                            M_drive_L.setPower(-0.5d);
 
                             sleep(50);
 
-                            M_drive_FR.setPower(0.0d);
-                            M_drive_FL.setPower(0.0d);
-                            M_drive_BR.setPower(0.0d);
-                            M_drive_BL.setPower(0.0d);
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
@@ -306,17 +298,12 @@ public class SR_redAutonSide extends LinearOpMode {
                         //RIGHT
                         if (turnAngle > deg+2) {
 
-                            M_drive_FR.setPower(-0.5d);
-                            M_drive_FL.setPower(0.5d);
-                            M_drive_BR.setPower(-0.5d);
-                            M_drive_BL.setPower(0.5d);
-
+                            M_drive_R.setPower(-0.5d);
+                            M_drive_L.setPower(0.5d);
                             sleep(50);
 
-                            M_drive_FR.setPower(0.0d);
-                            M_drive_FL.setPower(0.0d);
-                            M_drive_BR.setPower(0.0d);
-                            M_drive_BL.setPower(0.0d);
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //finalValsArray = getAngles();
                             //calculate difference from initial value AGAIN
@@ -363,10 +350,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -382,10 +367,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 4", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -402,10 +385,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 4", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -433,10 +414,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
 
@@ -452,10 +431,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -472,10 +449,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -514,17 +489,13 @@ public class SR_redAutonSide extends LinearOpMode {
                         //LEFT
                         if (turnAngle < deg1 -2) {
 
-                            M_drive_FR.setPower(-0.5d);
-                            M_drive_FL.setPower(0.5d);
-                            M_drive_BR.setPower(-0.5d);
-                            M_drive_BL.setPower(0.5d);
+                            M_drive_R.setPower(-0.5d);
+                            M_drive_L.setPower(0.5d);
 
                             sleep(50);
 
-                            M_drive_FR.setPower(0.0d);
-                            M_drive_FL.setPower(0.0d);
-                            M_drive_BR.setPower(0.0d);
-                            M_drive_BL.setPower(0.0d);
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
@@ -548,17 +519,13 @@ public class SR_redAutonSide extends LinearOpMode {
                         //RIGHT
                         if (turnAngle > deg1+2) {
 
-                            M_drive_FR.setPower(0.5d);
-                            M_drive_FL.setPower(-0.5d);
-                            M_drive_BR.setPower(0.5d);
-                            M_drive_BL.setPower(-0.5d);
+                            M_drive_R.setPower(0.5d);
+                            M_drive_L.setPower(-0.5d);
 
                             sleep(50);
 
-                            M_drive_FR.setPower(0.0d);
-                            M_drive_FL.setPower(0.0d);
-                            M_drive_BR.setPower(0.0d);
-                            M_drive_BL.setPower(0.0d);
+                            M_drive_R.setPower(0.0d);
+                            M_drive_L.setPower(0.0d);
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //finalValsArray = getAngles();
                             //calculate difference from initial value AGAIN
@@ -613,16 +580,12 @@ public class SR_redAutonSide extends LinearOpMode {
                 case 13:
                     //drive forwards towards corner vortex
 
-                    M_drive_FR.setPower(0.2d);
-                    M_drive_FL.setPower(0.2d);
-                    M_drive_BR.setPower(0.2d);
-                    M_drive_BL.setPower(0.2d);
+                    M_drive_R.setPower(0.2d);
+                    M_drive_L.setPower(0.2d);
                     sleep(1000);
 
-                    M_drive_FR.setPower(0.0d);
-                    M_drive_FL.setPower(0.0d);
-                    M_drive_BR.setPower(0.0d);
-                    M_drive_BL.setPower(0.0d);
+                    M_drive_R.setPower(0.0d);
+                    M_drive_L.setPower(0.0d);
 
                     telemetry.update();
                     counter++;
@@ -649,22 +612,11 @@ public class SR_redAutonSide extends LinearOpMode {
                         if (finished || isPastTime(1.0d)) {
                             hasBeenSet = false;
                             stopDriving();
-                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                            telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                            telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                             sleep(100);
                         }
 
-                        S_button_FL.setPosition(0.1); //extends servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.8); //reteract servo
-                        sleep(1500);
-                        S_button_FL.setPosition(0.5); //stop servo
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                         sleep(100);
                         counter++;
                     }
@@ -680,15 +632,6 @@ public class SR_redAutonSide extends LinearOpMode {
 
                             stopDriving();
 
-                            S_button_FL.setPosition(0.1); //extends servo
-                            sleep(1500);
-                            S_button_FL.setPosition(0.8); //reteract servo
-                            sleep(1500);
-                            S_button_FL.setPosition(0.5); //stop servo
-                            telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                            telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                            telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                            telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
                             sleep(100);
                             counter++;
                         }
@@ -780,10 +723,8 @@ public class SR_redAutonSide extends LinearOpMode {
                         hasBeenSet = false;
                         counter++;
                         stopDriving();
-                        telemetry.addData("RF POS 5", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
 /*
@@ -816,11 +757,8 @@ public class SR_redAutonSide extends LinearOpMode {
                     if (finished || isPastTime(1.0d)) {
                         hasBeenSet = false;
                         counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                        telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                        telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                        stopDriving();                        telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                         sleep(100);
                     }
                     break;
@@ -829,21 +767,15 @@ public class SR_redAutonSide extends LinearOpMode {
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
                     this.M_shooter.setPower(STOP);
-                    this.M_lift_FL.setPower(STOP);
-                    this.M_lift_FR.setPower(STOP);
-                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+                    telemetry.addData("RF POS 4", M_drive_R.getCurrentPosition());
+                    telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
                     telemetry.addData("Target R", motorTargetsDrive[0]);
                     telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
 
-            M_drive_FR.setPower(M_drivePowerR);
-            M_drive_FL.setPower(M_drivePowerL);
-            M_drive_BR.setPower(M_drivePowerR);
-            M_drive_BL.setPower(M_drivePowerL);
+            M_drive_R.setPower(M_drivePowerR);
+            M_drive_L.setPower(M_drivePowerL);
 
             telemetry.addData("Counter", counter);
             telemetry.addData("Supposed Power R", M_drivePowerR);
@@ -865,10 +797,8 @@ public class SR_redAutonSide extends LinearOpMode {
     public void stopDriving() {
         M_drivePowerR = STOP;
         M_drivePowerL = STOP;
-        M_drive_FR.setPower(STOP);
-        M_drive_FL.setPower(STOP);
-        M_drive_BR.setPower(STOP);
-        M_drive_BL.setPower(STOP);
+        M_drive_R.setPower(STOP);
+        M_drive_L.setPower(STOP);
     }
 
     public void shooterRUN(double power, int distance) throws InterruptedException {
@@ -891,7 +821,7 @@ public class SR_redAutonSide extends LinearOpMode {
 
     public int[] setDriveTarget(double inches) {
         final double INCHES_TO_TICKS = 1100.0d / 12.0d;
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L, M_drive_R, M_drive_R};
         int[] targets = new int[2];
         targets[0] = (int) (motors[0].getCurrentPosition() + inches * INCHES_TO_TICKS);
         targets[1] = (int) (motors[1].getCurrentPosition() + inches * INCHES_TO_TICKS);
@@ -901,7 +831,7 @@ public class SR_redAutonSide extends LinearOpMode {
     // 12 goes 14.5
 
     public boolean driveForward() {
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L, M_drive_R, M_drive_R};
         double[] PIDValue = new double[2];
         double[] accumError = new double[2];
         double kP = 0.002d;
@@ -934,9 +864,9 @@ public class SR_redAutonSide extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if (Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
+        if (Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
             return false;
-        } else if (Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
+        } else if (Math.abs((M_drive_L.getCurrentPosition() + M_drive_L.getCurrentPosition()) / 2.0d - motorTargetsDrive[1]) > 30) {
             return false;
         }
         return true;
@@ -944,7 +874,7 @@ public class SR_redAutonSide extends LinearOpMode {
 
     public int[] setTurnTarget(double degrees) {
         final double DEGREES_TO_TICKS = 1160.0d / 90.0d;
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L, M_drive_R, M_drive_R};
         int[] targets = new int[2];
         //targets[0] = (int)((motors[0].getCurrentPosition() + motors[2].getCurrentPosition()) / 2 - degrees * DEGREES_TO_TICKS);
         //targets[1] = (int)((motors[1].getCurrentPosition() + motors[3].getCurrentPosition()) / 2 + degrees * DEGREES_TO_TICKS);
@@ -954,7 +884,7 @@ public class SR_redAutonSide extends LinearOpMode {
     }
 
     public boolean turnRight() {
-        DcMotor[] motors = {M_drive_FR, M_drive_FL, M_drive_BR, M_drive_BR};
+        DcMotor[] motors = {M_drive_R, M_drive_L, M_drive_R, M_drive_R};
         double[] PIDValue = new double[2];
         double[] accumError = new double[2];
         double kP = 0.002d;
@@ -988,9 +918,9 @@ public class SR_redAutonSide extends LinearOpMode {
                 //drivePowers[i] = 0.0d;
             }
         }
-        if (Math.abs((M_drive_FR.getCurrentPosition() + M_drive_BR.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
+        if (Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
             return false;
-        } else if (Math.abs((M_drive_FL.getCurrentPosition() + M_drive_BL.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
+        } else if (Math.abs((M_drive_L.getCurrentPosition() + M_drive_L.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
             return false;
         }
         return true;
@@ -1123,10 +1053,7 @@ public class SR_redAutonSide extends LinearOpMode {
                 if (finished || isPastTime(0.6d)) {
                     hasBeenSet = false;
                     stopDriving();
-                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+
                     sleep(100);
                 }
 
@@ -1147,10 +1074,7 @@ public class SR_redAutonSide extends LinearOpMode {
                 if (finished || isPastTime(0.6d)) {
                     hasBeenSet = false;
                     stopDriving();
-                    telemetry.addData("RF POS", M_drive_FR.getCurrentPosition());
-                    telemetry.addData("LF POS", M_drive_FL.getCurrentPosition());
-                    telemetry.addData("RB POS", M_drive_BR.getCurrentPosition());
-                    telemetry.addData("LB POS", M_drive_BL.getCurrentPosition());
+
                     sleep(100);
                 }
 

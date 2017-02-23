@@ -1,5 +1,6 @@
 package SR_file;
 
+
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -96,7 +97,7 @@ public class SR_redAutonCorner extends LinearOpMode {
         colorSensorLeft = hardwareMap.colorSensor.get("color_L");
         //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
-        opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1");
+        opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1"); //right
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
@@ -207,7 +208,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //gyro turn towards wall
                     double[] initValsArray1 = {0, 0, 0};
                     boolean b = true;
-                    double deg = 22.5; //15 - 30 degrees
+                    double deg = -22.5; //15 - 30 degrees. Should be negative bc it's a LEFT turn
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
@@ -221,7 +222,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
                     //double turnAngle = turnAngle(finalValsArray, initValsArray1);
                     double turnAngle = finalValsArray[0] - initValsArray1[0];
-                    turnAngle = Math.abs(turnAngle);
+                    //turnAngle = Math.abs(turnAngle);
                     //convert double into string in order to display to phone
                     String turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                     //display to phone
@@ -254,7 +255,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                             //calculate difference from initial value AGAIN
                             turnAngle = finalValsArray[0] - initValsArray1[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
@@ -285,7 +286,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray1[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
@@ -320,7 +321,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //gyro turn to align with wall
                     double [] initValsArray2 = {0, 0, 0};
                     b = true;
-                    double deg1 = -112.5; //90 + (15-30)
+                    double deg1 = 112.5; //90 + (15-30). Positive value bc it's a RIGHT turn
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
@@ -335,7 +336,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
                     turnAngle = finalValsArray[0] - initValsArray2[0];
-                    turnAngle = Math.abs(turnAngle);
+                    //turnAngle = Math.abs(turnAngle);
 
                     //convert double into string in order to display to phone
                     turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
@@ -369,7 +370,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray2[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
@@ -400,7 +401,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray2[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
@@ -479,7 +480,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                         BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
                         S_button_R.setPower(BUTTON_POS);
                         sleep(1300);
-                        S_button_R.setPower(BUTTON_INIT_STOP);
+                        S_button_R.setPower(BUTTON_INIT_POS);
                         
                         telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
                         telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
@@ -503,7 +504,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
                             S_button_R.setPower(BUTTON_POS);
                             sleep(1300);
-                            S_button_R.setPower(BUTTON_INIT_STOP);
+                            S_button_R.setPower(BUTTON_INIT_POS);
                         
                             telemetry.addData("R POS", M_drive_R.getCurrentPosition());
                             telemetry.addData("L POS", M_drive_L.getCurrentPosition());
@@ -517,7 +518,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     //gyro turn to face center vortex
                     double [] initValsArray4 = {0, 0, 0};
                     b = true;
-                    double deg1 = 45.0;
+                    deg1 = 45.0; //RIGHT turn
 
                     //READ FINAL GYROSCOPE VALUES
                     //read (double) gyro values after turn to do calculations with
@@ -532,7 +533,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
                     turnAngle = finalValsArray[0] - initValsArray4[0];
-                    turnAngle = Math.abs(turnAngle);
+                    //turnAngle = Math.abs(turnAngle);
 
                     //convert double into string in order to display to phone
                     turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
@@ -566,7 +567,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray4[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
@@ -597,7 +598,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
                             turnAngle = finalValsArray[0] - initValsArray4[0];
-                            turnAngle = Math.abs(turnAngle);
+                            //turnAngle = Math.abs(turnAngle);
                             //convert double into string in order to display to phone
                             turnAngleString = String.format(Locale.US, "Turn Angle: %.3f", turnAngle);
                             //display to phone
