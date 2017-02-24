@@ -237,6 +237,14 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("Data after turning:", finalVals);
                     telemetry.update();
 
+                    telemetry.addData("HI", "here");
+                    telemetry.addData("HI", "here");
+                    telemetry.addData("HI", "here");
+                    telemetry.addData("HI", "here");
+                    telemetry.addData("HI", "here");
+                    telemetry.addData("HI", "here");
+                    telemetry.update();
+
                     //FIND DIFFERENCE BETWEEN FINAL AND INITIAL ANGLES
                     //double turnAngle = turnAngle(finalValsArray, initValsArray1);
                     double turnAngle = finalValsArray[0] - initValsArray1[0];
@@ -255,13 +263,13 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                             M_drive_R.setPower(0.5d);
                             M_drive_L.setPower(-0.5d);
-                        /*
+
                             sleep(50);
 
                             M_drive_R.setPower(0.0d);
                             M_drive_L.setPower(0.0d);
 
-                        */
+
                             //CHECK IF COMPENSATION MAKES TURN EQUAL 90 DEG by reading IMU
                             //read (double) gyro values after turn to do calculations with
                             finalValsArray = getAngles();
@@ -269,7 +277,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                             finalVals = telemetrize();
                             //display to phone - can take this out later
                             telemetry.addData("Data after turning:", finalVals);
-                            telemetry.update();
 
                             //calculate difference from initial value AGAIN
                             turnAngle = finalValsArray[0] - initValsArray1[0];
@@ -299,7 +306,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                             finalVals = telemetrize();
                             //display to phone - can take this out later
                             telemetry.addData("Data after turning:", finalVals);
-                            telemetry.update();
 
                             //calculate difference from initial value AGAIN
                             //turnAngle = turnAngle(finalValsArray, initValsArray1);
