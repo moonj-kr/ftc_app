@@ -223,6 +223,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 2:
+                    /*
                     //gyro turn towards wall
                     double[] initValsArray1 = {0, 0, 0};
                     boolean b = true;
@@ -319,14 +320,14 @@ public class SR_redAutonCorner extends LinearOpMode {
                         }
                     }
                     hasBeenSet = false;
-
+*/
                     counter++;
                     break;
-/*
+
                 case 3:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-176.0d);
+                        motorTargetsDrive = setDriveTarget(-50.0d); //-176
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -340,7 +341,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
+/*
                 case 4:
                     //gyro turn to align with wall
                     double [] initValsArray2 = {0, 0, 0};
@@ -652,7 +653,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
 
 */
                 default:

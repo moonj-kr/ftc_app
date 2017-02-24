@@ -119,6 +119,7 @@ public class SR_sensorTeleop extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
         rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
+        //change address
 
 
         //IMU Mapping Hardware
@@ -145,6 +146,16 @@ public class SR_sensorTeleop extends LinearOpMode {
         this.M_drive_L.setDirection(DcMotor.Direction.FORWARD);
         this.M_drive_R.setDirection(DcMotor.Direction.REVERSE);
 
+
+        // resets all the encoder values
+        this.M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // initializing servo positions
         this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
         this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
@@ -163,13 +174,15 @@ public class SR_sensorTeleop extends LinearOpMode {
         telemetry.addData("Data:", initVals);
         telemetry.update();
 
-
-
         while (opModeIsActive()) {
             // motor control block
             M_drive_L.setPower(gamepad1.right_stick_y);
             M_drive_R.setPower(gamepad1.left_stick_y);
 
+            //returns encoder values
+            telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+            telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
+            telemetry.update();
 
             /***READ FINAL GYROSCOPE VALUES***/
             //read (double) gyro values after turn to do calculations with
