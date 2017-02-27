@@ -90,6 +90,15 @@ public class SR_teleop extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
+
+            //returns joystick values
+            telemetry.addData("JOYSTICK R", gamepad1.right_stick_y);
+            telemetry.addData("JOYSTICK L", gamepad1.left_stick_y);
+
+            //returns encoder values
+            telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+            telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
+
             // motor control block
             M_drive_L.setPower(gamepad1.right_stick_y);
             M_drive_R.setPower(gamepad1.left_stick_y);

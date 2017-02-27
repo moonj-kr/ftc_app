@@ -182,7 +182,10 @@ public class SR_sensorTeleop extends LinearOpMode {
             //returns encoder values
             telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
             telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-            telemetry.update();
+
+            //print joystick values
+            telemetry.addData("JOYSTICK R", gamepad1.right_stick_y);
+            telemetry.addData("JOYSTICK L", gamepad1.left_stick_y);
 
             /***READ FINAL GYROSCOPE VALUES***/
             //read (double) gyro values after turn to do calculations with
