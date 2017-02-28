@@ -47,7 +47,6 @@ public class SR_redAutonSide extends LinearOpMode {
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
-    ModernRoboticsI2cRangeSensor rangeSensorRight;
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -98,7 +97,6 @@ public class SR_redAutonSide extends LinearOpMode {
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
-        rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration

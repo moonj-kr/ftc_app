@@ -50,7 +50,6 @@ public class SR_redAutonCorner extends LinearOpMode {
     OpticalDistanceSensor opticalDistanceSensor2;
 
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
-    ModernRoboticsI2cRangeSensor rangeSensorRight;
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -112,8 +111,8 @@ public class SR_redAutonCorner extends LinearOpMode {
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1"); //right
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
 
-        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_L");
-        rangeSensorRight = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_R");
+        rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range");
+
 
         //IMU Mapping Hardware
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -327,7 +326,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                 case 3:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-50.0d); //-176
+                        motorTargetsDrive = setDriveTarget(-300.0d); //-176
                         hasBeenSet = true;
                         clock.reset();
                     }

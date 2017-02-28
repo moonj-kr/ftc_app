@@ -53,6 +53,14 @@ public class testingAllSensors extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
 
+        ModernRoboticsI2cGyro gyro;   // Hardware Device Object
+        int xVal, yVal, zVal = 0;     // Gyro rate Values
+        int heading = 0;              // Gyro integrated heading
+        int angleZ = 0;
+        boolean lastResetState = false;
+        boolean curResetState  = false;
+
+
         mapStuff();
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
@@ -88,6 +96,8 @@ public class testingAllSensors extends LinearOpMode {
                         counter++;
                     }
                     break;
+
+                /*
                 case 1:
                     if(colorSensorRight.red() > colorSensorRight.blue()){
                         telemetry.addData("RED","RED");
@@ -116,7 +126,7 @@ public class testingAllSensors extends LinearOpMode {
 
 
 
-/*
+
                         if (colorSensorRight.red() < colorSensorRight.blue()) {
                             telemetry.addData("blue", "blue");
                             telemetry.addData("blue", "blue");
@@ -147,7 +157,7 @@ public class testingAllSensors extends LinearOpMode {
                         counter++;
 
                     break;
-                /*
+
                 case 1:
                     if(!hasBeenSet) {
                         while (rangeSensorLeft.getDistance(DistanceUnit.CM) > 8.0) {
@@ -192,7 +202,9 @@ public class testingAllSensors extends LinearOpMode {
 
                         }
                         break;
+
                         */
+
                 default:
                     telemetry.addData("default","default");
                     telemetry.addData("default","default");
