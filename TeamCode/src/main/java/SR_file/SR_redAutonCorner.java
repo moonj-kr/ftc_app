@@ -40,7 +40,7 @@ public class SR_redAutonCorner extends LinearOpMode {
             M_shooter = null;
 
     //servo declarations
-    Servo S_button_L = null,
+    Servo   S_button_L = null,
             S_button_R = null;
     Servo   S_ballDrop = null;
 
@@ -113,10 +113,6 @@ public class SR_redAutonCorner extends LinearOpMode {
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
-        // initializing servo positions
-        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
-        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
-        S_ballDrop.setPosition(BALL_DROP_INIT);
     }
 
     private void configureStuff() {
@@ -167,6 +163,13 @@ public class SR_redAutonCorner extends LinearOpMode {
         int angleZ = 0;
         boolean lastResetState = false;
         boolean curResetState  = false;
+/*
+        // initializing servo positions
+        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
+        S_ballDrop.setPosition(BALL_DROP_INIT);
+
+        */
 
         while(opModeIsActive()) {
 
@@ -194,24 +197,51 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 1:
-                    // turn 112.5 degrees right
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
 
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
+                    // get the heading info.
+                    // the Modern Robotics' gyro sensor keeps
+                    // track of the current heading for the Z axis only.
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
 
-                    if (angleZ != 22.5) {
+                    double deg1 = 22.5;
 
-                        M_drive_L.setPower(0.5);
-                        M_drive_R.setPower(0.5);
+                    while (angleZ > deg1 + 2 || angleZ < deg1 - 2) {
+                    //while(angleZ <= 22.5 ){
+                        if (angleZ < deg1 -2) {
+                            M_drive_L.setPower(0.5);
+                            M_drive_R.setPower(-0.5);
+
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                        if (angleZ > deg1 -2) {
+                            M_drive_L.setPower(0.5);
+                            M_drive_R.setPower(-0.5);
+
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
                     }
+
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
 
-                    counter++;
+                    //counter++;
                     break;
+
+
 
                 case 2:
                     //drives towards wall from turn
@@ -233,18 +263,32 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                 case 3:
 
-                    // turn 67.5 degrees right
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
 
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
+                    // get the heading info.
+                    // the Modern Robotics' gyro sensor keeps
+                    // track of the current heading for the Z axis only.
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
 
-                    if (angleZ != 67.5) {
-
+                    while(angleZ <= 67.5 ){
                         M_drive_L.setPower(0.5);
                         M_drive_R.setPower(0.5);
+                    }
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+                    while(angleZ >= 67.5){
+                        M_drive_L.setPower(-0.5);
+                        M_drive_R.setPower(-0.5);
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
