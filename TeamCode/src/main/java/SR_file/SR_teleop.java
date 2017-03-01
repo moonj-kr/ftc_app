@@ -53,7 +53,9 @@ public class SR_teleop extends LinearOpMode {
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
                  BUTTON_INIT_STOP_LEFT = 0.5,
-                 BALL_DROP_INIT = 0.2;
+                 BALL_DROP_INIT = 0.2,
+                 BUTTON_ADD_POS = 0.7,
+                 BUTTON_DEC_POS = 0.3;
 
     double  BUTTON_POS_R = BUTTON_INIT_STOP_RIGHT,
             BUTTON_POS_L = BUTTON_INIT_STOP_LEFT,
@@ -116,43 +118,41 @@ public class SR_teleop extends LinearOpMode {
 
             // beacon presser control block
             if(gamepad1.right_bumper){
-                BUTTON_POS_R +=2;
-                BUTTON_POS_R = Range.clip(BUTTON_POS_R, 0, 1);
-                S_button_R.setPosition(BUTTON_POS_R);
-                sleep(100);
-                S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
+                S_button_R.setPosition(BUTTON_ADD_POS);
             }
-            if(gamepad1.right_trigger > 0.0){
-                BUTTON_POS_R -= .2;
-                S_button_R.setPosition(BUTTON_POS_R);
-                sleep(100);
+            else if(gamepad1.right_trigger > 0.0){
+                S_button_R.setPosition(BUTTON_DEC_POS);
+            }
+            else if(gamepad1.right_trigger != 0.0 || gamepad1.right_bumper != true) {
                 S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
             }
 
             // beacon presser control block
             if(gamepad1.left_bumper){
-                BUTTON_POS_L -= .2;
-                BUTTON_POS_L = Range.clip(BUTTON_POS_L, 0, 1);
-                S_button_L.setPosition(BUTTON_POS_L);
-                sleep(900);
+                S_button_L.setPosition(BUTTON_DEC_POS);
+            }
+            else if(gamepad1.left_trigger > 0.0){
+                S_button_L.setPosition(BUTTON_ADD_POS);
+            }
+            else if(gamepad1.left_trigger != 0.0 || gamepad1.left_bumper != true) {
                 S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
             }
-            if(gamepad1.left_trigger > 0.0){
-                BUTTON_POS_L += .2;
-                S_button_L.setPosition(BUTTON_POS_L);
-                sleep(900);
-                S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
-            }
+
+
 
             if(gamepad2.right_bumper){
                 BALL_DROP_POS -= SERVO_TICK;
                 BALL_DROP_POS = Range.clip(BALL_DROP_POS, 0, 1);
-                S_ballDrop.setPosition(BALL_DROP_POS);
             }
-            if(gamepad2.right_trigger > 0.0){
+            else if(gamepad2.right_trigger > 0.0){
                 BALL_DROP_POS += SERVO_TICK;
-                S_ballDrop.setPosition(BALL_DROP_POS);
+                BALL_DROP_POS = Range.clip(BALL_DROP_POS, 0, 1);
             }
+            S_ballDrop.setPosition(BALL_DROP_POS);
+
+            telemetry.addData("TRIGGER", gamepad2.right_trigger);
+            telemetry.addData( "BALLDROP1", BALL_DROP_POS);
+            telemetry.update();
 
             idle();
         }

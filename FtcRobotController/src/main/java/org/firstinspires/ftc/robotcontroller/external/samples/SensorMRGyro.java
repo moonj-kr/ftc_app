@@ -77,9 +77,9 @@ public class SensorMRGyro extends LinearOpMode {
     }
 
     telemetry.addData(">", "Gyro Calibrated.  Press Start.");
-    telemetry.update();
 
-    // wait for the start button to be pressed.
+
+    // wait for th    telemetry.update();e start button to be pressed.
     waitForStart();
 
     while (opModeIsActive())  {
@@ -99,7 +99,7 @@ public class SensorMRGyro extends LinearOpMode {
       // get the heading info.
       // the Modern Robotics' gyro sensor keeps
       // track of the current heading for the Z axis only.
-      heading = gyro.getHeading();
+      heading = gyro.getHeading(); //not needed for auton
       angleZ  = gyro.getIntegratedZValue();
 
       telemetry.addData(">", "Press A & B to reset Heading.");

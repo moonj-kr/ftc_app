@@ -43,6 +43,7 @@ import java.util.Locale;
  gamepad 2:
 
  Shooter - same controls
+ Ball Drop - right bumper & trigger
 
 
  //Notes
@@ -77,15 +78,8 @@ public class SR_sensorTeleop extends LinearOpMode {
     OpticalDistanceSensor opticalDistanceSensor2;
 
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
-    //ModernRoboticsI2cRangeSensor rangeSensorRight;
 
     ModernRoboticsI2cGyro gyroSensor;
-
-    // The IMU sensor object
-    BNO055IMU imu;
-    // State used for updating telemetry
-    Orientation angles;
-    Acceleration gravity;
 
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
@@ -149,12 +143,26 @@ public class SR_sensorTeleop extends LinearOpMode {
         this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
         S_ballDrop.setPosition(BALL_DROP_INIT);
 
+
+        // start calibrating the gyro.
+        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
+        telemetry.update();
+        gyroSensor.calibrate();
+
+        // make sure the gyro is calibrated.
+        while (!isStopRequested() && gyroSensor.isCalibrating())  {
+            sleep(50);
+            idle();
+        }
+        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
+        telemetry.update();
+
         // wait for the game to start
         waitForStart();
-        runtime.reset();
 
         while (opModeIsActive()) {
 
+            // if the A and B buttons are pressed just now, reset Z heading.
             curResetState = (gamepad1.a && gamepad1.b);
             if(curResetState && !lastResetState)  {
                 gyroSensor.resetZAxisIntegrator();
@@ -169,10 +177,9 @@ public class SR_sensorTeleop extends LinearOpMode {
             // get the heading info.
             // the Modern Robotics' gyro sensor keeps
             // track of the current heading for the Z axis only.
-            heading = gyroSensor.getHeading();
+            heading = gyroSensor.getHeading(); //not needed for auton
             angleZ  = gyroSensor.getIntegratedZValue();
 
-            //gyro telemetry
             telemetry.addData(">", "Press A & B to reset Heading.");
             telemetry.addData("0", "Heading %03d", heading);
             telemetry.addData("1", "Int. Ang. %03d", angleZ);
@@ -180,12 +187,6 @@ public class SR_sensorTeleop extends LinearOpMode {
             telemetry.addData("3", "Y av. %03d", yVal);
             telemetry.addData("4", "Z av. %03d", zVal);
             telemetry.update();
-
-            // get the heading info.
-            // the Modern Robotics' gyro sensor keeps
-            // track of the current heading for the Z axis only.
-            heading = gyroSensor.getHeading();
-            angleZ  = gyroSensor.getIntegratedZValue();
 
             // motor control block
             M_drive_L.setPower(gamepad1.right_stick_y);
@@ -202,10 +203,14 @@ public class SR_sensorTeleop extends LinearOpMode {
             telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
             telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
             //print color values
-            telemetry.addData("COLOR RIGHT", colorSensorRight.red());
-            telemetry.addData("COLOR LEFT", colorSensorLeft.red());
+            if(colorSensorLeft.red() > colorSensorLeft.blue()){
+                telemetry.addData("COLOR LEFT", "IT IS RED");
+            }
+            if(colorSensorRight.red() > colorSensorRight.blue()){
+                telemetry.addData("COLOR RIGHT", "IT IS RED");
+            }
             //print range value
-            //telemetry.addData("range", rangeSensorLeft.getDistance(DistanceUnit.CM));
+            telemetry.addData("range", rangeSensorLeft.getDistance(DistanceUnit.CM));
 
             idle();
         }

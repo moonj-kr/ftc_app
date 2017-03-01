@@ -7,7 +7,6 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -24,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import java.util.Arrays;
 import java.util.Locale;
 
-@Autonomous(name = "SR_redAutonCorner", group = "Linear Opmode")
+@Autonomous(name = "SR_redAutonCorner2", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 2/16/17
@@ -32,7 +31,7 @@ import java.util.Locale;
  * Autonomous for Red Alliance Starting from Corner
  */
 
-public class SR_redAutonCorner extends LinearOpMode {
+public class SR_redAutonCorner2 extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -49,9 +48,16 @@ public class SR_redAutonCorner extends LinearOpMode {
     ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
-    ModernRoboticsI2cGyro gyro;   // Hardware Device Object
 
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
+    ModernRoboticsI2cGyro gyro;   // Hardware Device Object
+
+    //gyro constants
+    int xVal, yVal, zVal = 0;     // Gyro rate Values
+    int heading = 0;              // Gyro integrated heading
+    int angleZ = 0;
+    boolean lastResetState = false;
+    boolean curResetState  = false;
 
     // all of the important constants
     final double    BUTTON_INIT_POS = 0.05d;
@@ -65,6 +71,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     final double TurnRight45 = 45.0d,
             TurnLeft45 = -45.0d;
 
+
     // motor powers
     double   M_drivePowerR = STOP,
              M_drivePowerL = STOP;
@@ -77,9 +84,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
             BUTTON_INIT_STOP_LEFT = 0.5,
-            BALL_DROP_INIT = 0.2,
-            BUTTON_ADD_POS = 0.7,
-            BUTTON_DEC_POS = 0.3;
+            BALL_DROP_INIT = 0.2;
 
     double  BUTTON_POS_R = BUTTON_INIT_STOP_RIGHT,
             BUTTON_POS_L = BUTTON_INIT_STOP_LEFT,
@@ -111,12 +116,13 @@ public class SR_redAutonCorner extends LinearOpMode {
 
         rangeSensorLeft = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range");
 
-        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
 
         // initializing servo positions
         this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
         this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
         S_ballDrop.setPosition(BALL_DROP_INIT);
+
     }
 
     private void configureStuff() {
@@ -156,19 +162,37 @@ public class SR_redAutonCorner extends LinearOpMode {
         boolean finished = false;
         drivePowers = new double[2];
         Arrays.fill(drivePowers, 0.0d);
+
+        // start calibrating the gyro.
+        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
+        telemetry.update();
+        gyro.calibrate();
+
+        // make sure the gyro is calibrated.
+        while (!isStopRequested() && gyro.isCalibrating())  {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
+        telemetry.update();
+
+
+        // if the A and B buttons are pressed just now, reset Z heading.
+        //curResetState = (gamepad1.a && gamepad1.b);
+        //if(curResetState && !lastResetState)  {
+            gyro.resetZAxisIntegrator();
+        //}
+        //lastResetState = curResetState;
+
+
         waitForStart();
         clock.startTime();
         int tempMotorPosR = 0;
         int deltaMotorPos = 0;
         double increment = 0.05d;
-
-        int xVal, yVal, zVal = 0;     // Gyro rate Values
-        int heading = 0;              // Gyro integrated heading
-        int angleZ = 0;
-        boolean lastResetState = false;
-        boolean curResetState  = false;
-
         while(opModeIsActive()) {
+            colorSensorRight.enableLed(false);
 
             switch (counter) {
 
@@ -177,6 +201,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                 case 0:
                     //shooter run
                     if (!hasBeenSet) {
+                        /*
                         shooterRUN(0.5, -2200); // previous -2160
                         shooterRUN(0.0, 0);
                         S_ballDrop.setPosition(1.0);
@@ -185,7 +210,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(700); //previous 1500
                         shooterRUN(0.5, -2200); //previous -2160
                         shooterRUN(0.0, 0);
-
+                        */
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -194,18 +219,32 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 1:
-                    // turn 112.5 degrees right
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
 
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
+                    // get the heading info.
+                    // the Modern Robotics' gyro sensor keeps
+                    // track of the current heading for the Z axis only.
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
 
-                    if (angleZ != 22.5) {
-
+                    while(angleZ <= 22.5 ){
                         M_drive_L.setPower(0.5);
                         M_drive_R.setPower(0.5);
+                    }
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+                    while(angleZ >= 22.5){
+                        M_drive_L.setPower(-0.5);
+                        M_drive_R.setPower(-0.5);
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
@@ -216,7 +255,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                 case 2:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-300.0d);
+                        motorTargetsDrive = setDriveTarget(-300.0d); //-176
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -232,19 +271,33 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 3:
+                    gyro.resetZAxisIntegrator(); //may need to comment this out
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
 
-                    // turn 67.5 degrees right
+                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
 
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
+                    // get the heading info.
+                    // the Modern Robotics' gyro sensor keeps
+                    // track of the current heading for the Z axis only.
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
 
-                    if (angleZ != 67.5) {
-
+                    while(angleZ <= 112.5 ){
                         M_drive_L.setPower(0.5);
                         M_drive_R.setPower(0.5);
+                    }
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+                    while(angleZ >= 112.5){
+                        M_drive_L.setPower(-0.5);
+                        M_drive_R.setPower(-0.5);
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
@@ -252,12 +305,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 4:
-                    //using range sensor follow the wall
-                    counter++;
-                    break;
-
-                case 5:
+                case 7:
                     //drive forwards first beacon
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(60.0d); //could be positive or negative
@@ -277,92 +325,122 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                 case 8:
                     //until optical distance sensor detects white line
-                    while (opticalDistanceSensor1.getLightDetected() < .13 || opticalDistanceSensor2.getLightDetected() < .13) {
-
+                    
+                    while(opticalDistanceSensor1.getLightDetected() < .40 || opticalDistanceSensor2.getLightDetected() < .40) {
+                        telemetry.addData("distance", opticalDistanceSensor1.getLightDetected());
+                        telemetry.update();
+                        sleep(100);
                         M_drive_R.setPower(0.5d);
                         M_drive_L.setPower(0.5d);
                     }
                     M_drive_R.setPower(0.0d);
                     M_drive_L.setPower(0.0d);
-
+                    
                     counter++;
                     break;
-
+              
                 case 9:
                     //color sensor 
                     if (colorSensorRight.red() < colorSensorRight.blue()) {
-                        telemetry.addData("COLOR R", "blue");
+                        telemetry.addData("blue", "itisnotred");
+                        telemetry.addData("blue", "itisnotred");
+                        telemetry.addData("blue", "itisnotred");
+                        telemetry.addData("blue", "itisnotred");
+                        telemetry.addData("blue", "itisnotred");
                         telemetry.update();
-                        motorTargetsDrive = setDriveTarget(5.5d);
-                        clock.reset();
+                        sleep(100);
+
+                        if (!hasBeenSet) {
+                            motorTargetsDrive = setDriveTarget(5.5d);
+                            hasBeenSet = true;
+                            clock.reset();
+                        }
+
                         finished = driveForward();
 
                         if (finished || isPastTime(1.0d)) {
+                            hasBeenSet = false;
                             stopDriving();
                             telemetry.addData("R POS", M_drive_R.getCurrentPosition());
                             telemetry.addData("L POS", M_drive_L.getCurrentPosition());
-                            telemetry.update();
-
-                            //extends servo
-                            S_button_R.setPosition(BUTTON_ADD_POS);
-                            sleep(900);
-                            S_button_R.setPosition(BUTTON_INIT_POS);
-                            S_button_R.setPosition(BUTTON_DEC_POS);
-                            sleep(900);
-                            S_button_R.setPosition(BUTTON_INIT_POS);
-
-                            telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                            telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                            telemetry.update();
-
-                            //DRIVE TO SECOND BEACON
+                            sleep(100);
                         }
-                    } else if (colorSensorRight.red() > colorSensorRight.blue()) {
-                        telemetry.addData("red", "it is red");
-                        telemetry.update();
-
+                        
                         //extends servo
-                        S_button_R.setPosition(BUTTON_ADD_POS);
-                        sleep(900);
+                        BUTTON_POS -= .2;
+                        BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
+                        S_button_R.setPosition(BUTTON_POS);
+                        sleep(1300);
                         S_button_R.setPosition(BUTTON_INIT_POS);
-                        S_button_R.setPosition(BUTTON_DEC_POS);
-                        sleep(900);
-                        S_button_R.setPosition(BUTTON_INIT_POS);
-
-                        telemetry.addData("R POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("L POS", M_drive_L.getCurrentPosition());
-                        telemetry.update();
-
-                        //DRIVE TO SECOND BEACON
-
+                        
+                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
+                        sleep(100);
+                        counter++;
                     }
 
-                    hasBeenSet = false;
-                    counter++;
+                    if (colorSensorRight.red() > colorSensorRight.blue()){
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.addData("red", "it is red");
+                            telemetry.update();
+                            sleep(100);
+
+                            stopDriving();
+
+                            //extends servos
+                            BUTTON_POS -= .2;
+                            BUTTON_POS = Range.clip(BUTTON_POS, 0, 1);
+                            S_button_R.setPosition(BUTTON_POS);
+                            sleep(1300);
+                            S_button_R.setPosition(BUTTON_INIT_POS);
+                        
+                            telemetry.addData("R POS", M_drive_R.getCurrentPosition());
+                            telemetry.addData("L POS", M_drive_L.getCurrentPosition());
+                            sleep(100);
+                            counter++;
+                        }
+
                     break;
 
                 case 10:
+                    gyro.resetZAxisIntegrator(); //may have to take this out
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
 
-                    // turn 112.5 degrees right
+                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
 
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
+                    // get the heading info.
+                    // the Modern Robotics' gyro sensor keeps
+                    // track of the current heading for the Z axis only.
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
 
-                    if (angleZ != 22.5) {
-
+                    while(angleZ <= 45.0 ){
                         M_drive_L.setPower(0.5);
                         M_drive_R.setPower(0.5);
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
 
+                    while(angleZ >= 45.0){
+                        M_drive_L.setPower(-0.5);
+                        M_drive_R.setPower(-0.5);
+                    }
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
                     counter++;
                     break;
-
-                case 11:
+                    
+                case 11: 
                     //drives towards center vortex
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(90.0d);
@@ -380,7 +458,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                     }
                     break;
 
-
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
@@ -391,7 +468,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
-
             //M_drivePowerR = drivePowers[0];
             //M_drivePowerL = drivePowers[1];
             M_drive_R.setPower(M_drivePowerR);
@@ -405,6 +481,7 @@ public class SR_redAutonCorner extends LinearOpMode {
             //waitOneFullHardwareCycle();
             sleep(20);
         }}
+
 
     private boolean isRed() {   return colorSensorRight.red() > colorSensorRight.blue();  }
 
@@ -421,6 +498,25 @@ public class SR_redAutonCorner extends LinearOpMode {
         M_drivePowerL = STOP;
         M_drive_R.setPower(STOP);
         M_drive_L.setPower(STOP);
+    }
+
+
+    public void shooterRUN (double power, int distance) throws InterruptedException{
+        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        M_shooter.setTargetPosition(distance);
+
+        M_shooter.setPower(power);
+
+        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(M_shooter.isBusy()){
+            //wait
+        }
+
+
+
+        idle();
     }
 
 
@@ -477,6 +573,59 @@ public class SR_redAutonCorner extends LinearOpMode {
         return true;
     }
 
+    public int[] setTurnTarget(double degrees) {
+        final double DEGREES_TO_TICKS = 1160.0d / 90.0d;
+        DcMotor[] motors = {M_drive_R, M_drive_L};
+        int[] targets = new int[2];
+        //targets[0] = (int)((motors[0].getCurrentPosition() + motors[2].getCurrentPosition()) / 2 - degrees * DEGREES_TO_TICKS);
+        //targets[1] = (int)((motors[1].getCurrentPosition() + motors[3].getCurrentPosition()) / 2 + degrees * DEGREES_TO_TICKS);
+        targets[0] = (int)(motors[0].getCurrentPosition() - degrees * DEGREES_TO_TICKS);
+        targets[1] = (int)(motors[1].getCurrentPosition() + degrees * DEGREES_TO_TICKS);
+        return targets;
+    }
+
+    public boolean turnRight() {
+        DcMotor[] motors = {M_drive_R, M_drive_L};
+        double[] PIDValue = new double[2];
+        double[] accumError = new double[2];
+        double kP = 0.002d;
+        double kI;
+        double actualPIDValue[] = new double[2];
+        double thresholdPower = 0.1d;
+
+        for (int i = 0; i < 2; i++) {
+            //int error = (int)(motorTargetsTurn[i] - (motors[i].getCurrentPosition() - motors[i + 2].getCurrentPosition()) / 2);
+            int error = motorTargetsTurn[i] - motors[i].getCurrentPosition();
+            PIDValue[i] = kP * error;
+            accumError[i] += error;
+            actualPIDValue[i] = kP * error;
+            if (Math.abs(actualPIDValue[i]) > 0.05) {
+               /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
+               motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
+                if(i == 0) {
+                    M_drivePowerR = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
+                } else {
+                    M_drivePowerL = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
+                }
+                //drivePowers[i] = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
+            } else {
+               /*motors[i].setPower(0.0d);
+               motors[i + 2].setPower(0.0d);*/
+                if(i == 0) {
+                    M_drivePowerR = STOP;
+                } else {
+                    M_drivePowerL = STOP;
+                }
+                //drivePowers[i] = 0.0d;
+            }
+        }
+        if(Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsTurn[0]) > 30) {
+            return false;
+        } else if(Math.abs((M_drive_L.getCurrentPosition() + M_drive_L.getCurrentPosition()) / 2.0d - motorTargetsTurn[1]) > 30) {
+            return false;
+        }
+        return true;
+    }
 
 
    /*private class DriveThread extends PID {
@@ -496,6 +645,8 @@ public class SR_redAutonCorner extends LinearOpMode {
        }
    }
    */
+
+    /***************IMU METHODS***************/
 
     public void TurnLeft(double power, int distance) throws InterruptedException{
         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -546,21 +697,4 @@ public class SR_redAutonCorner extends LinearOpMode {
     }
 
 
-public void shooterRUN(double power, int distance) throws InterruptedException {
-        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        M_shooter.setTargetPosition(distance);
-
-        M_shooter.setPower(power);
-
-        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (M_shooter.isBusy()) {
-        //wait
-        }
-
-
-        idle();
-        }
-
-        }
+}
