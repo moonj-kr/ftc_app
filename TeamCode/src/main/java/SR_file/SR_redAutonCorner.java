@@ -233,10 +233,9 @@ public class SR_redAutonCorner extends LinearOpMode {
                             M_drive_L.setPower(-0.5);
                             M_drive_R.setPower(0.5);
 
-                            sleep(50);
+                            //sleep(50);
 
-                            M_drive_L.setPower(0.0);
-                            M_drive_R.setPower(0.0);
+
 
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
@@ -245,12 +244,12 @@ public class SR_redAutonCorner extends LinearOpMode {
                         if (angleZ > deg1 - i) {
                             M_drive_L.setPower(0.5);
                             M_drive_R.setPower(-0.5);
-
+/*
                             sleep(50);
 
                             M_drive_L.setPower(0.0);
                             M_drive_R.setPower(0.0);
-
+*/
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
@@ -258,6 +257,8 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     }
 
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
                     telemetry.addData("TURN COMPLETED %03d", angleZ);
                     telemetry.update();
                    // gyro.resetZAxisIntegrator();
@@ -268,7 +269,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                     break;
 
-/*
+
 
                 case 2:
                     //drives towards wall from turn
@@ -288,6 +289,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                     }
                     break;
 
+
+                /*
                 case 3:
 
                     angleZ  = gyro.getIntegratedZValue();
