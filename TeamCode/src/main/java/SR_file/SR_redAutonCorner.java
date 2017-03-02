@@ -113,6 +113,12 @@ public class SR_redAutonCorner extends LinearOpMode {
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
+        // initializing servo positions
+        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
+        S_ballDrop.setPosition(BALL_DROP_INIT);
+
+
     }
 
     private void configureStuff() {
@@ -127,10 +133,6 @@ public class SR_redAutonCorner extends LinearOpMode {
         this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        this.S_button_L.setPosition(BUTTON_INIT_POS);
-        this.S_button_R.setPosition(BUTTON_INIT_POS);
-        this.S_ballDrop.setPosition(0.02);
 
         motorTargetsDrive = new int[2];
         motorTargetsTurn = new int[2];
@@ -152,6 +154,20 @@ public class SR_redAutonCorner extends LinearOpMode {
         boolean finished = false;
         drivePowers = new double[2];
         Arrays.fill(drivePowers, 0.0d);
+
+        // start calibrating the gyro.
+        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
+        telemetry.update();
+        gyro.calibrate();
+
+        // make sure the gyro is calibrated.
+        while (!isStopRequested() && gyro.isCalibrating())  {
+            sleep(50);
+            idle();
+        }
+        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
+        telemetry.update();
+
         waitForStart();
         clock.startTime();
         int tempMotorPosR = 0;
@@ -163,13 +179,7 @@ public class SR_redAutonCorner extends LinearOpMode {
         int angleZ = 0;
         boolean lastResetState = false;
         boolean curResetState  = false;
-/*
-        // initializing servo positions
-        this.S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
-        this.S_button_R.setPosition(BUTTON_INIT_STOP_RIGHT);
-        S_ballDrop.setPosition(BALL_DROP_INIT);
 
-        */
 
         while(opModeIsActive()) {
 
@@ -197,6 +207,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 1:
+                    telemetry.addData("CASE 1", "CASE 1");
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Beg. Ang. %03d", angleZ);
 
@@ -214,39 +225,55 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.update();
 
                     double deg1 = 22.5;
+                    double i = 2;
 
-                    while (angleZ > deg1 + 2 || angleZ < deg1 - 2) {
+                    while (angleZ > deg1 + i || angleZ < deg1 - i) {
                     //while(angleZ <= 22.5 ){
-                        if (angleZ < deg1 -2) {
-                            M_drive_L.setPower(0.5);
-                            M_drive_R.setPower(-0.5);
+                        if (angleZ < deg1 + i) {
+                            M_drive_L.setPower(-0.5);
+                            M_drive_R.setPower(0.5);
+
+                            sleep(50);
+
+                            M_drive_L.setPower(0.0);
+                            M_drive_R.setPower(0.0);
 
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
                         }
-                        if (angleZ > deg1 -2) {
+                        if (angleZ > deg1 - i) {
                             M_drive_L.setPower(0.5);
                             M_drive_R.setPower(-0.5);
+
+                            sleep(50);
+
+                            M_drive_L.setPower(0.0);
+                            M_drive_R.setPower(0.0);
 
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
                         }
+
                     }
 
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
+                    telemetry.addData("TURN COMPLETED %03d", angleZ);
+                    telemetry.update();
+                   // gyro.resetZAxisIntegrator();
 
-                    //counter++;
+
+
+                    counter++;
+
                     break;
 
-
+/*
 
                 case 2:
                     //drives towards wall from turn
                     if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(-300.0d);
+                        motorTargetsDrive = setDriveTarget(300.0d);
                         hasBeenSet = true;
                         clock.reset();
                     }
@@ -423,7 +450,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                         sleep(100);
                     }
                     break;
-
+*/
 
                 default:
                     M_drivePowerR = STOP;
