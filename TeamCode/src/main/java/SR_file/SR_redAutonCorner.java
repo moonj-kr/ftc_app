@@ -224,26 +224,25 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg1 = 22.5;
+                    double deg1 = -22.5;
                     double i = 2;
 
                     while (angleZ > deg1 + i || angleZ < deg1 - i) {
                     //while(angleZ <= 22.5 ){
-                        if (angleZ < deg1 + i) {
-                            M_drive_L.setPower(-0.5);
-                            M_drive_R.setPower(0.5);
+                        if (angleZ > deg1 + i) {
+                            M_drive_L.setPower(0.05);
+                            M_drive_R.setPower(-0.05);
 
                             //sleep(50);
 
-
-
                             angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
                         }
-                        if (angleZ > deg1 - i) {
-                            M_drive_L.setPower(0.5);
-                            M_drive_R.setPower(-0.5);
+                        if (angleZ < deg1 - i) {
+                            M_drive_L.setPower(-0.05);
+                            M_drive_R.setPower(0.05);
 /*
                             sleep(50);
 
@@ -251,6 +250,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                             M_drive_R.setPower(0.0);
 */
                             angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
                         }
