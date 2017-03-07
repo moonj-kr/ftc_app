@@ -24,6 +24,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import java.util.Arrays;
 import java.util.Locale;
 
+import lib.PID;
+
 @Autonomous(name = "SR_redAutonCorner", group = "Linear Opmode")
 
 /**
@@ -188,6 +190,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                 /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
                 case 0:
+
+                    /*
                     //shooter run
                     if (!hasBeenSet) {
                         shooterRUN(0.5, -2200); // previous -2160
@@ -203,37 +207,31 @@ public class SR_redAutonCorner extends LinearOpMode {
                         clock.reset();
                     }
                     hasBeenSet = false;
+
+                    */
                     counter++;
                     break;
 
                 case 1:
-                    telemetry.addData("CASE 1", "CASE 1");
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Beg. Ang. %03d", angleZ);
 
-                    // get the x, y, and z values (rate of change of angle).
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
-
-                    // get the heading info.
-                    // the Modern Robotics' gyro sensor keeps
-                    // track of the current heading for the Z axis only.
                     heading = gyro.getHeading();
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg1 = -22.5;
+                    double deg1 = 22.5;
                     double i = 2;
 
                     while (angleZ > deg1 + i || angleZ < deg1 - i) {
-                    //while(angleZ <= 22.5 ){
+                        //while(angleZ <= 22.5 ){
                         if (angleZ > deg1 + i) {
-                            M_drive_L.setPower(0.05);
+                            M_drive_L.setPower(0.05); //too slow, 18, -number to 18, 20, 18, 20
                             M_drive_R.setPower(-0.05);
-
-                            //sleep(50);
 
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
@@ -243,12 +241,85 @@ public class SR_redAutonCorner extends LinearOpMode {
                         if (angleZ < deg1 - i) {
                             M_drive_L.setPower(-0.05);
                             M_drive_R.setPower(0.05);
-/*
-                            sleep(50);
 
-                            M_drive_L.setPower(0.0);
-                            M_drive_R.setPower(0.0);
-*/
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                    }
+
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+                    telemetry.addData("TURN COMPLETED %03d", angleZ);
+                    telemetry.update();
+                    counter++;
+                    break;
+
+                case 2:
+                    telemetry.addData("CASE 2", "CASE 2");
+                    telemetry.update();
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    M_drive_R.setTargetPosition(10001); //295 cm
+                    M_drive_L.setTargetPosition(10001);
+
+                    M_drive_R.setPower(0.6);
+                    M_drive_L.setPower(0.6);
+
+                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    }
+
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+
+                    idle();
+
+                    counter++;
+                    break;
+
+
+                case 3:
+                    //configureStuff(); //commented
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    xVal = gyro.rawX();
+                    yVal = gyro.rawY();
+                    zVal = gyro.rawZ();
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
+
+                    double deg2 = -41.5;
+                    double j = 2;
+
+                    while (angleZ > deg2 + j || angleZ < deg2 - j) {
+                        telemetry.addData("WHILE", "WHILE");
+                        telemetry.update();
+                        //while(angleZ <= 67.5 ){
+                        if (angleZ > deg2 + j) {
+                            M_drive_L.setPower(0.1); //too slow, 18, -number to 18, 20, 18, 20
+                            M_drive_R.setPower(-0.1);
+
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                        if (angleZ < deg2 - j) {
+                            M_drive_L.setPower(-0.05);
+                            M_drive_R.setPower(0.05);
+
                             angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
@@ -261,70 +332,11 @@ public class SR_redAutonCorner extends LinearOpMode {
                     M_drive_R.setPower(0.0);
                     telemetry.addData("TURN COMPLETED %03d", angleZ);
                     telemetry.update();
-                   // gyro.resetZAxisIntegrator();
-
-
-
-                    counter++;
-
-                    break;
-
-
-
-                case 2:
-                    //drives towards wall from turn
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(300.0d);
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-
-                /*
-                case 3:
-
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
-
-                    // get the x, y, and z values (rate of change of angle).
-                    xVal = gyro.rawX();
-                    yVal = gyro.rawY();
-                    zVal = gyro.rawZ();
-
-                    // get the heading info.
-                    // the Modern Robotics' gyro sensor keeps
-                    // track of the current heading for the Z axis only.
-                    heading = gyro.getHeading();
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                    telemetry.update();
-
-                    while(angleZ <= 67.5 ){
-                        M_drive_L.setPower(0.5);
-                        M_drive_R.setPower(0.5);
-                    }
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
-
-                    while(angleZ >= 67.5){
-                        M_drive_L.setPower(-0.5);
-                        M_drive_R.setPower(-0.5);
-                    }
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
+                    // gyro.resetZAxisIntegrator();
 
                     counter++;
                     break;
+
 
                 case 4:
                     //using range sensor follow the wall
@@ -332,111 +344,138 @@ public class SR_redAutonCorner extends LinearOpMode {
                     break;
 
                 case 5:
-                    //drive forwards first beacon
-                    if (!hasBeenSet) {
-                        motorTargetsDrive = setDriveTarget(60.0d); //could be positive or negative
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    finished = driveForward();
-                    if (finished || isPastTime(1.0d)) {
-                        hasBeenSet = false;
-                        counter++;
-                        stopDriving();
-                        telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                        sleep(100);
-                    }
-                    break;
-
-                case 8:
-                    //until optical distance sensor detects white line
-                    while (opticalDistanceSensor1.getLightDetected() < .13 || opticalDistanceSensor2.getLightDetected() < .13) {
-
-                        M_drive_R.setPower(0.5d);
-                        M_drive_L.setPower(0.5d);
-                    }
-                    M_drive_R.setPower(0.0d);
-                    M_drive_L.setPower(0.0d);
-
-                    counter++;
-                    break;
-
-                case 9:
-                    //color sensor 
-                    if (colorSensorRight.red() < colorSensorRight.blue()) {
-                        telemetry.addData("COLOR R", "blue");
+                    configureStuff();
+                    while(opticalDistanceSensor1.getLightDetected() < 0.09 && opticalDistanceSensor2.getLightDetected() < 0.09){
+                        M_drive_L.setPower(0.25);
+                        M_drive_R.setPower(0.25);
+                        telemetry.addData("INSIDE WHILE","INSIDE WHILE");
+                        telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
                         telemetry.update();
-                        motorTargetsDrive = setDriveTarget(5.5d);
-                        clock.reset();
-                        finished = driveForward();
-
-                        if (finished || isPastTime(1.0d)) {
-                            stopDriving();
-                            telemetry.addData("R POS", M_drive_R.getCurrentPosition());
-                            telemetry.addData("L POS", M_drive_L.getCurrentPosition());
-                            telemetry.update();
-
-                            //extends servo
-                            S_button_R.setPosition(BUTTON_ADD_POS);
-                            sleep(900);
-                            S_button_R.setPosition(BUTTON_INIT_POS);
-                            S_button_R.setPosition(BUTTON_DEC_POS);
-                            sleep(900);
-                            S_button_R.setPosition(BUTTON_INIT_POS);
-
-                            telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
-                            telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                            telemetry.update();
-
-                            //DRIVE TO SECOND BEACON
-                        }
-                    } else if (colorSensorRight.red() > colorSensorRight.blue()) {
-                        telemetry.addData("red", "it is red");
-                        telemetry.update();
-
-                        //extends servo
-                        S_button_R.setPosition(BUTTON_ADD_POS);
-                        sleep(900);
-                        S_button_R.setPosition(BUTTON_INIT_POS);
-                        S_button_R.setPosition(BUTTON_DEC_POS);
-                        sleep(900);
-                        S_button_R.setPosition(BUTTON_INIT_POS);
-
-                        telemetry.addData("R POS", M_drive_R.getCurrentPosition());
-                        telemetry.addData("L POS", M_drive_L.getCurrentPosition());
-                        telemetry.update();
-
-                        //DRIVE TO SECOND BEACON
-
                     }
-
-                    hasBeenSet = false;
-                    counter++;
-                    break;
-
-                case 10:
-
-                    // turn 112.5 degrees right
-                    xVal = gyro.rawX();
-                    yVal = gyro.rawY();
-                    zVal = gyro.rawZ();
-
-                    angleZ = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ); // variable to use for turns
-
-                    if (angleZ != 22.5) {
-
-                        M_drive_L.setPower(0.5);
-                        M_drive_R.setPower(0.5);
-                    }
+                    telemetry.addData("OUTSIDE WHILE","OUTSIDE WHILE");
+                    telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
+                    telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
+                    telemetry.update();
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
 
                     counter++;
                     break;
 
-                case 11:
+
+                case 6:
+                    //color sensor 
+                    if (colorSensorLeft.red() < colorSensorLeft.blue()) {
+
+                        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        M_drive_R.setTargetPosition(291); //295 cm
+                        M_drive_L.setTargetPosition(291);
+
+                        M_drive_R.setPower(0.3);
+                        M_drive_L.setPower(0.3);
+
+                        M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                        while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                        }
+
+                        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                        this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+
+                        M_drive_L.setPower(0.0);
+                        M_drive_R.setPower(0.0);
+
+                        idle();
+
+                            //extends servo
+                            S_button_L.setPosition(BUTTON_ADD_POS);
+                            sleep(700);
+                            S_button_L.setPosition(BUTTON_INIT_POS);
+                            telemetry.addData("RETRACTING NOW","RETRACTING");
+                            telemetry.update();
+                            S_button_L.setPosition(0.2);
+                            sleep(700);
+                            S_button_L.setPosition(BUTTON_INIT_POS);
+
+                            telemetry.addData("FIRST IF STATEMENT","FIRST");
+                            telemetry.update();
+
+                            //DRIVE TO SECOND BEACON
+                        }
+                    else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
+                        telemetry.addData("IN ELSE IF", "IN ELSE IF");
+                        telemetry.addData("red", "it is red");
+                        telemetry.update();
+
+                        //extends servo
+                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        sleep(900);
+                        S_button_L.setPosition(BUTTON_INIT_POS);
+                        telemetry.addData("RETRACTING NOW","RETRACTING");
+                        telemetry.update();
+                        S_button_L.setPosition(0.2);
+                        sleep(900);
+                        S_button_L.setPosition(BUTTON_INIT_POS);
+                    }
+                    counter++;
+                    break;
+                /*
+
+                case 8:
+
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    xVal = gyro.rawX();
+                    yVal = gyro.rawY();
+                    zVal = gyro.rawZ();
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    telemetry.update();
+
+                    double deg3 = 112.5;
+                    double k = 2;
+
+                    while (angleZ > deg3 + k || angleZ < deg3 - k) {
+                        //while(angleZ <= 22.5 ){
+                        if (angleZ > deg3 + k) {
+                            M_drive_L.setPower(0.05); //too slow, 18, -number to 18, 20, 18, 20
+                            M_drive_R.setPower(-0.05);
+
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                        if (angleZ < deg3 - k) {
+                            M_drive_L.setPower(-0.05);
+                            M_drive_R.setPower(0.05);
+
+                            angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+
+                    }
+
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+                    telemetry.addData("TURN COMPLETED %03d", angleZ);
+                    telemetry.update();
+                    // gyro.resetZAxisIntegrator();
+
+                    counter++;
+                    break;
+                case 9:
                     //drives towards center vortex
                     if (!hasBeenSet) {
                         motorTargetsDrive = setDriveTarget(90.0d);
@@ -524,8 +563,6 @@ public class SR_redAutonCorner extends LinearOpMode {
             accumError[i] += error;
             actualPIDValue[i] = kP * error;
             if (Math.abs(actualPIDValue[i]) > thresholdPower) {
-               /*motors[i].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));
-               motors[i + 2].setPower(Range.clip(actualPIDValue[i], -1.0d, 1.0d));*/
                 if(i == 0) {
                     M_drivePowerR = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
                 } else {
@@ -533,14 +570,11 @@ public class SR_redAutonCorner extends LinearOpMode {
                 }
                 //drivePowers[i] = Range.clip(actualPIDValue[i], -1.0d, 1.0d);
             } else {
-               /*motors[i].setPower(0.0d);
-               motors[i + 2].setPower(0.0d);*/
                 if(i == 0) {
                     M_drivePowerR = STOP;
                 } else {
                     M_drivePowerL = STOP;
                 }
-                //drivePowers[i] = 0.0d;
             }
         }
         if(Math.abs((M_drive_R.getCurrentPosition() + M_drive_R.getCurrentPosition()) / 2.0d - motorTargetsDrive[0]) > 30) {
@@ -553,7 +587,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
 
 
-   /*private class DriveThread extends PID {
+    private class DriveThread extends PID {
        public DriveThread(int gearRatio, int objectCircumference) {
            GEAR_RATIO = gearRatio;
            OBJECT_CIRCUMFERENCE = objectCircumference;
@@ -569,7 +603,7 @@ public class SR_redAutonCorner extends LinearOpMode {
            this.target = target;
        }
    }
-   */
+
 
     public void TurnLeft(double power, int distance) throws InterruptedException{
         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
