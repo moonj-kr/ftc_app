@@ -29,12 +29,12 @@ import lib.PID;
 @Autonomous(name = "SR_redAutonCorner", group = "Linear Opmode")
 
 /**
- * Created by Jisook on 2/16/17
+ * Created by Jisook on 3/7/17
  * Super Regionals
- * Autonomous for Red Alliance Starting from Corner
+ * Autonomous for Blue Alliance Starting from Corner
  */
 
-public class SR_redAutonCorner extends LinearOpMode {
+public class SR_blueAutonCorner extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -58,7 +58,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
 
     final double    STOP                   = 0.0d,
-                    MAX_POWER              = 1.0d;
+            MAX_POWER              = 1.0d;
     final int       TICKS_PER_REVOLUTION   = 1120;
 
     final double TurnRight45 = 45.0d,
@@ -66,7 +66,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     // motor powers
     double   M_drivePowerR = STOP,
-             M_drivePowerL = STOP;
+            M_drivePowerL = STOP;
     double[] drivePowers;
 
     // function necessity delcarations
@@ -222,7 +222,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg1 = 22.5;
+                    double deg1 = -22.5;
                     double i = 2;
 
                     while (angleZ > deg1 + i || angleZ < deg1 - i) {
@@ -298,7 +298,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg2 = -37.0;
+                    double deg2 = 37.0;
                     double j = 2;
 
                     while (angleZ > deg2 + j || angleZ < deg2 - j) {
@@ -363,7 +363,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
 
                 case 6:
-                    //color sensor 
+                    //color sensor
                     if (colorSensorLeft.red() < colorSensorLeft.blue()) {
 
                         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -392,21 +392,21 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                         idle();
 
-                            //extends servo
-                            S_button_L.setPosition(BUTTON_DEC_POS);
-                            sleep(1300);
-                            S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
-                            telemetry.addData("RETRACTING NOW","RETRACTING");
-                            telemetry.update();
-                            S_button_L.setPosition(BUTTON_ADD_POS);
-                            sleep(1300);
-                            S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        //extends servo
+                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        sleep(1300);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        telemetry.addData("RETRACTING NOW","RETRACTING");
+                        telemetry.update();
+                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        sleep(1300);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
 
-                            telemetry.addData("FIRST IF STATEMENT","FIRST");
-                            telemetry.update();
+                        telemetry.addData("FIRST IF STATEMENT","FIRST");
+                        telemetry.update();
 
-                            //DRIVE TO SECOND BEACON
-                        }
+                        //DRIVE TO SECOND BEACON
+                    }
 
                     else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
                         telemetry.addData("IN ELSE IF", "IN ELSE IF");
@@ -543,87 +543,6 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 10:
-
-                    //configureStuff(); //commented
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
-
-                    xVal = gyro.rawX();
-                    yVal = gyro.rawY();
-                    zVal = gyro.rawZ();
-                    heading = gyro.getHeading();
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                    telemetry.update();
-
-                    double deg3 = 45.0;
-                    double k = 2;
-
-                    while (angleZ > deg3 + k || angleZ < deg3 - k) {
-                        telemetry.addData("WHILE", "WHILE");
-                        telemetry.update();
-                        //while(angleZ <= 67.5 ){
-                        if (angleZ > deg3 + k) {
-                            M_drive_L.setPower(0.1); //too slow, 18, -number to 18, 20, 18, 20
-                            M_drive_R.setPower(-0.1);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-                        if (angleZ < deg3 - k) {
-                            M_drive_L.setPower(-0.05);
-                            M_drive_R.setPower(0.05);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-
-                    }
-
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
-                    telemetry.addData("TURN COMPLETED %03d", angleZ);
-                    telemetry.update();
-                    // gyro.resetZAxisIntegrator();
-
-                    counter++;
-                    break;
-
-                case 11:
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    M_drive_R.setTargetPosition(5310); //10021
-                    M_drive_L.setTargetPosition(5310); //5010
-
-                    M_drive_R.setPower(-0.6);
-                    M_drive_L.setPower(-0.6);
-
-                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
-                    }
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-
-                    idle();
-
-                    counter++;
-                    break;
-
-
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
@@ -718,21 +637,21 @@ public class SR_redAutonCorner extends LinearOpMode {
 
 
     private class DriveThread extends PID {
-       public DriveThread(int gearRatio, int objectCircumference) {
-           GEAR_RATIO = gearRatio;
-           OBJECT_CIRCUMFERENCE = objectCircumference;
-           kP = 0.0f;
-           kI = 0.0f;
-           kD = 0.0f;
-           maxPower = 1.0f;
-           minPower = -1.0f;
-           minPIDPower = 0.2f;
-           acceptableError = 50;
-       }
-       public void setTarget(float target) {
-           this.target = target;
-       }
-   }
+        public DriveThread(int gearRatio, int objectCircumference) {
+            GEAR_RATIO = gearRatio;
+            OBJECT_CIRCUMFERENCE = objectCircumference;
+            kP = 0.0f;
+            kI = 0.0f;
+            kD = 0.0f;
+            maxPower = 1.0f;
+            minPower = -1.0f;
+            minPIDPower = 0.2f;
+            acceptableError = 50;
+        }
+        public void setTarget(float target) {
+            this.target = target;
+        }
+    }
 
 
     public void TurnLeft(double power, int distance) throws InterruptedException{
@@ -784,7 +703,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     }
 
 
-public void shooterRUN(double power, int distance) throws InterruptedException {
+    public void shooterRUN(double power, int distance) throws InterruptedException {
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         M_shooter.setTargetPosition(distance);
@@ -794,11 +713,11 @@ public void shooterRUN(double power, int distance) throws InterruptedException {
         M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         while (M_shooter.isBusy()) {
-        //wait
+            //wait
         }
 
 
         idle();
-        }
+    }
 
-        }
+}
