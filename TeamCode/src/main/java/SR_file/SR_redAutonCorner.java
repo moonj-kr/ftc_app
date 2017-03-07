@@ -55,10 +55,7 @@ public class SR_redAutonCorner extends LinearOpMode {
 
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-    // all of the important constants
-    final double    BUTTON_INIT_POS = 0.05d;
 
-    double BUTTON_POS = BUTTON_INIT_POS;
 
     final double    STOP                   = 0.0d,
                     MAX_POWER              = 1.0d;
@@ -82,6 +79,7 @@ public class SR_redAutonCorner extends LinearOpMode {
             BALL_DROP_INIT = 0.2,
             BUTTON_ADD_POS = 0.7,
             BUTTON_DEC_POS = 0.3;
+
 
     double  BUTTON_POS_R = BUTTON_INIT_STOP_RIGHT,
             BUTTON_POS_L = BUTTON_INIT_STOP_LEFT,
@@ -262,8 +260,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    M_drive_R.setTargetPosition(10001); //295 cm
-                    M_drive_L.setTargetPosition(10001);
+                    M_drive_R.setTargetPosition(10021); //295 cm
+                    M_drive_L.setTargetPosition(10021);
 
                     M_drive_R.setPower(0.6);
                     M_drive_L.setPower(0.6);
@@ -300,7 +298,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg2 = -41.5;
+                    double deg2 = -37.0;
                     double j = 2;
 
                     while (angleZ > deg2 + j || angleZ < deg2 - j) {
@@ -346,8 +344,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                 case 5:
                     configureStuff();
                     while(opticalDistanceSensor1.getLightDetected() < 0.09 && opticalDistanceSensor2.getLightDetected() < 0.09){
-                        M_drive_L.setPower(0.25);
-                        M_drive_R.setPower(0.25);
+                        M_drive_L.setPower(0.06);
+                        M_drive_R.setPower(0.06);
                         telemetry.addData("INSIDE WHILE","INSIDE WHILE");
                         telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
                         telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
@@ -371,8 +369,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                        M_drive_R.setTargetPosition(291); //295 cm
-                        M_drive_L.setTargetPosition(291);
+                        M_drive_R.setTargetPosition(345); //295 cm
+                        M_drive_L.setTargetPosition(345);
 
                         M_drive_R.setPower(0.3);
                         M_drive_L.setPower(0.3);
@@ -395,38 +393,162 @@ public class SR_redAutonCorner extends LinearOpMode {
                         idle();
 
                             //extends servo
-                            S_button_L.setPosition(BUTTON_ADD_POS);
-                            sleep(700);
-                            S_button_L.setPosition(BUTTON_INIT_POS);
+                            S_button_L.setPosition(BUTTON_DEC_POS);
+                            sleep(1300);
+                            S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
                             telemetry.addData("RETRACTING NOW","RETRACTING");
                             telemetry.update();
-                            S_button_L.setPosition(0.2);
-                            sleep(700);
-                            S_button_L.setPosition(BUTTON_INIT_POS);
+                            S_button_L.setPosition(BUTTON_ADD_POS);
+                            sleep(1300);
+                            S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
 
                             telemetry.addData("FIRST IF STATEMENT","FIRST");
                             telemetry.update();
 
                             //DRIVE TO SECOND BEACON
                         }
+
                     else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
                         telemetry.addData("IN ELSE IF", "IN ELSE IF");
                         telemetry.addData("red", "it is red");
                         telemetry.update();
 
                         //extends servo
-                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        S_button_L.setPosition(BUTTON_DEC_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_POS);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
-                        S_button_L.setPosition(0.2);
+                        S_button_L.setPosition(BUTTON_ADD_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_POS);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
                     }
                     counter++;
                     break;
+
+                case 7:
+
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    M_drive_R.setTargetPosition(3582); //295 cm
+                    M_drive_L.setTargetPosition(3582);
+
+                    M_drive_R.setPower(0.3);
+                    M_drive_L.setPower(0.3);
+
+                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    }
+
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+                    idle();
+
+                    counter++;
+                    break;
+
+                case 8:
+
+                    configureStuff();
+                    while(opticalDistanceSensor1.getLightDetected() < 0.09 && opticalDistanceSensor2.getLightDetected() < 0.09){
+                        M_drive_L.setPower(0.06);
+                        M_drive_R.setPower(0.06);
+                        telemetry.addData("INSIDE WHILE","INSIDE WHILE");
+                        telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
+                        telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
+                        telemetry.update();
+                    }
+                    telemetry.addData("OUTSIDE WHILE","OUTSIDE WHILE");
+                    telemetry.addData("ODS 1", opticalDistanceSensor1.getLightDetected());
+                    telemetry.addData("ODS 2", opticalDistanceSensor2.getLightDetected());
+                    telemetry.update();
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+                    counter++;
+                    break;
+
+                case 9:
+
+                    //color sensor
+                    if (colorSensorLeft.red() < colorSensorLeft.blue()) {
+
+                        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        M_drive_R.setTargetPosition(345); //295 cm
+                        M_drive_L.setTargetPosition(345);
+
+                        M_drive_R.setPower(0.3);
+                        M_drive_L.setPower(0.3);
+
+                        M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                        while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                        }
+
+                        M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                        this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+
+                        M_drive_L.setPower(0.0);
+                        M_drive_R.setPower(0.0);
+
+                        idle();
+
+                        //extends servo
+                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        sleep(700);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        telemetry.addData("RETRACTING NOW","RETRACTING");
+                        telemetry.update();
+                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        sleep(700);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+
+                        telemetry.addData("FIRST IF STATEMENT","FIRST");
+                        telemetry.update();
+
+                        //DRIVE TO SECOND BEACON
+                    }
+
+                    else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
+                        telemetry.addData("IN ELSE IF", "IN ELSE IF");
+                        telemetry.addData("red", "it is red");
+                        telemetry.update();
+
+                        //extends servo
+                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        sleep(900);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        telemetry.addData("RETRACTING NOW","RETRACTING");
+                        telemetry.update();
+                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        sleep(900);
+                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                    }
+                    counter++;
+                    break;
+
+
+
+
+
                 /*
+
 
                 case 8:
 
