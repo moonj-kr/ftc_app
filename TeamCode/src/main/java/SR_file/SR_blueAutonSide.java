@@ -1,13 +1,10 @@
 
 package SR_file;
 
-import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -16,25 +13,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-
 import java.util.Arrays;
-import java.util.Locale;
 
 import lib.PID;
 
-@Autonomous(name = "SR_redAutonSide", group = "Linear Opmode")
+@Autonomous(name = "SR_blueAutonSide", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 2/16/17
  * Super Regionals
- * Autonomous for Red Alliance Starting from Wall: 1st Block from Corner Vortex
+ * Autonomous for Blue Alliance Starting from Wall: 1st Block from Corner Vortex
  */
 
-public class SR_redAutonSide extends LinearOpMode {
+public class SR_blueAutonSide extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -220,7 +211,7 @@ public class SR_redAutonSide extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg1 = 45;
+                    double deg1 = -45;
                     double i = 2;
 
                     while (angleZ > deg1 + i || angleZ < deg1 - i) {
@@ -296,7 +287,7 @@ public class SR_redAutonSide extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg2 = -45.0;
+                    double deg2 = 45.0;
                     double j = 2;
 
                     while (angleZ > deg2 + j || angleZ < deg2 - j) {
@@ -362,7 +353,7 @@ public class SR_redAutonSide extends LinearOpMode {
 
                 case 6:
                     //color sensor
-                    if (colorSensorLeft.red() < colorSensorLeft.blue()) {
+                    if (colorSensorLeft.red() > colorSensorLeft.blue()) {
 
                         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -391,14 +382,14 @@ public class SR_redAutonSide extends LinearOpMode {
                         idle();
 
                         //extends servo
-                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        S_button_R.setPosition(BUTTON_DEC_POS);
                         sleep(1300);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
-                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(1300);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
 
                         telemetry.addData("FIRST IF STATEMENT","FIRST");
                         telemetry.update();
@@ -406,20 +397,20 @@ public class SR_redAutonSide extends LinearOpMode {
                         //DRIVE TO SECOND BEACON
                     }
 
-                    else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
+                    else if (colorSensorLeft.red() < colorSensorLeft.blue()) {
                         telemetry.addData("IN ELSE IF", "IN ELSE IF");
                         telemetry.addData("red", "it is red");
                         telemetry.update();
 
                         //extends servo
-                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        S_button_R.setPosition(BUTTON_DEC_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
-                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                     }
                     counter++;
                     break;
@@ -479,7 +470,7 @@ public class SR_redAutonSide extends LinearOpMode {
                 case 9:
 
                     //color sensor
-                    if (colorSensorLeft.red() < colorSensorLeft.blue()) {
+                    if (colorSensorLeft.red() > colorSensorLeft.blue()) {
 
                         M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -508,14 +499,14 @@ public class SR_redAutonSide extends LinearOpMode {
                         idle();
 
                         //extends servo
-                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        S_button_R.setPosition(BUTTON_DEC_POS);
                         sleep(700);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
-                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(700);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
 
                         telemetry.addData("FIRST IF STATEMENT","FIRST");
                         telemetry.update();
@@ -523,20 +514,20 @@ public class SR_redAutonSide extends LinearOpMode {
                         //DRIVE TO SECOND BEACON
                     }
 
-                    else if (colorSensorLeft.red() > colorSensorLeft.blue()) {
+                    else if (colorSensorLeft.red() < colorSensorLeft.blue()) {
                         telemetry.addData("IN ELSE IF", "IN ELSE IF");
                         telemetry.addData("red", "it is red");
                         telemetry.update();
 
                         //extends servo
-                        S_button_L.setPosition(BUTTON_DEC_POS);
+                        S_button_R.setPosition(BUTTON_DEC_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
-                        S_button_L.setPosition(BUTTON_ADD_POS);
+                        S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(900);
-                        S_button_L.setPosition(BUTTON_INIT_STOP_LEFT);
+                        S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                     }
                     counter++;
                     break;
