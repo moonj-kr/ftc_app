@@ -42,19 +42,6 @@ public class Match78Beacon extends LinearOpMode {
     ModernRoboticsI2cGyro gyro;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-
-
-    // motor powers
-    final double        STOP = 0.0d;
-    double              M_drivePowerR = STOP,
-            M_drivePowerL = STOP;
-
-    double[] drivePowers;
-
-    // function necessity delcarations
-    int[] motorTargetsDrive;
-    int[] motorTargetsTurn;
-
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
             BUTTON_INIT_STOP_LEFT = 0.5,
@@ -110,12 +97,6 @@ public class Match78Beacon extends LinearOpMode {
         this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //PID arrays
-        motorTargetsDrive = new int[2];
-        motorTargetsTurn = new int[2];
-        Arrays.fill(motorTargetsDrive, 0);
-        Arrays.fill(motorTargetsTurn, 0);
-
         clock = new ElapsedTime();
     }
 
@@ -126,11 +107,7 @@ public class Match78Beacon extends LinearOpMode {
 
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
-        drivePowers = new double[2];
-        Arrays.fill(drivePowers, 0.0d);
-
         waitForStart();
-        clock.startTime();
 
         int xVal, yVal, zVal = 0;     // Gyro rate Values
         int heading = 0;              // Gyro integrated heading
@@ -170,7 +147,6 @@ public class Match78Beacon extends LinearOpMode {
                     this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
-                    idle();
                     telemetry.addData("CASE 0", "End of case 0");
                     telemetry.update();
                     counter++;
@@ -185,12 +161,8 @@ public class Match78Beacon extends LinearOpMode {
                     //sleep(2000);
                     telemetry.addData("SHOOTER ","SHOOTER END");
                     telemetry.update();
-
-
                     counter++;
                     break;
-
-
 
                case 2:
 // change motor to rotate little more
@@ -225,21 +197,15 @@ public class Match78Beacon extends LinearOpMode {
                     this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
-                    idle();
-
-
-                    sleep(30000);
-
                     counter++;
                     break;
-/*
+                    
                 case 4:
-// change motor to rotate little more
+                    // change motor to rotate little more
                     // first turn from initial position
 
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Beg. Ang. %03d", angleZ);
-
                     finalAngle = 0;
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
@@ -252,7 +218,7 @@ public class Match78Beacon extends LinearOpMode {
                     deg = -18.5; //18.5
                     b= 1;
 
-                    while (angleZ > deg + b || angleZ < deg - b) {
+                    while ((angleZ > deg + b || angleZ < deg - b) && opModeIsActive()) {
                         //while(angleZ <= 22.5 ){
                         angleZ  = gyro.getIntegratedZValue();
                         finalAngle = angleZ;
@@ -284,7 +250,6 @@ public class Match78Beacon extends LinearOpMode {
                     telemetry.addData("After Ang. %03d", angleZ_two);
                     telemetry.addData("After While Ang. %03d", finalAngle);
                     telemetry.update();
-                    //sleep(3000);
                     counter++;
                     break;
 
@@ -412,8 +377,6 @@ public class Match78Beacon extends LinearOpMode {
                         M_drive_L.setPower(0.0);
                         M_drive_R.setPower(0.0);
 
-                        idle();
-
                         //extends servo
                         S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(1200);
@@ -476,9 +439,6 @@ public class Match78Beacon extends LinearOpMode {
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
 
-                    idle();
-
-
                     counter ++;
                     break;
 
@@ -486,8 +446,7 @@ public class Match78Beacon extends LinearOpMode {
                     // stops at white line
                     // checks range to see if it is 15
 
-                    while ((opticalDistanceSensor1.getLightDetected() < 0.09)
-                            && opModeIsActive()) {
+                    while ((opticalDistanceSensor1.getLightDetected() < 0.09) && opModeIsActive()) {
                         telemetry.addData("WHILE", "WHILE");
                         telemetry.update();
 
@@ -550,9 +509,7 @@ public class Match78Beacon extends LinearOpMode {
 
                         M_drive_L.setPower(0.0);
                         M_drive_R.setPower(0.0);
-
-                        idle();
-
+                        
                         //extends servo
                         S_button_R.setPosition(BUTTON_ADD_POS);
                         sleep(1200);
@@ -586,24 +543,22 @@ public class Match78Beacon extends LinearOpMode {
                     }
                     counter++;
                     break;
-
-                */
+                    
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
                     this.M_shooter.setPower(STOP);
                     telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
                     telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                    telemetry.addData("Target R", motorTargetsDrive[0]);
-                    telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
 
         }}
 
-    public void shooterRUN(double power, int distance) throws InterruptedException {
+    public void shooterRUN(double power, int distance) {
         telemetry.addData("Shooter", "Starting shot");
         telemetry.update();
+        
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         M_shooter.setTargetPosition(distance);
@@ -612,10 +567,9 @@ public class Match78Beacon extends LinearOpMode {
 
         M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (M_shooter.isBusy()) {
-            //wait
+        while ((M_shooter.isBusy())&& opModeIsActive) {
+          
         }
-        idle();
         telemetry.addData("Shooter", "Finished shot");
         telemetry.update();
     }
