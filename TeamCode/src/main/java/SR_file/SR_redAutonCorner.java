@@ -34,7 +34,7 @@ public class SR_redAutonCorner extends LinearOpMode {
     Servo   S_ballDrop = null;
 
     // sensor declarations
-    ColorSensor colorSensorRight; // address: 0x3a
+    //ColorSensor colorSensorRight; // address: 0x3a
     ColorSensor colorSensorLeft;
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
@@ -75,11 +75,11 @@ public class SR_redAutonCorner extends LinearOpMode {
         this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_R");
+        //colorSensorRight = hardwareMap.colorSensor.get("color_R");
         colorSensorLeft = hardwareMap.colorSensor.get("color_L");
 
         // I2C address change
-        colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
+        //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1"); //right
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2"); //left
@@ -158,21 +158,52 @@ public class SR_redAutonCorner extends LinearOpMode {
 
                 case 0:
                     //launches particle
-/*
-                    shooterRUN(0.5, -2200); // previous -2160
-                    shooterRUN(0.0, 0);
-                    S_ballDrop.setPosition(1.0);
-                    sleep(700); //previous 1500
-                    S_ballDrop.setPosition(0.0);
-                    sleep(700); //previous 1500
-                    shooterRUN(0.5, -2200); //previous -2160
-                    shooterRUN(0.0, 0);
-                    */
+
+
+                    telemetry.addData("CASE 0", "CASE 0");
+                    telemetry.update();
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    M_drive_R.setTargetPosition(635); //295 cm
+                    M_drive_L.setTargetPosition(635); //10021 - 740 = 9281
+
+                    M_drive_R.setPower(0.75);
+                    M_drive_L.setPower(0.75);
+
+                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    }
+
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+
+                    idle();
+
                     counter++;
                     break;
 
-
                 case 1:
+
+
+                    shooterRUN(0.6, -2200); // previous -2160
+                    shooterRUN(0.0, 0);
+                    S_ballDrop.setPosition(1.0);
+                    sleep(950); //previous 1500
+                    S_ballDrop.setPosition(0.0);
+                    sleep(900); //previous 1500
+                    shooterRUN(0.6, -2200); //previous -2160
+                    shooterRUN(0.0, 0);
+
+                    counter++;
+                    break;
+
+                case 2:
                     // first turn from initial position
 
                     angleZ  = gyro.getIntegratedZValue();
@@ -218,7 +249,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 2: // ADJUST SPEED AND DISTANCE
+                case 3: // ADJUST SPEED AND DISTANCE
                     // drive towards wall
 
                     telemetry.addData("CASE 2", "CASE 2");
@@ -226,11 +257,11 @@ public class SR_redAutonCorner extends LinearOpMode {
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    M_drive_R.setTargetPosition(10021); //295 cm
-                    M_drive_L.setTargetPosition(10021);
+                    M_drive_R.setTargetPosition(9000); //295 cm
+                    M_drive_L.setTargetPosition(9000); //10021 - 7635 = 9386
 
-                    M_drive_R.setPower(0.6);
-                    M_drive_L.setPower(0.6);
+                    M_drive_R.setPower(0.65);
+                    M_drive_L.setPower(0.65);
 
                     M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -248,7 +279,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 3:
+                case 4:
                     //turn to align with wall
 
                     angleZ  = gyro.getIntegratedZValue();
@@ -296,11 +327,10 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 4: //INCREASED SPEED
+                case 5: //INCREASED SPEED
                     // stop when white line is detected
-                    // range sensor follow the wall
+
                     while (opticalDistanceSensor1.getLightDetected() < 0.09
-                            && opticalDistanceSensor2.getLightDetected() < 0.09
                             && opModeIsActive()) {
                         telemetry.addData("WHILE", "WHILE");
                         telemetry.update();
@@ -308,24 +338,25 @@ public class SR_redAutonCorner extends LinearOpMode {
                         if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 9 + 1) {
                             telemetry.addData("RANGE", "TOO BIG");
                             telemetry.update();
-                            M_drive_L.setPower(0.06); //too slow, 18, -number to 18, 20, 18, 20
-                            M_drive_R.setPower(0.08);
+                            M_drive_L.setPower(0.21); //BIG BLUE .23
+                            M_drive_R.setPower(0.24); //SMALL BLUE  .21
 
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
                         } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 9 - 1) {
                             telemetry.addData("RANGE", "TOO SMALL");
-                            M_drive_L.setPower(0.08);
-                            M_drive_R.setPower(0.06);
+                            M_drive_L.setPower(0.24);
+                            M_drive_R.setPower(0.21);
                             telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
-                        } else {
-                            M_drive_L.setPower(0.08);
-                            M_drive_R.setPower(0.08);
                         }
 
+                        else {
+                            M_drive_L.setPower(0.23);
+                            M_drive_R.setPower(0.23);
+                        }
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
@@ -333,7 +364,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 5:
+                case 6:
                     // detects color for first beacon
                     // presses beacon if red
 
@@ -399,17 +430,17 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 6: //INCREASE POWER AND DECREASE DISTANCE
+                case 7: //INCREASE POWER AND DECREASE DISTANCE
                     //drives to second beacon
 
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    M_drive_R.setTargetPosition(3082); //295 cm
-                    M_drive_L.setTargetPosition(3082);
+                    M_drive_R.setTargetPosition(302); //3082
+                    M_drive_L.setTargetPosition(302);
 
-                    M_drive_R.setPower(0.3); //INCREASE POWER FROM .3 TO .6
-                    M_drive_L.setPower(0.3);
+                    M_drive_R.setPower(0.5); //INCREASE POWER FROM .3 TO .5
+                    M_drive_L.setPower(0.5);
 
                     M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -430,12 +461,11 @@ public class SR_redAutonCorner extends LinearOpMode {
                     counter ++;
                     break;
 
-                case 7:
+                case 8:
                     // stops at white line
                     // checks range to see if it is 15
 
                     while (opticalDistanceSensor1.getLightDetected() < 0.09
-                            && opticalDistanceSensor2.getLightDetected() < 0.09
                             && opModeIsActive()) {
                         telemetry.addData("WHILE", "WHILE");
                         telemetry.update();
@@ -443,33 +473,34 @@ public class SR_redAutonCorner extends LinearOpMode {
                         if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 9 + 1) {
                             telemetry.addData("RANGE", "TOO BIG");
                             telemetry.update();
-                            M_drive_L.setPower(0.06); //too slow, 18, -number to 18, 20, 18, 20
-                            M_drive_R.setPower(0.08);
+                            M_drive_L.setPower(0.21); //BIG BLUE .23
+                            M_drive_R.setPower(0.24); //SMALL BLUE  .21
 
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
                         } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 9 - 1) {
                             telemetry.addData("RANGE", "TOO SMALL");
-                            M_drive_L.setPower(0.08);
-                            M_drive_R.setPower(0.06);
+                            M_drive_L.setPower(0.24);
+                            M_drive_R.setPower(0.21);
                             telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
-                        } else {
-                            M_drive_L.setPower(0.08);
-                            M_drive_R.setPower(0.08);
                         }
 
-
+                        else {
+                            M_drive_L.setPower(0.23);
+                            M_drive_R.setPower(0.23);
+                        }
                     }
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
 
                     counter++;
+
                     break;
 
-                case 8:  //INCREASE POWER AND DECREASE DISTANCE
+                case 9:  //INCREASE POWER AND DECREASE DISTANCE
                     // detects beacon color
                     // presses beacon if red
                     telemetry.addData("CASE 7", "CASE 7");
@@ -536,8 +567,8 @@ public class SR_redAutonCorner extends LinearOpMode {
                     }
                     counter++;
                     break;
-
-                case 9:
+/*
+                case 10:
 
                     // drives towards center vortex for launching particle
 
@@ -645,9 +676,10 @@ public class SR_redAutonCorner extends LinearOpMode {
                     this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
-*/
+
                     idle();
-                    counter++;
+
+
                     break;
 
                 case 12:
@@ -661,7 +693,7 @@ public class SR_redAutonCorner extends LinearOpMode {
                     sleep(700); //previous 1500
                     shooterRUN(0.5, -2200); //previous -2160
                     shooterRUN(0.0, 0);
-                    */
+
                     counter++;
                     break;
 
@@ -692,10 +724,10 @@ public class SR_redAutonCorner extends LinearOpMode {
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
                     idle();
-*/
+
                     counter++;
                     break;
-
+*/
 
                 default:
                     M_drivePowerR = STOP;

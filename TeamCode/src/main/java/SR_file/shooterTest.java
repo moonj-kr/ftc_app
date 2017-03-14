@@ -16,8 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.Arrays;
 
-@Autonomous(name = "rangeSensorwallFollow", group = "Linear Opmode")
-//Disabled
+@Autonomous(name = "shooterTest", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 2/16/17
@@ -25,7 +24,7 @@ import java.util.Arrays;
  * Autonomous for Red Alliance Starting from Corner
  */
 
-public class rangeSensorwallFollow extends LinearOpMode {
+public class shooterTest extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -50,7 +49,7 @@ public class rangeSensorwallFollow extends LinearOpMode {
     // motor powers
     final double        STOP = 0.0d;
     double              M_drivePowerR = STOP,
-                        M_drivePowerL = STOP;
+            M_drivePowerL = STOP;
 
     double[] drivePowers;
 
@@ -60,10 +59,10 @@ public class rangeSensorwallFollow extends LinearOpMode {
 
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
-                 BUTTON_INIT_STOP_LEFT = 0.5,
-                 BALL_DROP_INIT = 0.2,
-                 BUTTON_ADD_POS = 0.7,
-                 BUTTON_DEC_POS = 0.3;
+            BUTTON_INIT_STOP_LEFT = 0.5,
+            BALL_DROP_INIT = 0.2,
+            BUTTON_ADD_POS = 0.7,
+            BUTTON_DEC_POS = 0.3;
 
     ElapsedTime clock;
 
@@ -156,36 +155,61 @@ public class rangeSensorwallFollow extends LinearOpMode {
 
         while(opModeIsActive()) {
 
-            while (opticalDistanceSensor1.getLightDetected() < 0.09
-                    && opticalDistanceSensor2.getLightDetected() < 0.09
-                    && opModeIsActive()) {
-                telemetry.addData("WHILE", "WHILE");
-                telemetry.update();
+            switch (counter) {
 
-                if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 11 + 1) {
-                    telemetry.addData("RANGE", "TOO BIG");
-                    telemetry.update();
-                    M_drive_L.setPower(0.11); //BIG BLUE .23
-                    M_drive_R.setPower(0.13); //SMALL BLUE  .21
+                /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
-                    telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
-                    telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
-                    telemetry.update();
-                } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 11 - 1) {
-                    telemetry.addData("RANGE", "TOO SMALL");
-                    M_drive_L.setPower(0.13);
-                    M_drive_R.setPower(0.11);
-                    telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
-                    telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
-                    telemetry.update();
-                }
+                case 0:
 
-                else {
-                    M_drive_L.setPower(0.23);
-                    M_drive_R.setPower(0.23);
-                }
+                    shooterRUN(0.6, -2200); // previous -2160
+                    shooterRUN(0.0, 0);
+                    S_ballDrop.setPosition(1.0);
+                    sleep(950); //previous 1500
+                    S_ballDrop.setPosition(0.0);
+                    sleep(900); //previous 1500
+                    shooterRUN(0.6, -2200); //previous -2160
+                    shooterRUN(0.0, 0);
+
+                    counter++;
+                    break;
+
+
+                default:
+                    M_drivePowerR = STOP;
+                    M_drivePowerL = STOP;
+                    this.M_shooter.setPower(STOP);
+                    telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
+                    telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
+                    telemetry.addData("Target R", motorTargetsDrive[0]);
+                    telemetry.addData("Target L", motorTargetsDrive[1]);
+                    break;
             }
-            M_drive_L.setPower(0.0);
-            M_drive_R.setPower(0.0);
 
-        }}}
+            //M_drivePowerR = drivePowers[0];
+            //M_drivePowerL = drivePowers[1];
+            M_drive_R.setPower(M_drivePowerR);
+            M_drive_L.setPower(M_drivePowerL);
+
+
+            telemetry.addData("Counter", counter);
+            telemetry.addData("Supposed Power R", M_drivePowerR);
+            telemetry.addData("Supposed Power L", M_drivePowerL);
+            telemetry.addData("time", clock.time());
+            sleep(20);
+        }}
+
+    public void shooterRUN(double power, int distance) throws InterruptedException {
+        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        M_shooter.setTargetPosition(distance);
+
+        M_shooter.setPower(power);
+
+        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (M_shooter.isBusy()) {
+            //wait
+        }
+        idle();
+    }
+}

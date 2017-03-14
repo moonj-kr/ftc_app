@@ -3,11 +3,9 @@ package SR_file;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -16,8 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.Arrays;
 
-@Autonomous(name = "rangeSensorwallFollow", group = "Linear Opmode")
-//Disabled
+@Autonomous(name = "Match67", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 2/16/17
@@ -25,7 +22,7 @@ import java.util.Arrays;
  * Autonomous for Red Alliance Starting from Corner
  */
 
-public class rangeSensorwallFollow extends LinearOpMode {
+public class Match67 extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -50,7 +47,7 @@ public class rangeSensorwallFollow extends LinearOpMode {
     // motor powers
     final double        STOP = 0.0d;
     double              M_drivePowerR = STOP,
-                        M_drivePowerL = STOP;
+            M_drivePowerL = STOP;
 
     double[] drivePowers;
 
@@ -60,10 +57,10 @@ public class rangeSensorwallFollow extends LinearOpMode {
 
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
-                 BUTTON_INIT_STOP_LEFT = 0.5,
-                 BALL_DROP_INIT = 0.2,
-                 BUTTON_ADD_POS = 0.7,
-                 BUTTON_DEC_POS = 0.3;
+            BUTTON_INIT_STOP_LEFT = 0.5,
+            BALL_DROP_INIT = 0.2,
+            BUTTON_ADD_POS = 0.7,
+            BUTTON_DEC_POS = 0.3;
 
     ElapsedTime clock;
 
@@ -132,60 +129,84 @@ public class rangeSensorwallFollow extends LinearOpMode {
         drivePowers = new double[2];
         Arrays.fill(drivePowers, 0.0d);
 
-        // start calibrating the gyro.
-        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
-        telemetry.update();
-        gyro.calibrate();
-
-        // make sure the gyro is calibrated.
-        while (!isStopRequested() && gyro.isCalibrating())  {
-            sleep(50);
-            idle();
-        }
-        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
-        telemetry.update();
-
         waitForStart();
-        clock.startTime();
 
-        int xVal, yVal, zVal = 0;     // Gyro rate Values
-        int heading = 0;              // Gyro integrated heading
-        int angleZ = 0;
-        boolean lastResetState = false;
-        boolean curResetState  = false;
+                    sleep(10000);
 
-        while(opModeIsActive()) {
-
-            while (opticalDistanceSensor1.getLightDetected() < 0.09
-                    && opticalDistanceSensor2.getLightDetected() < 0.09
-                    && opModeIsActive()) {
-                telemetry.addData("WHILE", "WHILE");
-                telemetry.update();
-
-                if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 11 + 1) {
-                    telemetry.addData("RANGE", "TOO BIG");
+                    telemetry.addData("CASE 0", "CASE 0");
                     telemetry.update();
-                    M_drive_L.setPower(0.11); //BIG BLUE .23
-                    M_drive_R.setPower(0.13); //SMALL BLUE  .21
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
-                    telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
-                    telemetry.update();
-                } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 11 - 1) {
-                    telemetry.addData("RANGE", "TOO SMALL");
-                    M_drive_L.setPower(0.13);
-                    M_drive_R.setPower(0.11);
-                    telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
-                    telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
-                    telemetry.update();
-                }
+                    M_drive_R.setTargetPosition(635); //295 cm
+                    M_drive_L.setTargetPosition(635); //10021 - 740 = 9281
 
-                else {
-                    M_drive_L.setPower(0.23);
-                    M_drive_R.setPower(0.23);
-                }
-            }
-            M_drive_L.setPower(0.0);
-            M_drive_R.setPower(0.0);
+                    M_drive_R.setPower(0.5);
+                    M_drive_L.setPower(0.5);
 
-        }}}
+                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    }
+
+                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+
+
+                    shooterRUN(0.6, -2200); // previous -2160
+                    shooterRUN(0.0, 0);
+                    S_ballDrop.setPosition(1.0);
+                    sleep(950); //previous 1500
+                    S_ballDrop.setPosition(0.0);
+                    sleep(950); //previous 1500
+                    shooterRUN(0.6, -2200); //previous -2160
+                    shooterRUN(0.0, 0);
+
+
+                   sleep(1000);
+
+                   telemetry.addData("CASE 0", "CASE 0");
+                   telemetry.update();
+                   M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                   M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                   M_drive_R.setTargetPosition(4800); //295 cm
+                   M_drive_L.setTargetPosition(4800); //10021 - 740 = 9281 735 + 635 1
+
+                   M_drive_R.setPower(0.5);
+                   M_drive_L.setPower(0.5);
+
+                   M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                   M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                   while ((M_drive_L.isBusy() || M_drive_R.isBusy()) && opModeIsActive()) {
+                   }
+
+                   M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                   M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                   this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+                   this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
+}
+
+    public void shooterRUN(double power, int distance) throws InterruptedException {
+        M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        M_shooter.setTargetPosition(distance);
+
+        M_shooter.setPower(power);
+
+        M_shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (M_shooter.isBusy() && opModeIsActive()) {
+            //wait
+        }
+
+    }
+}

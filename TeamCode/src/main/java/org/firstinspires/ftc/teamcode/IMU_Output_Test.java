@@ -33,6 +33,7 @@ import java.util.Locale;
         * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
         */
 @Autonomous(name = "IMU_Output_Test", group = "Linear Opmode")
+@Disabled
 //@Disabled
 
 public class IMU_Output_Test extends LinearOpMode{

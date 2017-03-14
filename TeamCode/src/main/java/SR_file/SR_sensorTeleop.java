@@ -5,6 +5,7 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -55,7 +56,7 @@ import java.util.Locale;
 
 
 @TeleOp(name="SR_sensorTeleop", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-
+// Disabled
 
 public class SR_sensorTeleop extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
@@ -72,7 +73,7 @@ public class SR_sensorTeleop extends LinearOpMode {
 
 
     // sensor declarations
-    ColorSensor colorSensorRight; // 0x3a
+    //ColorSensor colorSensorRight; // 0x3a
     ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
@@ -114,9 +115,9 @@ public class SR_sensorTeleop extends LinearOpMode {
         this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_R");
+        //colorSensorRight = hardwareMap.colorSensor.get("color_R");
         colorSensorLeft = hardwareMap.colorSensor.get("color_L");
-        colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a)); //change to 0x3a from 0x4c
+        //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a)); //change to 0x3a from 0x4c
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1"); //right
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
@@ -206,9 +207,12 @@ public class SR_sensorTeleop extends LinearOpMode {
             if(colorSensorLeft.red() > colorSensorLeft.blue()){
                 telemetry.addData("COLOR LEFT", "IT IS RED");
             }
+            /*
             if(colorSensorRight.red() > colorSensorRight.blue()){
                 telemetry.addData("COLOR RIGHT", "IT IS RED");
             }
+
+            */
             //print range value
             telemetry.addData("range", rangeSensorLeft.getDistance(DistanceUnit.CM));
 

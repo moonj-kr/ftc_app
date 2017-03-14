@@ -3,17 +3,20 @@ package SR_file;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.Arrays;
 
-@Autonomous(name = "SR_blueAutonCorner", group = "Linear Opmode")
+@Autonomous(name = "SR_blueAutonCorner2", group = "Linear Opmode")
+@Disabled
 
 /**
  * Created by Jisook on 2/16/17
@@ -21,7 +24,7 @@ import java.util.Arrays;
  * Autonomous for Red Alliance Starting from Corner
  */
 
-public class SR_blueAutonCorner extends LinearOpMode {
+public class SR_blueAutonCorner2 extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -190,14 +193,22 @@ public class SR_blueAutonCorner extends LinearOpMode {
 
                 case 1:
 
-                    shooterRUN(0.6, -2200); // previous -2160
-                    shooterRUN(0.0, 0);
+                    shooterRUN(0.6, -2200); // previous -2200
+                    telemetry.addData("FIRST RUN","FIRST RUN");
+                    telemetry.update();
+
+                    //shooterRUN(0.0, 0);
                     S_ballDrop.setPosition(1.0);
-                    sleep(950); //previous 1500
+                    sleep(700); //previous 1500
                     S_ballDrop.setPosition(0.0);
-                    sleep(900); //previous 1500
+                    sleep(700); //previous 1500
                     shooterRUN(0.6, -2200); //previous -2160
-                    shooterRUN(0.0, 0);
+                    telemetry.addData("SECOND RUN","SECOND RUN");
+                    telemetry.update();
+                    //shooterRUN(0.0, 0);
+                    telemetry.addData("STILL IN CASE 1", "STILL IN CASE 1");
+                    telemetry.update();
+
 
                     counter++;
                     break;
@@ -218,7 +229,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     telemetry.update();
 
                     double deg1 = -18.5; //18.5
-                    double i = 1;
+                    double i = 2;
 
                     while (angleZ > deg1 + i || angleZ < deg1 - i) {
                         //while(angleZ <= 22.5 ){
@@ -341,7 +352,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                         telemetry.addData("WHILE", "WHILE");
                         telemetry.update();
 
-                        if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 9 + 1) {
+                        if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 11 + 1) {
                             telemetry.addData("RANGE", "TOO BIG");
                             telemetry.update();
                             M_drive_L.setPower(0.24); //BIG BLUE .23
@@ -350,7 +361,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
-                        } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 9 - 1) {
+                        } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 11 - 1) {
                             telemetry.addData("RANGE", "TOO SMALL");
                             M_drive_L.setPower(0.21);
                             M_drive_R.setPower(0.24);
@@ -476,12 +487,13 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     // stops at white line
                     // checks range to see if it is 15
 
-                    while ((opticalDistanceSensor1.getLightDetected() < 0.09)
+                    while ((opticalDistanceSensor1.getLightDetected() < 0.09
+                            && opticalDistanceSensor2.getLightDetected() < 0.09)
                             && opModeIsActive()) {
                         telemetry.addData("WHILE", "WHILE");
                         telemetry.update();
 
-                        if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 9 + 1) {
+                        if (rangeSensorLeft.getDistance(DistanceUnit.CM) > 11 + 1) {
                             telemetry.addData("RANGE", "TOO BIG");
                             telemetry.update();
                             M_drive_L.setPower(0.24); //BIG BLUE .23
@@ -490,7 +502,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("RANGE", rangeSensorLeft.getDistance(DistanceUnit.CM));
                             telemetry.update();
-                        } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 9 - 1) {
+                        } else if (rangeSensorLeft.getDistance(DistanceUnit.CM) < 11 - 1) {
                             telemetry.addData("RANGE", "TOO SMALL");
                             M_drive_L.setPower(0.21);
                             M_drive_R.setPower(0.24);
@@ -545,12 +557,12 @@ public class SR_blueAutonCorner extends LinearOpMode {
 
                         //extends servo
                         S_button_R.setPosition(BUTTON_ADD_POS);
-                        sleep(1200);
+                        sleep(1300);
                         S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
                         telemetry.addData("RETRACTING NOW","RETRACTING");
                         telemetry.update();
                         S_button_R.setPosition(BUTTON_DEC_POS);
-                        sleep(1200);
+                        sleep(1300);
                         S_button_R.setPosition(BUTTON_INIT_STOP_LEFT);
 
                         telemetry.addData("FIRST IF STATEMENT","FIRST");

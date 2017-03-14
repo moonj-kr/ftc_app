@@ -47,7 +47,7 @@ public class SR_redAutonSide extends LinearOpMode {
     Servo   S_ballDrop = null;
 
     // sensor declarations
-    ColorSensor colorSensorRight; // 0x3a
+    //ColorSensor colorSensorRight; // 0x3a
     ColorSensor colorSensorLeft; // CHANGE ADDRESS
     OpticalDistanceSensor opticalDistanceSensor1;
     OpticalDistanceSensor opticalDistanceSensor2;
@@ -102,9 +102,9 @@ public class SR_redAutonSide extends LinearOpMode {
         this.S_ballDrop = hardwareMap.servo.get("S_ballDrop");
 
         // mapping sensor variables to their hardware counter parts
-        colorSensorRight = hardwareMap.colorSensor.get("color_R");
+        //colorSensorRight = hardwareMap.colorSensor.get("color_R");
         colorSensorLeft = hardwareMap.colorSensor.get("color_L");
-        colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
+        //colorSensorRight.setI2cAddress(I2cAddr.create7bit(0x3a));
 
         opticalDistanceSensor1 = hardwareMap.opticalDistanceSensor.get("ODS1"); //right
         opticalDistanceSensor2 = hardwareMap.opticalDistanceSensor.get("ODS2");
@@ -187,24 +187,17 @@ public class SR_redAutonSide extends LinearOpMode {
 
                 case 0:
 
-                    /*
+
                     //shooter run
-                    if (!hasBeenSet) {
-                        shooterRUN(0.5, -2200); // previous -2160
-                        shooterRUN(0.0, 0);
-                        S_ballDrop.setPosition(1.0);
-                        sleep(700); //previous 1500
-                        S_ballDrop.setPosition(0.0);
-                        sleep(700); //previous 1500
-                        shooterRUN(0.5, -2200); //previous -2160
-                        shooterRUN(0.0, 0);
+                    shooterRUN(0.6, -2200); // previous -2160
+                    shooterRUN(0.0, 0);
+                    S_ballDrop.setPosition(1.0);
+                    sleep(950); //previous 1500
+                    S_ballDrop.setPosition(0.0);
+                    sleep(900); //previous 1500
+                    shooterRUN(0.6, -2200); //previous -2160
+                    shooterRUN(0.0, 0);
 
-                        hasBeenSet = true;
-                        clock.reset();
-                    }
-                    hasBeenSet = false;
-
-                    */
                     counter++;
                     break;
 
@@ -296,7 +289,7 @@ public class SR_redAutonSide extends LinearOpMode {
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
                     telemetry.update();
 
-                    double deg2 = -45.0;
+                    double deg2 = 0.0;
                     double j = 2;
 
                     while (angleZ > deg2 + j || angleZ < deg2 - j) {
@@ -646,8 +639,6 @@ public class SR_redAutonSide extends LinearOpMode {
             //waitOneFullHardwareCycle();
             sleep(20);
         }}
-
-    private boolean isRed() {   return colorSensorRight.red() > colorSensorRight.blue();  }
 
     public boolean isPastTime(double maxTime) {
         if(clock.time() > maxTime) {

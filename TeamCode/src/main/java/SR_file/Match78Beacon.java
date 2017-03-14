@@ -6,14 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.Arrays;
 
-@Autonomous(name = "SR_blueAutonCorner", group = "Linear Opmode")
+@Autonomous(name = "Match78Beacon", group = "Linear Opmode")
 
 /**
  * Created by Jisook on 2/16/17
@@ -21,7 +22,7 @@ import java.util.Arrays;
  * Autonomous for Red Alliance Starting from Corner
  */
 
-public class SR_blueAutonCorner extends LinearOpMode {
+public class Match78Beacon extends LinearOpMode {
 
     // motor declarations
     DcMotor M_drive_L = null,
@@ -128,19 +129,6 @@ public class SR_blueAutonCorner extends LinearOpMode {
         drivePowers = new double[2];
         Arrays.fill(drivePowers, 0.0d);
 
-        // start calibrating the gyro.
-        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
-        telemetry.update();
-        gyro.calibrate();
-
-        // make sure the gyro is calibrated.
-        while (!isStopRequested() && gyro.isCalibrating())  {
-            sleep(50);
-            idle();
-        }
-        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
-        telemetry.update();
-
         waitForStart();
         clock.startTime();
 
@@ -172,87 +160,49 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    while ((M_drive_L.isBusy() || M_drive_R.isBusy()) && opModeIsActive()) {
                     }
 
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    idle();
 
                     this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
                     idle();
-
+                    telemetry.addData("CASE 0", "End of case 0");
+                    telemetry.update();
                     counter++;
                     break;
-
-                    //launches particle
 
                 case 1:
 
+                    telemetry.addData("CASE 1", "Start of case 1");
+                    telemetry.update();
                     shooterRUN(0.6, -2200); // previous -2160
                     shooterRUN(0.0, 0);
-                    S_ballDrop.setPosition(1.0);
-                    sleep(950); //previous 1500
-                    S_ballDrop.setPosition(0.0);
-                    sleep(900); //previous 1500
-                    shooterRUN(0.6, -2200); //previous -2160
-                    shooterRUN(0.0, 0);
+                    //sleep(2000);
+                    telemetry.addData("SHOOTER ","SHOOTER END");
+                    telemetry.update();
+
 
                     counter++;
                     break;
+
+
 
                case 2:
 // change motor to rotate little more
-                    // first turn from initial position
+                   // first turn from initial position
 
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
-
-                    xVal = gyro.rawX();
-                    yVal = gyro.rawY();
-                    zVal = gyro.rawZ();
-                    heading = gyro.getHeading();
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                    telemetry.update();
-
-                    double deg1 = -18.5; //18.5
-                    double i = 1;
-
-                    while (angleZ > deg1 + i || angleZ < deg1 - i) {
-                        //while(angleZ <= 22.5 ){
-                        if (angleZ > deg1 + i) {
-                            M_drive_L.setPower(0.05); //too slow, 18, -number to 18, 20, 18, 20
-                            M_drive_R.setPower(-0.05);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-                        if (angleZ < deg1 - i) {
-                            M_drive_L.setPower(-0.05);
-                            M_drive_R.setPower(0.05);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-                    }
-
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
-                    telemetry.addData("TURN COMPLETED %03d", angleZ);
-                    telemetry.update();
-                    counter++;
-                    break;
+                   counter++;
+                   break;
 
                 case 3:
                     // drive towards wall
-
-                    telemetry.addData("CASE 2", "CASE 2");
+                    sleep(3000);
+                    telemetry.addData("CASE 3", "CASE 3");
                     telemetry.update();
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -260,13 +210,13 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     M_drive_R.setTargetPosition(9001); //295 cm
                     M_drive_L.setTargetPosition(9001); //9851 - 740 = 9111
 
-                    M_drive_R.setPower(0.65);
-                    M_drive_L.setPower(0.65);
+                    M_drive_R.setPower(0.5); //original = .65
+                    M_drive_L.setPower(0.5);
 
                     M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    while ((M_drive_L.isBusy() || M_drive_R.isBusy())&& opModeIsActive()) {
                     }
 
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -276,44 +226,51 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
                     idle();
+
+
+                    sleep(30000);
+
                     counter++;
                     break;
-
+/*
                 case 4:
-                    //turn to align with wall
+// change motor to rotate little more
+                    // first turn from initial position
 
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                    finalAngle = 0;
                     xVal = gyro.rawX();
                     yVal = gyro.rawY();
                     zVal = gyro.rawZ();
                     heading = gyro.getHeading();
                     angleZ  = gyro.getIntegratedZValue();
                     telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                    telemetry.update();
+                    //telemetry.update();
 
-                    double deg2 = 41.0;
-                    double j = 2;
+                    deg = -18.5; //18.5
+                    b= 1;
 
-                    while (angleZ > deg2 + j || angleZ < deg2 - j) {
-                        telemetry.addData("WHILE", "WHILE");
-                        telemetry.update();
+                    while (angleZ > deg + b || angleZ < deg - b) {
+                        //while(angleZ <= 22.5 ){
+                        angleZ  = gyro.getIntegratedZValue();
+                        finalAngle = angleZ;
 
-                        if (angleZ > deg2 + j) {
+                        if (angleZ > deg + b) {
                             M_drive_L.setPower(0.05); //too slow, 18, -number to 18, 20, 18, 20
                             M_drive_R.setPower(-0.05);
 
-                            angleZ  = gyro.getIntegratedZValue();
+                            // angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
                         }
-
-                        if (angleZ < deg2 - j) {
+                        if (angleZ < deg - b) {
                             M_drive_L.setPower(-0.05);
                             M_drive_R.setPower(0.05);
 
-                            angleZ  = gyro.getIntegratedZValue();
+                            //angleZ  = gyro.getIntegratedZValue();
                             telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
                             telemetry.addData("1", "Int. Ang. %03d", angleZ);
                             telemetry.update();
@@ -323,18 +280,71 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     M_drive_L.setPower(0.0);
                     M_drive_R.setPower(0.0);
                     telemetry.addData("TURN COMPLETED %03d", angleZ);
+                    angleZ_two  = gyro.getIntegratedZValue();
+                    telemetry.addData("After Ang. %03d", angleZ_two);
+                    telemetry.addData("After While Ang. %03d", finalAngle);
                     telemetry.update();
+                    //sleep(3000);
                     counter++;
                     break;
 
                 case 5:
+                    // change motor to rotate little more
+                    // first turn from initial position
+
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
+
+                     finalAngle = 0;
+                    xVal = gyro.rawX();
+                    yVal = gyro.rawY();
+                    zVal = gyro.rawZ();
+                    heading = gyro.getHeading();
+                    angleZ  = gyro.getIntegratedZValue();
+                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                    //telemetry.update();
+
+                     deg = 41.0; //18.5
+                     b= 1;
+
+                    while (angleZ > deg + b || angleZ < deg - b) {
+                        //while(angleZ <= 22.5 ){
+                        angleZ  = gyro.getIntegratedZValue();
+                        finalAngle = angleZ;
+
+                        if (angleZ > deg + b) {
+                            M_drive_L.setPower(0.05); //too slow, 18, -number to 18, 20, 18, 20
+                            M_drive_R.setPower(-0.05);
+
+                            // angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                        if (angleZ < deg - b) {
+                            M_drive_L.setPower(-0.05);
+                            M_drive_R.setPower(0.05);
+
+                            //angleZ  = gyro.getIntegratedZValue();
+                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
+                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
+                            telemetry.update();
+                        }
+                    }
+
+                    M_drive_L.setPower(0.0);
+                    M_drive_R.setPower(0.0);
+                    telemetry.addData("TURN COMPLETED %03d", angleZ);
+                     angleZ_two  = gyro.getIntegratedZValue();
+                    telemetry.addData("After Ang. %03d", angleZ_two);
+                    telemetry.addData("After While Ang. %03d", finalAngle);
+                    telemetry.update();
+                    counter++;
+                    break;
+
+                case 6:
                     // stop when white line is detected
                     // range sensor follow the wall
-/*
-                    while ((opticalDistanceSensor1.getLightDetected() < 0.09
-                            && opticalDistanceSensor2.getLightDetected() < 0.09)
-                            && opModeIsActive()) {
-                    */
 
                     while ((opticalDistanceSensor1.getLightDetected() < 0.09) //only checking one
                             && opModeIsActive()) {
@@ -370,8 +380,8 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 6:
-                    telemetry.addData("CASE 5", "CASE 5");
+                case 7:
+                    telemetry.addData("CASE 7", "CASE 7");
                     // detects color for first beacon
                     // presses beacon if red
 
@@ -438,7 +448,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 7:
+                case 8:
                     //drives to second beacon
 
 
@@ -472,7 +482,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     counter ++;
                     break;
 
-                case 8:
+                case 9:
                     // stops at white line
                     // checks range to see if it is 15
 
@@ -509,7 +519,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 9:
+                case 10:
                     // detects beacon color
                     // presses beacon if red
                     telemetry.addData("CASE 7", "CASE 7");
@@ -577,153 +587,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     counter++;
                     break;
 
-                case 10:
-
-                    // drives towards center vortex for launching particle
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    M_drive_R.setTargetPosition(50); //10021
-                    M_drive_L.setTargetPosition(50); //5010
-
-                    M_drive_R.setPower(-0.6);
-                    M_drive_L.setPower(-0.6);
-
-                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
-                    }
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-
-                    idle();
-
-                    counter++;
-                    break;
-
-
-                case 11:
-                    // turns towards center vortex
-                    configureStuff();
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Beg. Ang. %03d", angleZ);
-
-                    xVal = gyro.rawX();
-                    yVal = gyro.rawY();
-                    zVal = gyro.rawZ();
-                    heading = gyro.getHeading();
-                    angleZ  = gyro.getIntegratedZValue();
-                    telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                    telemetry.update();
-
-                    double deg3 = 140.0;
-                    double k = 2;
-
-                    while (angleZ > deg3 + k || angleZ < deg3 - k && opModeIsActive())  {
-                        telemetry.addData("WHILE", "WHILE");
-                        telemetry.update();
-                        //while(angleZ <= 67.5 ){
-                        if (angleZ > deg3 + k) {
-                            M_drive_L.setPower(0.1); //too slow, 18, -number to 18, 20, 18, 20
-                            M_drive_R.setPower(-0.1);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS GREATER", "ANGLE IS GREATER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-                        if (angleZ < deg3 - k) {
-                            M_drive_L.setPower(-0.05);
-                            M_drive_R.setPower(0.05);
-
-                            angleZ  = gyro.getIntegratedZValue();
-                            telemetry.addData("ANGLE IS LESSER", "ANGLE IS LESSER");
-                            telemetry.addData("1", "Int. Ang. %03d", angleZ);
-                            telemetry.update();
-                        }
-
-                    }
-
-                    M_drive_L.setPower(0.0);
-                    M_drive_R.setPower(0.0);
-                    telemetry.addData("TURN COMPLETED %03d", angleZ);
-                    telemetry.update();
-                    // gyro.resetZAxisIntegrator();
-
-                    counter++;
-                    break;
-
-
-                case 12:
-                    // drives towards center vortex for launching particle
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    M_drive_R.setTargetPosition(4210); //10021
-                    M_drive_L.setTargetPosition(4210); //5010
-
-                    M_drive_R.setPower(-0.6);
-                    M_drive_L.setPower(-0.6);
-
-                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
-                    }
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-
-                    idle();
-                    counter++;
-                    break;
-
-                case 13:
-
-                    counter++;
-                    break;
-
-
-                case 14:
-                    // drives towards center vortex & parks
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                    M_drive_R.setTargetPosition(5310); //10021
-                    M_drive_L.setTargetPosition(5310); //5010
-
-                    M_drive_R.setPower(-0.6);
-                    M_drive_L.setPower(-0.6);
-
-                    M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
-                    }
-
-                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    M_drive_R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-                    this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-                    this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
-
-                    idle();
-                    counter++;
-                    break;
-
-
+                */
                 default:
                     M_drivePowerR = STOP;
                     M_drivePowerL = STOP;
@@ -735,20 +599,11 @@ public class SR_blueAutonCorner extends LinearOpMode {
                     break;
             }
 
-            //M_drivePowerR = drivePowers[0];
-            //M_drivePowerL = drivePowers[1];
-            M_drive_R.setPower(M_drivePowerR);
-            M_drive_L.setPower(M_drivePowerL);
-
-
-            telemetry.addData("Counter", counter);
-            telemetry.addData("Supposed Power R", M_drivePowerR);
-            telemetry.addData("Supposed Power L", M_drivePowerL);
-            telemetry.addData("time", clock.time());
-            sleep(20);
         }}
 
     public void shooterRUN(double power, int distance) throws InterruptedException {
+        telemetry.addData("Shooter", "Starting shot");
+        telemetry.update();
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         M_shooter.setTargetPosition(distance);
@@ -761,5 +616,7 @@ public class SR_blueAutonCorner extends LinearOpMode {
             //wait
         }
         idle();
+        telemetry.addData("Shooter", "Finished shot");
+        telemetry.update();
     }
 }
