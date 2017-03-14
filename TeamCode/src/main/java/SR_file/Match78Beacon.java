@@ -122,7 +122,7 @@ public class Match78Beacon extends LinearOpMode {
                 /////////ACTUAL TESED AUTONOMOUS PROGRAM/////////////////////////
 
                 case 0:
-
+                    
                     telemetry.addData("CASE 0", "CASE 0");
                     telemetry.update();
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
