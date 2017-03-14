@@ -18,6 +18,8 @@ import java.util.Arrays;
  * Created by Jisook on 2/16/17
  * Super Regionals
  * Autonomous for Red Alliance Starting from Corner
+ * Launches two particles & parks on ramp
+ * Using time for turns
  */
 
 public class Match78Ramp extends LinearOpMode {
@@ -40,18 +42,8 @@ public class Match78Ramp extends LinearOpMode {
     ModernRoboticsI2cGyro gyro;
     ModernRoboticsI2cRangeSensor rangeSensorLeft;
 
-
-
     // motor powers
     final double        STOP = 0.0d;
-    double              M_drivePowerR = STOP,
-            M_drivePowerL = STOP;
-
-    double[] drivePowers;
-
-    // function necessity delcarations
-    int[] motorTargetsDrive;
-    int[] motorTargetsTurn;
 
     // all of the starting servo positions
     final double BUTTON_INIT_STOP_RIGHT = 0.5,
@@ -108,12 +100,6 @@ public class Match78Ramp extends LinearOpMode {
         this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.M_shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //PID arrays
-        motorTargetsDrive = new int[2];
-        motorTargetsTurn = new int[2];
-        Arrays.fill(motorTargetsDrive, 0);
-        Arrays.fill(motorTargetsTurn, 0);
-
         clock = new ElapsedTime();
     }
 
@@ -124,8 +110,6 @@ public class Match78Ramp extends LinearOpMode {
 
         ////////////////////////// run auton stuff starts here ///////////////////////////////
         int counter = 0;
-        drivePowers = new double[2];
-        Arrays.fill(drivePowers, 0.0d);
 
         waitForStart();
         clock.startTime();
@@ -144,8 +128,6 @@ public class Match78Ramp extends LinearOpMode {
 
                 case 0:
 
-                    //sleep(10000);
-
                     telemetry.addData("CASE 0", "CASE 0");
                     telemetry.update();
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -160,7 +142,7 @@ public class Match78Ramp extends LinearOpMode {
                     M_drive_L.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     M_drive_R.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    while (M_drive_L.isBusy() || M_drive_R.isBusy()) {
+                    while (M_drive_L.isBusy() || M_drive_R.isBusy() && opModeIsActive()) {
                     }
 
                     M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -169,20 +151,16 @@ public class Match78Ramp extends LinearOpMode {
                     this.M_drive_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
                     this.M_drive_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //added
 
-
-
-                    idle();
-
                     counter++;
                     break;
 
                 case 1:
-// change motor to rotate little more
+                    // change motor to rotate little more
                     // first turn from initial position
 
                     counter++;
                     break;
-                    //launches particl
+                    //launches particle
 
                 case 2:
                     shooterRUN(0.6, -2200); // previous -2160
@@ -208,12 +186,8 @@ public class Match78Ramp extends LinearOpMode {
                     counter++;
                     break;
 
-
-
                 case 4:
-
-                   sleep(1000);
-
+                    
                    telemetry.addData("CASE 0", "CASE 0");
                    telemetry.update();
                    M_drive_L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -248,25 +222,12 @@ public class Match78Ramp extends LinearOpMode {
                     this.M_shooter.setPower(STOP);
                     telemetry.addData("RF POS", M_drive_R.getCurrentPosition());
                     telemetry.addData("LF POS", M_drive_L.getCurrentPosition());
-                    telemetry.addData("Target R", motorTargetsDrive[0]);
-                    telemetry.addData("Target L", motorTargetsDrive[1]);
                     break;
             }
 
-            //M_drivePowerR = drivePowers[0];
-            //M_drivePowerL = drivePowers[1];
-            M_drive_R.setPower(M_drivePowerR);
-            M_drive_L.setPower(M_drivePowerL);
-
-
-            telemetry.addData("Counter", counter);
-            telemetry.addData("Supposed Power R", M_drivePowerR);
-            telemetry.addData("Supposed Power L", M_drivePowerL);
-            telemetry.addData("time", clock.time());
-            sleep(20);
         }}
 
-    public void shooterRUN(double power, int distance) throws InterruptedException {
+    public void shooterRUN(double power, int distance) {
         M_shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         M_shooter.setTargetPosition(distance);
@@ -278,6 +239,5 @@ public class Match78Ramp extends LinearOpMode {
         while (M_shooter.isBusy() && opModeIsActive()) {
             //wait
         }
-        idle();
     }
 }
